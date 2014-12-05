@@ -229,10 +229,12 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
           newenv.env[arg] = args[i]
         }
         //}
-        a := make([]interface{}, len(fns[n].stmts))
-        for i, stmt := range fns[n].stmts {
+        //a := make([]interface{}, len(fns[n].stmts))
+        var a interface{}
+        for _, stmt := range fns[n].stmts {
           rr, _ := Run(stmt, newenv)
-          a[i] = rr.Interface()
+          //a[i] = rr.Interface()
+          a = rr.Interface()
         }
         //if err == ReturnError {
         //  err = nil

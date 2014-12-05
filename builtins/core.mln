@@ -1,0 +1,14 @@
+; molino.core 
+
+(def vector
+  (fn
+    ([a] [a])
+    ([a b] [a b])
+    ([a b c] [a b c])
+    ([a b c d] [a b c d])))
+
+(vector 1)
+(vector 1 1)
+(vector 21 :a 3)
+(vector 4 41 9 "u")
+1
