@@ -32,6 +32,7 @@ func (s *Scanner) Init(src string) {
 func (s *Scanner) Scan() (tok int, lit string, pos Position) {
   s.skipWhiteSpace()
   s.skipComment()
+  s.skipWhiteSpace()
   pos = s.position()
   switch ch := s.peek(); {
   case isLetter(ch):
