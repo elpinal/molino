@@ -30,9 +30,10 @@ func (s *Scanner) Init(src string) {
 }
 
 func (s *Scanner) Scan() (tok int, lit string, pos Position) {
-  s.skipWhiteSpace()
-  s.skipComment()
-  s.skipWhiteSpace()
+  for isWhiteSpace(s.peek()) || s.peek() == ';' {
+    s.skipWhiteSpace()
+    s.skipComment()
+  }
   pos = s.position()
   switch ch := s.peek(); {
   case isLetter(ch):

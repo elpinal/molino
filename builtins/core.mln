@@ -1,5 +1,9 @@
 ; molino.core 
 
+;(def cons
+;  (fn
+;    [x seq] append(seq, x)))
+
 (def vector
   (fn
     ([a] [a])
