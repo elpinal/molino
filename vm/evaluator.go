@@ -192,29 +192,44 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
     //return reflect.ValueOf(a), nil
 
     s := make([]int, len(e.Fns))
+    var v = -1
     for i, fn := range e.Fns {
-      s[i] = len(fn.args)
+      if fn.Args.Vararg {
+        if v == len(fn.Args.Args) {
+          return reflect.ValueOf(nil), errors.New("Can't have more than 1 variadic overload")
+        }
+        if v == -1 || v > len(fn.Args.Args) {
+          v = len(fn.Args.Args)
+        }
+      } else {
+        s[i] = len(fn.Args.Args)
+      }
     }
     sort.Ints(s)
     for i := 1; i < len(s); i++ {
+      if s[i-1] > v && v != -1 {
+        return reflect.ValueOf(nil), errors.New("Can't have fixed arity function with more params than variadic function")
+      }
       if s[i-1] == s[i] {
-        return reflect.ValueOf(nil), errors.New("Can't have 2 or more overloads with some arity")
+        return reflect.ValueOf(nil), errors.New("Can't have more than 2 overloads with some arity")
       }
     }
 
     f := func(fns []Fn, env *Env) Func {
       return func(args ...reflect.Value) (reflect.Value, error) {
-        //if !expr.VarArg {
-        //  if len(args) != len(expr.Args) {
-        //    return NilValue, NewStringError(expr, "Arguments Number of mismatch")
-        //  }
-        //}
 
         var n int = -1
         for i, fn := range fns {
-          if len(args) == len(fn.args) {
-            n = i
-            break
+          if fn.Args.Vararg {
+            if len(args) >= len(fn.Args.Args) {
+              n = i
+              break
+            }
+          } else {
+            if len(args) == len(fn.Args.Args) {
+              n = i
+              break
+            }
           }
         }
         if n == -1 {
@@ -222,16 +237,24 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
         }
 
         newenv := env.NewEnv()
-        //if expr.VarArg {
-        //  newenv.Define(expr.Args[0], reflect.ValueOf(args))
-        //} else {
-        for i, arg := range fns[n].args {
+        if fns[n].Args.Vararg {
+          if len(args) != len(fns[n].Args.Args) {
+            var more []interface{}
+            for i := len(fns[n].Args.Args); i < len(args); i++ {
+              more = append(more, args[i].Interface())
+            }
+            newenv.env[fns[n].Args.More] = reflect.ValueOf(more)
+          }
+          for i := 0; i < len(fns[n].Args.Args); i++ {
+            newenv.env[fns[n].Args.Args[i]] = args[i]
+          }
+        }
+        for i, arg := range fns[n].Args.Args {
           newenv.env[arg] = args[i]
         }
-        //}
         //a := make([]interface{}, len(fns[n].stmts))
         var a interface{}
-        for _, stmt := range fns[n].stmts {
+        for _, stmt := range fns[n].Stmts {
           rr, _ := Run(stmt, newenv)
           //a[i] = rr.Interface()
           a = rr.Interface()

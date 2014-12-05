@@ -12,8 +12,14 @@ type Token struct {
 }
 
 type Fn struct {
-  args  []string
-  stmts []Statement
+  Args  Args
+  Stmts []Statement
+}
+
+type Args struct {
+  Args   []string
+  Vararg bool
+  More   string
 }
 
 %}
@@ -27,7 +33,7 @@ type Fn struct {
   expr_pairs map[Expression]Expression
   fn         Fn
   fns        []Fn
-  args       []string
+  args       Args
   idents     []string
   bool       bool
 }
@@ -129,7 +135,7 @@ expr  : NUMBER
   }
   | '(' FN args statements ')'
   {
-    $$ = &FnExpression{Fns: []Fn{Fn{args: $3, stmts: $4}}}
+    $$ = &FnExpression{Fns: []Fn{Fn{Args: $3, Stmts: $4}}}
   }
   | '(' expr exprs ')'
   {
@@ -162,7 +168,7 @@ expr_pairs
 fn
   : '(' args statements ')'
   {
-    $$ = Fn{args: $2, stmts: $3}
+    $$ = Fn{Args: $2, Stmts: $3}
   }
 
 fns
@@ -170,14 +176,16 @@ fns
   {
     $$ = []Fn{$1}
   }
-  | fn fns
+  | fns fn
   {
-    $$ = append([]Fn{$1}, $2...)
+    $$ = append($1, $2)
   }
 
 args
   : '[' idents ']'
-  { $$ = $2 }
+  { $$ = Args{Args: $2} }
+  | '[' idents '&' IDENT ']'
+  { $$ = Args{Args: $2, Vararg: true, More: $4.lit} }
 
 idents
   : { $$ = nil }

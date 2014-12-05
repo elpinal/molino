@@ -13,7 +13,7 @@ state 0
 	(  shift 4
 	[  shift 11
 	{  shift 12
-	.  reduce 1 (src line 54)
+	.  reduce 1 (src line 60)
 
 	statements  goto 1
 	statement  goto 2
@@ -41,7 +41,7 @@ state 2
 	(  shift 4
 	[  shift 11
 	{  shift 12
-	.  reduce 1 (src line 54)
+	.  reduce 1 (src line 60)
 
 	statements  goto 15
 	statement  goto 2
@@ -51,7 +51,7 @@ state 2
 state 3
 	statement:  expr.    (3)
 
-	.  reduce 3 (src line 70)
+	.  reduce 3 (src line 76)
 
 
 state 4
@@ -93,19 +93,19 @@ state 4
 state 5
 	expr:  NUMBER.    (8)
 
-	.  reduce 8 (src line 94)
+	.  reduce 8 (src line 100)
 
 
 state 6
 	expr:  IDENT.    (9)
 
-	.  reduce 9 (src line 98)
+	.  reduce 9 (src line 104)
 
 
 state 7
 	expr:  bool.    (10)
 
-	.  reduce 10 (src line 102)
+	.  reduce 10 (src line 108)
 
 
 state 8
@@ -129,13 +129,13 @@ state 8
 state 9
 	expr:  KEYWORD.    (12)
 
-	.  reduce 12 (src line 110)
+	.  reduce 12 (src line 116)
 
 
 state 10
 	expr:  STRING.    (13)
 
-	.  reduce 13 (src line 114)
+	.  reduce 13 (src line 120)
 
 
 state 11
@@ -161,26 +161,26 @@ state 12
 	expr:  {.expr_pairs } 
 	expr_pairs: .    (25)
 
-	.  reduce 25 (src line 151)
+	.  reduce 25 (src line 157)
 
 	expr_pairs  goto 30
 
 state 13
-	bool:  TRUE.    (33)
+	bool:  TRUE.    (34)
 
-	.  reduce 33 (src line 187)
+	.  reduce 34 (src line 195)
 
 
 state 14
-	bool:  FALSE.    (34)
+	bool:  FALSE.    (35)
 
-	.  reduce 34 (src line 190)
+	.  reduce 35 (src line 198)
 
 
 state 15
 	statements:  statement statements.    (2)
 
-	.  reduce 2 (src line 62)
+	.  reduce 2 (src line 68)
 
 
 state 16
@@ -389,7 +389,7 @@ state 26
 state 27
 	expr:  - expr.    (11)
 
-	.  reduce 11 (src line 106)
+	.  reduce 11 (src line 112)
 
 
 state 28
@@ -413,7 +413,7 @@ state 29
 	(  shift 26
 	[  shift 11
 	{  shift 12
-	.  reduce 6 (src line 84)
+	.  reduce 6 (src line 90)
 
 	exprs  goto 47
 	expr  goto 29
@@ -477,10 +477,13 @@ state 32
 
 state 33
 	expr:  ( FN fns.) 
+	fns:  fns.fn 
 
+	(  shift 37
 	)  shift 52
 	.  error
 
+	fn  goto 53
 
 state 34
 	expr:  ( FN args.statements ) 
@@ -496,29 +499,26 @@ state 34
 	(  shift 4
 	[  shift 11
 	{  shift 12
-	.  reduce 1 (src line 54)
+	.  reduce 1 (src line 60)
 
-	statements  goto 53
+	statements  goto 54
 	statement  goto 2
 	expr  goto 3
 	bool  goto 7
 
 state 35
 	fns:  fn.    (28)
-	fns:  fn.fns 
 
-	(  shift 37
-	.  reduce 28 (src line 168)
+	.  reduce 28 (src line 174)
 
-	fn  goto 35
-	fns  goto 54
 
 state 36
 	args:  [.idents ] 
-	idents: .    (31)
+	args:  [.idents & IDENT ] 
+	idents: .    (32)
 
 	IDENT  shift 56
-	.  reduce 31 (src line 182)
+	.  reduce 32 (src line 190)
 
 	idents  goto 55
 
@@ -565,10 +565,10 @@ state 40
 	TRUE  shift 13
 	FALSE  shift 14
 	(  shift 26
-	)  reduce 6 (src line 84)
+	)  reduce 6 (src line 90)
 	[  shift 11
 	{  shift 12
-	.  reduce 11 (src line 106)
+	.  reduce 11 (src line 112)
 
 	exprs  goto 47
 	expr  goto 29
@@ -612,19 +612,19 @@ state 45
 state 46
 	expr:  [ exprs ].    (14)
 
-	.  reduce 14 (src line 118)
+	.  reduce 14 (src line 124)
 
 
 state 47
 	exprs:  expr exprs.    (7)
 
-	.  reduce 7 (src line 89)
+	.  reduce 7 (src line 95)
 
 
 state 48
 	expr:  { expr_pairs }.    (15)
 
-	.  reduce 15 (src line 122)
+	.  reduce 15 (src line 128)
 
 
 state 49
@@ -662,37 +662,39 @@ state 51
 state 52
 	expr:  ( FN fns ).    (16)
 
-	.  reduce 16 (src line 126)
+	.  reduce 16 (src line 132)
 
 
 state 53
+	fns:  fns fn.    (29)
+
+	.  reduce 29 (src line 179)
+
+
+state 54
 	expr:  ( FN args statements.) 
 
 	)  shift 68
 	.  error
 
 
-state 54
-	fns:  fn fns.    (29)
-
-	.  reduce 29 (src line 173)
-
-
 state 55
 	args:  [ idents.] 
+	args:  [ idents.& IDENT ] 
 
 	]  shift 69
+	&  shift 70
 	.  error
 
 
 state 56
 	idents:  IDENT.idents 
-	idents: .    (31)
+	idents: .    (32)
 
 	IDENT  shift 56
-	.  reduce 31 (src line 182)
+	.  reduce 32 (src line 190)
 
-	idents  goto 70
+	idents  goto 71
 
 state 57
 	fn:  ( args.statements ) 
@@ -708,9 +710,9 @@ state 57
 	(  shift 4
 	[  shift 11
 	{  shift 12
-	.  reduce 1 (src line 54)
+	.  reduce 1 (src line 60)
 
-	statements  goto 71
+	statements  goto 72
 	statement  goto 2
 	expr  goto 3
 	bool  goto 7
@@ -718,103 +720,123 @@ state 57
 state 58
 	expr:  ( expr exprs ).    (18)
 
-	.  reduce 18 (src line 134)
+	.  reduce 18 (src line 140)
 
 
 state 59
 	expr:  ( + exprs ).    (19)
 
-	.  reduce 19 (src line 138)
+	.  reduce 19 (src line 144)
 
 
 state 60
 	expr:  ( - exprs ).    (20)
 
-	.  reduce 20 (src line 140)
+	.  reduce 20 (src line 146)
 
 
 state 61
 	expr:  ( * exprs ).    (21)
 
-	.  reduce 21 (src line 142)
+	.  reduce 21 (src line 148)
 
 
 state 62
 	expr:  ( / exprs ).    (22)
 
-	.  reduce 22 (src line 144)
+	.  reduce 22 (src line 150)
 
 
 state 63
 	expr:  ( % exprs ).    (23)
 
-	.  reduce 23 (src line 146)
+	.  reduce 23 (src line 152)
 
 
 state 64
 	expr:  ( = exprs ).    (24)
 
-	.  reduce 24 (src line 148)
+	.  reduce 24 (src line 154)
 
 
 state 65
 	expr_pairs:  expr_pairs expr expr.    (26)
 
-	.  reduce 26 (src line 156)
+	.  reduce 26 (src line 162)
 
 
 state 66
 	statement:  ( VAR IDENT expr ).    (4)
 
-	.  reduce 4 (src line 75)
+	.  reduce 4 (src line 81)
 
 
 state 67
 	statement:  ( IF expr expr ).    (5)
 
-	.  reduce 5 (src line 79)
+	.  reduce 5 (src line 85)
 
 
 state 68
 	expr:  ( FN args statements ).    (17)
 
-	.  reduce 17 (src line 130)
+	.  reduce 17 (src line 136)
 
 
 state 69
 	args:  [ idents ].    (30)
 
-	.  reduce 30 (src line 178)
+	.  reduce 30 (src line 184)
 
 
 state 70
-	idents:  IDENT idents.    (32)
+	args:  [ idents &.IDENT ] 
 
-	.  reduce 32 (src line 184)
-
-
-state 71
-	fn:  ( args statements.) 
-
-	)  shift 72
+	IDENT  shift 73
 	.  error
 
 
+state 71
+	idents:  IDENT idents.    (33)
+
+	.  reduce 33 (src line 192)
+
+
 state 72
+	fn:  ( args statements.) 
+
+	)  shift 74
+	.  error
+
+
+state 73
+	args:  [ idents & IDENT.] 
+
+	]  shift 75
+	.  error
+
+
+state 74
 	fn:  ( args statements ).    (27)
 
-	.  reduce 27 (src line 162)
+	.  reduce 27 (src line 168)
 
 
-25 terminals, 11 nonterminals
-35 grammar rules, 73/2000 states
+state 75
+	args:  [ idents & IDENT ].    (31)
+
+	.  reduce 31 (src line 187)
+
+
+26 terminals, 11 nonterminals
+36 grammar rules, 76/2000 states
 9 shift/reduce, 0 reduce/reduce conflicts reported
 60 working sets used
-memory: parser 78/30000
+memory: parser 72/30000
 82 extra closures
-255 shift entries, 2 exceptions
+258 shift entries, 2 exceptions
 37 goto entries
-34 entries saved by goto default
-Optimizer space used: output 178/30000
-178 table entries, 47 zero
-maximum spread: 25, maximum offset: 57
+33 entries saved by goto default
+Optimizer space used: output 198/30000
+198 table entries, 64 zero
+maximum spread: 26, maximum offset: 57
