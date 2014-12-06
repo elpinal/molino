@@ -13,7 +13,7 @@ type Token struct {
 
 type Fn struct {
   Args  Args
-  Stmts []Statement
+  Exprs []Expression
 }
 
 type Args struct {
@@ -88,9 +88,9 @@ statement
   }
 
 exprs
-  : expr
+  : 
   {
-    $$ = []Expression{$1}
+    $$ = []Expression{}
   }
   | expr exprs
   {
@@ -133,9 +133,9 @@ expr  : NUMBER
   {
     $$ = &FnExpression{Fns: $3}
   }
-  | '(' FN args statements ')'
+  | '(' FN args exprs ')'
   {
-    $$ = &FnExpression{Fns: []Fn{Fn{Args: $3, Stmts: $4}}}
+    $$ = &FnExpression{Fns: []Fn{Fn{Args: $3, Exprs: $4}}}
   }
   | '(' expr exprs ')'
   {
@@ -166,9 +166,9 @@ expr_pairs
   }
 
 fn
-  : '(' args statements ')'
+  : '(' args exprs ')'
   {
-    $$ = Fn{Args: $2, Stmts: $3}
+    $$ = Fn{Args: $2, Exprs: $3}
   }
 
 fns
@@ -188,9 +188,9 @@ args
   { $$ = Args{Args: $2, Vararg: true, More: $4.lit} }
 
 idents
-  : { $$ = nil }
-  | IDENT idents
-  { $$ = append([]string{$1.lit}, $2...)}
+  : { $$ = []string{} }
+  | idents IDENT
+  { $$ = append($1, $2.lit) }
 
 bool
   : TRUE

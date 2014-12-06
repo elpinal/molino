@@ -1,0 +1,23 @@
+;; molino.core
+
+(def vector
+  (fn
+    ([a] [a])
+    ([a b] [a b])
+    ([a b c] [a b c])
+    ([a b c d] [a b c d])
+    ([a b c d & args]
+     (cons a (cons b (cons c (cons d args)))))))
+
+;(vector 1)
+;(vector 1 1)
+;(vector 21 :a 3)
+;(vector 4 41 9 "u")
+;(vector "a" 2 3 4 5 6)
+;1
+;(cons 1 [1])
+;(cons [1] [1])
+;(cons 1 [91 92 93 94 95])
+;(cons 44 (cons 1 [91 92 93 94 95]))
+;((fn [] (cons 101 [1091 1092 1093 1094 1095])))
+;(cons 3 (vector 4 5 6))

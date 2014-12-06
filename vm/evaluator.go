@@ -43,6 +43,28 @@ func (e *Env) Destroy() {
   e.env = nil
 }
 
+func (e *Env) Define(k string, v reflect.Value) error {
+  e.env[k] = v
+  return nil
+}
+
+func (e *Env) Get(k string) (reflect.Value, error) {
+  for {
+    if e.parent == nil {
+      v, ok := e.env[k]
+      if !ok {
+        return reflect.ValueOf(nil), fmt.Errorf("Undefined symbol '%s'", k)
+      }
+      return v, nil
+    }
+    if v, ok := e.env[k]; ok {
+      return v, nil
+    }
+    e = e.parent
+  }
+  return reflect.ValueOf(nil), fmt.Errorf("Undefined symbol '%s'", k)
+}
+
 func Run(stmt Statement, env *Env) (reflect.Value, error) {
   v, err := Evaluate(stmt, env)
   if err != nil {
@@ -104,11 +126,12 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
     }
     return reflect.ValueOf(v), nil
   case *IdentifierExpression:
-    if v, ok := env.env[e.Lit]; ok {
-      return v, nil
-    } else {
-      return reflect.ValueOf(0), fmt.Errorf("Undefined variable: %s", e.Lit)
-    }
+//    if v, ok := env.env[e.Lit]; ok {
+//      return v, nil
+//    } else {
+//      return reflect.ValueOf(0), fmt.Errorf("Undefined variable: %s", e.Lit)
+//    }
+    return env.Get(e.Lit)
   case *BoolExpression:
     return reflect.ValueOf(e.Bool), nil
   case *StringExpression:
@@ -143,8 +166,10 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
       return reflect.ValueOf(v), err
     }
     if v.Kind() != reflect.Func {
-      return reflect.ValueOf(v), errors.New("Unknown Function")
+      return reflect.ValueOf(v), errors.New(fmt.Sprint("Unknown Function: ", v.Interface()))
     }
+
+    _, isReflect := v.Interface().(Func)
 
     args := []reflect.Value{}
     for _, expr := range e.Args {
@@ -152,14 +177,23 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
       if err != nil {
         return arg, err
       }
-      args = append(args, reflect.ValueOf(arg))
+      if !isReflect {
+        args = append(args, reflect.ValueOf(arg))
+      } else {
+        args = append(args, reflect.ValueOf(arg))
+      }
     }
     rets := v.Call(args)
     ev := rets[1].Interface()
     if ev != nil {
       return reflect.ValueOf(nil), ev.(error)
     }
-    ret := rets[0].Interface().(reflect.Value)
+    var ret reflect.Value
+    if !isReflect {
+      ret = rets[0].Interface().(reflect.Value)
+    } else {
+      ret = rets[0].Interface().(reflect.Value) //.Interface().(reflect.Value)
+    }
 
     return ret, nil
   case *UnaryMinusExpression:
@@ -253,18 +287,18 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
           newenv.env[arg] = args[i]
         }
         //a := make([]interface{}, len(fns[n].stmts))
-        var a interface{}
-        for _, stmt := range fns[n].Stmts {
-          rr, _ := Run(stmt, newenv)
+        var a reflect.Value
+        for _, ex := range fns[n].Exprs {
+          rr, _ := evaluateExpr(ex, newenv)
           //a[i] = rr.Interface()
-          a = rr.Interface()
+          a = rr
         }
         //if err == ReturnError {
         //  err = nil
         //  rr = rr.Interface().(reflect.Value)
         //}
         //return rr, err
-        return reflect.ValueOf(a), nil
+        return a, nil
       }
     }(e.Fns, env)
 
