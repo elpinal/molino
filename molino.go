@@ -2,7 +2,7 @@ package main
 
 import (
   "./vm"
-  "./builtins/go"
+  go_core "./builtins/go"
   "fmt"
   "io/ioutil"
   "log"
@@ -12,7 +12,7 @@ import (
 
 func main() {
   env := vm.NewEnv()
-  core.Import(env)
+  go_core.Import(env)
   for _, arg := range os.Args[1:] {
     scanner := new(vm.Scanner)
     body, err := ioutil.ReadFile(arg)
