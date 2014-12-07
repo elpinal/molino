@@ -78,7 +78,7 @@ func isDigit(ch rune) bool {
 }
 
 func isSign(ch rune) bool {
-  return ch == '&' || ch == '?' || ch == '-'
+  return ch == '&' || ch == '?' || ch == '-' || ch == '*'
 }
 
 func isWhiteSpace(ch rune) bool {

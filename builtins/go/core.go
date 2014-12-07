@@ -5,7 +5,7 @@ import (
   "reflect"
   "fmt"
   "bytes"
-//  "errors"
+  "errors"
 )
 
 func Import(env *vm.Env) {
@@ -45,7 +45,10 @@ func Import(env *vm.Env) {
   }))
 
   env.Define("next", reflect.ValueOf(func(x reflect.Value) (reflect.Value, error) {
-    v := x.Interface().([]interface{})
+    v, ok := x.Interface().([]interface{})
+    if !ok {
+      return reflect.ValueOf(v), errors.New(fmt.Sprint(x.Kind(), " cannot be cast to vector"))
+    }
     if len(v) > 1 {
       var a = make([]interface{}, len(v) - 1)
       for i := 1; i < len(v); i++ {
@@ -54,6 +57,26 @@ func Import(env *vm.Env) {
       return reflect.ValueOf(a), nil
     }
     return reflect.ValueOf(nil), nil
+  }))
+
+  env.Define("applyTo", reflect.ValueOf(func(f, x reflect.Value) (reflect.Value, error) {
+    if f.Kind() != reflect.Func {
+      return reflect.ValueOf(f), errors.New(fmt.Sprint("Unknown Function: ", f.Interface()))
+    }
+    v, ok := x.Interface().([]interface{})
+    if !ok {
+      return reflect.ValueOf(f), errors.New(fmt.Sprint("Don't know how to create vector from: ", x.Interface()))
+    }
+    var arg = make([]reflect.Value, len(v))
+    for i, a := range v {
+      arg[i] = reflect.ValueOf(reflect.ValueOf(a))
+    }
+    //var arg = []reflect.Value{reflect.ValueOf(x)}
+    r := f.Call(arg)
+    if r[1].Interface() != nil {
+      return r[0], r[1].Interface().(error)
+    }
+    return r[0].Interface().(reflect.Value), nil
   }))
 }
 

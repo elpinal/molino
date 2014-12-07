@@ -22,33 +22,94 @@
 ;((fn [] (cons 101 [1091 1092 1093 1094 1095])))
 ;(cons 3 (vector 4 5 6))
 
-(println 1 2 3)
-(pr-on 1)
+(def nil?
+  (fn
+    [x]
+    (= x nil)))
+
+(def spread
+ (fn
+  [arglist]
+  (if (nil? arglist)
+    nil
+    (if (nil? (next arglist))
+      (first arglist)
+      (cons (first arglist) (spread (next arglist)))))))
+
+(def list*
+  (fn
+    ([args] args)
+    ([a args] (cons a args))
+    ([a b args] (cons a (cons b args)))
+    ([a b c args] (cons a (cons b (cons c args))))
+    ([a b c d & more]
+      (cons a (cons b (cons c (cons d (spread more))))))))
+
+
+(def apply
+  (fn
+    ([f args]
+     (applyTo f args))
+    ([f x args]
+     (applyTo f (list* x args)))
+    ([f x y args]
+     (applyTo f (list* x y args)))
+    ([f x y z args]
+     (applyTo f (list* x y z args)))
+    ([f a b c d & args]
+     (applyTo f (cons a (cons b (cons c (cons d (spread args)))))))))
 
 (def pr
   (fn
-;    ([] nil)
+    ([] nil)
     ([x] (pr-on x))
     ([x & more]
      (pr x)
      (pr " ")
      (if (next more)
-       ((fn ([] (def temp (next more)) (pr (first more) temp))))
-       (pr more))
+       ((fn ([] (def temp (next more)) (apply pr (first more) temp))))
+       (apply pr more))
      )))
 
-(pr "8")
-(pr 8 9)
-(if true
-  (pr "true!" ""))
-(if false
-  (pr "true!" "")
-  (pr "false!" ""))
+(def prn
+  (fn
+    [& more]
+    (apply pr more)
+    (println)))
 
-(pr (next (next [1 2 3 4])))
-(pr (first (next [1 2 3 4])))
-(pr (next [1]))
-(pr "
-    ")
-(pr (next [1 2 3 4]) 3 7)
-(pr 1 2 3 4 5 6 7 8 9 10)
+;(println 1 2 3)
+;(pr-on 1)
+;(applyTo pr [1 2])
+;(pr "8")
+;(pr 8 9)
+;(if true
+;  (pr "true!" ""))
+;(if false
+;  (prn "true!" "")
+;  (prn "false!" ""))
+;
+;(prn (next (next [1 2 3 4])))
+;(prn (first (next [1 2 3 4])))
+;(prn (next [1]))
+;(prn "
+;     ")
+;(prn (next [1 2 3 4]) 3 7)
+;(prn 1 2 3 4 5 6 7 8 9 10)
+;(prn 1 2 3)
+;(pr)
+;(prn)
+;(prn "--")
+;(pr "")
+;(prn "")
+;(prn (applyTo first [[1 2]]))
+;(prn (list* 2 3 4 [1]))
+;(prn (list* 9 2 3 4 [1]))
+;(prn (spread [1]))
+;(apply prn [1 2])
+;(applyTo prn [1 2])
+;(prn "")
+;(apply prn [1])
+;(apply prn [1 2])
+;(apply prn [1 2 3])
+;(apply prn [1 2 3 4])
+;(prn "")

@@ -156,6 +156,11 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
 
     _, isReflect := v.Interface().(Func)
 
+    if !v.Type().IsVariadic() {
+      if v.Type().NumIn() != len(e.Args) {
+        return reflect.ValueOf(nil), errors.New("Wrong number of args (" + fmt.Sprint(len(e.Args),v.Type().NumIn() ) + ")")
+      }
+    }
     args := []reflect.Value{}
     for _, expr := range e.Args {
       arg, err := evaluateExpr(expr, env)
@@ -238,8 +243,10 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
       if s[i-1] > v && v != -1 {
         return reflect.ValueOf(nil), errors.New("Can't have fixed arity function with more params than variadic function")
       }
-      if s[i-1] == s[i] {
-        return reflect.ValueOf(nil), errors.New("Can't have more than 2 overloads with some arity")
+      if v == -1 {
+        if s[i-1] == s[i] {
+          return reflect.ValueOf(nil), errors.New("Can't have more than 2 overloads with some arity ")
+        }
       }
     }
 
@@ -266,13 +273,20 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
 
         newenv := env.NewEnv()
         if fns[n].Args.Vararg {
+          var more []interface{}
           if len(args) != len(fns[n].Args.Args) {
-            var more []interface{}
             for i := len(fns[n].Args.Args); i < len(args); i++ {
-              more = append(more, args[i].Interface())
+              if args[i] != reflect.ValueOf(nil) {
+                more = append(more, args[i].Interface())
+              } else {
+                more = append(more, nil)
+              }
             }
-            newenv.env[fns[n].Args.More] = reflect.ValueOf(more)
           }
+          if len(args) == 0 {
+            more = append(more, nil)
+          }
+          newenv.env[fns[n].Args.More] = reflect.ValueOf(more)
           for i := 0; i < len(fns[n].Args.Args); i++ {
             newenv.env[fns[n].Args.Args[i]] = args[i]
           }
@@ -283,7 +297,10 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
         //a := make([]interface{}, len(fns[n].stmts))
         var a reflect.Value
         for _, ex := range fns[n].Exprs {
-          rr, _ := evaluateExpr(ex, newenv)
+          rr, err := evaluateExpr(ex, newenv)
+          if err != nil {
+            return a, err
+          }
           //a[i] = rr.Interface()
           a = rr
         }
@@ -323,6 +340,20 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
       }
     }
     return v, nil
+  case *EqualExpression:
+    a, err := evaluateExpr(e.HS[0], env)
+    if err != nil {
+      return reflect.ValueOf(nil), err
+    }
+    var x bool = true
+    for i := 1; i < len(e.HS); i++ {
+      b, err := evaluateExpr(e.HS[i], env)
+      if err != nil {
+        return reflect.ValueOf(nil), err
+      }
+      x = (a == b) == x
+    }
+    return reflect.ValueOf(x), nil
   case *BinOpExpression:
     //a := make([]interface{}, len(e.HS))
     //for i, hs := range e.HS {
@@ -353,12 +384,6 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
         b = b.(int64) / a.Interface().(int64)
       case '%':
         b = b.(int64) % a.Interface().(int64)
-      case '=':
-        if i == 1 {
-          b = equal(a, c)
-        } else {
-          b = equal(a, c) && b.(bool)
-        }
       default:
         panic("Unknown operator")
       }

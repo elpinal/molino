@@ -149,6 +149,10 @@ expr  : NUMBER
   {
     $$ = &IfExpression{Expr: $3, True: $4, False: $5}
   }
+  | '(' '=' exprs ')'
+  {
+    $$ = &EqualExpression{HS: $3}
+  }
   | '(' '+' exprs ')'
   { $$ = &BinOpExpression{HS: $3, Operator: int('+')} }
   | '(' '-' exprs ')'
@@ -159,8 +163,6 @@ expr  : NUMBER
   { $$ = &BinOpExpression{HS: $3, Operator: int('/')} }
   | '(' '%' exprs ')'
   { $$ = &BinOpExpression{HS: $3, Operator: int('%')} }
-  | '(' '=' exprs ')'
-  { $$ = &BinOpExpression{HS: $3, Operator: int('=')} }
 
 expr_pairs
   :
