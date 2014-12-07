@@ -283,9 +283,11 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
               }
             }
           }
+          /*
           if len(args) == 0 {
-            more = append(more, nil)
+            more = more
           }
+          */
           newenv.env[fns[n].Args.More] = reflect.ValueOf(more)
           for i := 0; i < len(fns[n].Args.Args); i++ {
             newenv.env[fns[n].Args.Args[i]] = args[i]
