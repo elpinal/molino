@@ -8,7 +8,7 @@ import (
   "io/ioutil"
   "log"
   "os"
-  "reflect"
+  _ "reflect"
 )
 
 var fs = flag.NewFlagSet(os.Args[0], 1)
@@ -38,12 +38,13 @@ func main() {
   scanner := new(vm.Scanner)
   scanner.Init(string(body))
   for _, statement := range vm.Parse(scanner) {
-    s, err := vm.Run(statement, env)
+    _, err := vm.Run(statement, env)
     if err != nil {
       fmt.Printf("%s: ", source)
       log.Fatal(err)
     }
     //fmt.Println(s)
+/*
     var keyword vm.Keyword
     o, ok := s.Interface().(fmt.Stringer)
     switch {
@@ -58,5 +59,6 @@ func main() {
     default:
       fmt.Printf("%#v\n", s.Interface())
     }
+ */
   }
 }

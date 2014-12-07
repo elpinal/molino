@@ -6,10 +6,11 @@ const (
 )
 
 var keywords = map[string]int{
-  "def"  : VAR,
+  "def"  : DEF,
   "if"   : IF,
   "true" : TRUE,
   "false": FALSE,
+  "nil"  : NIL,
   "fn"   : FN,
 }
 

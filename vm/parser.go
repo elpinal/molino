@@ -46,22 +46,24 @@ const IDENT = 57346
 const NUMBER = 57347
 const KEYWORD = 57348
 const STRING = 57349
-const VAR = 57350
+const DEF = 57350
 const IF = 57351
 const TRUE = 57352
 const FALSE = 57353
-const FN = 57354
-const UNARY = 57355
+const NIL = 57354
+const FN = 57355
+const UNARY = 57356
 
 var yyToknames = []string{
 	"IDENT",
 	"NUMBER",
 	"KEYWORD",
 	"STRING",
-	"VAR",
+	"DEF",
 	"IF",
 	"TRUE",
 	"FALSE",
+	"NIL",
 	"FN",
 	" +",
 	" -",
@@ -76,7 +78,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyMaxDepth = 200
 
-//line parser.go.y:206
+//line parser.go.y:209
 
 
 type LexerWrapper struct {
@@ -115,113 +117,112 @@ var yyExca = []int{
 	-1, 1,
 	1, -1,
 	-2, 0,
-	-1, 40,
-	20, 6,
-	-2, 11,
+	-1, 44,
+	25, 4,
+	-2, 10,
 }
 
-const yyNprod = 36
+const yyNprod = 38
 const yyPrivate = 57344
 
 var yyTokenNames []string
 var yyStates []string
 
-const yyLast = 186
+const yyLast = 175
 
 var yyAct = []int{
 
-	47, 34, 35, 74, 46, 37, 36, 36, 73, 70,
-	29, 3, 28, 3, 67, 19, 37, 52, 66, 27,
-	38, 39, 41, 42, 43, 44, 45, 68, 32, 65,
-	63, 69, 40, 62, 61, 54, 53, 19, 60, 56,
-	59, 49, 50, 51, 58, 57, 72, 31, 1, 7,
-	55, 15, 33, 30, 2, 0, 0, 71, 0, 0,
-	64, 6, 5, 9, 10, 16, 17, 13, 14, 18,
-	20, 21, 22, 23, 24, 0, 26, 0, 11, 0,
-	12, 0, 25, 6, 5, 9, 10, 0, 0, 13,
-	14, 18, 20, 21, 22, 23, 24, 0, 26, 0,
-	11, 0, 12, 0, 25, 6, 5, 9, 10, 0,
-	0, 13, 14, 0, 0, 8, 0, 0, 0, 0,
-	26, 0, 11, 0, 12, 48, 6, 5, 9, 10,
-	0, 0, 13, 14, 0, 0, 8, 0, 0, 0,
-	0, 26, 0, 11, 0, 12, 6, 5, 9, 10,
-	0, 0, 13, 14, 0, 0, 8, 0, 0, 0,
-	0, 4, 0, 11, 0, 12, 6, 5, 9, 10,
-	0, 0, 13, 14, 0, 0, 0, 0, 0, 0,
-	0, 26, 0, 11, 0, 12,
+	19, 3, 75, 3, 36, 74, 68, 39, 51, 17,
+	32, 70, 37, 65, 22, 64, 63, 62, 61, 60,
+	59, 34, 18, 66, 56, 42, 38, 44, 76, 67,
+	39, 31, 38, 40, 73, 50, 43, 45, 46, 47,
+	48, 49, 57, 58, 55, 41, 1, 53, 52, 16,
+	6, 54, 35, 20, 2, 0, 0, 0, 0, 72,
+	0, 0, 0, 0, 0, 0, 69, 5, 4, 9,
+	10, 23, 24, 14, 15, 7, 21, 25, 26, 27,
+	28, 29, 0, 11, 0, 12, 0, 13, 0, 30,
+	5, 4, 9, 10, 0, 0, 14, 15, 7, 0,
+	0, 8, 0, 0, 0, 0, 11, 0, 12, 0,
+	13, 71, 5, 4, 9, 10, 0, 0, 14, 15,
+	7, 0, 0, 8, 0, 0, 0, 0, 11, 0,
+	12, 33, 13, 5, 4, 9, 10, 0, 0, 14,
+	15, 7, 0, 0, 8, 0, 0, 0, 0, 11,
+	0, 12, 0, 13, 5, 4, 9, 10, 0, 0,
+	14, 15, 7, 0, 0, 0, 0, 0, 0, 0,
+	11, 0, 12, 0, 13,
 }
 var yyPact = []int{
 
-	142, -1000, 142, -1000, 57, -1000, -1000, -1000, 122, -1000,
-	-1000, 122, -1000, -1000, -1000, -1000, 43, 122, -14, 122,
-	122, 122, 122, 122, 122, 122, 79, -1000, -18, 122,
-	101, 122, 122, -3, 122, -1000, -1000, -15, 25, 24,
-	162, 20, 18, 14, 13, 10, -1000, -1000, -1000, 122,
-	9, -2, -1000, -1000, -6, 5, 122, -1000, -1000, -1000,
-	-1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, 42,
-	-1000, -12, -19, -1000, -1000,
+	129, -1000, 129, -1000, -1000, -1000, -1000, -1000, 129, -1000,
+	-1000, 129, -1000, 63, -1000, -1000, -1000, -1000, 10, 129,
+	108, 6, 129, 41, 129, 129, 129, 129, 129, 129,
+	129, -1000, -1000, -1000, 129, -17, 129, -1000, -1000, 12,
+	-1, 129, 129, -5, 150, -6, -7, -8, -9, -10,
+	-1000, -1000, -1000, -12, 2, 129, -1000, -14, 86, -1000,
+	-1000, -1000, -1000, -1000, -1000, -1000, -1000, 30, -1000, -20,
+	-1000, -1000, -23, 7, -1000, -1000, -1000,
 }
 var yyPgo = []int{
 
-	0, 48, 54, 0, 10, 53, 2, 52, 1, 50,
-	49,
+	0, 46, 54, 10, 0, 53, 12, 52, 4, 51,
+	50,
 }
 var yyR1 = []int{
 
-	0, 1, 1, 2, 2, 2, 3, 3, 4, 4,
+	0, 1, 1, 2, 3, 3, 4, 4, 4, 4,
 	4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-	4, 4, 4, 4, 4, 5, 5, 6, 7, 7,
-	8, 8, 9, 9, 10, 10,
+	4, 4, 4, 4, 4, 4, 4, 5, 5, 6,
+	7, 7, 8, 8, 9, 9, 10, 10,
 }
 var yyR2 = []int{
 
-	0, 0, 2, 1, 5, 5, 0, 2, 1, 1,
-	1, 2, 1, 1, 3, 3, 4, 5, 4, 4,
-	4, 4, 4, 4, 4, 0, 3, 4, 1, 2,
-	3, 5, 0, 2, 1, 1,
+	0, 0, 2, 1, 0, 2, 1, 1, 1, 1,
+	2, 1, 1, 3, 3, 4, 5, 4, 5, 5,
+	6, 4, 4, 4, 4, 4, 4, 0, 3, 4,
+	1, 2, 3, 5, 0, 2, 1, 1,
 }
 var yyChk = []int{
 
-	-1000, -1, -2, -4, 19, 5, 4, -10, 14, 6,
-	7, 21, 23, 10, 11, -1, 8, 9, 12, -4,
-	13, 14, 15, 16, 17, 25, 19, -4, -3, -4,
-	-5, 4, -4, -7, -8, -6, 21, 19, -3, -3,
-	-4, -3, -3, -3, -3, -3, 22, -3, 24, -4,
-	-4, -4, 20, -6, -3, -9, -8, 20, 20, 20,
-	20, 20, 20, 20, -4, 20, 20, 20, 22, 26,
-	4, -3, 4, 20, 22,
+	-1000, -1, -2, -4, 5, 4, -10, 12, 15, 6,
+	7, 20, 22, 24, 10, 11, -1, -4, -3, -4,
+	-5, 13, -4, 8, 9, 14, 15, 16, 17, 18,
+	26, 21, -3, 23, -4, -7, -8, -6, 20, 24,
+	-3, 4, -4, -3, -4, -3, -3, -3, -3, -3,
+	-4, 25, -6, -3, -9, -8, 25, -4, -4, 25,
+	25, 25, 25, 25, 25, 25, 21, 27, 4, -3,
+	25, 25, -4, 4, 25, 25, 21,
 }
 var yyDef = []int{
 
-	1, -2, 1, 3, 0, 8, 9, 10, 0, 12,
-	13, 6, 25, 34, 35, 2, 0, 0, 0, 6,
-	6, 6, 6, 6, 6, 6, 0, 11, 0, 6,
-	0, 0, 0, 0, 6, 28, 32, 0, 0, 0,
-	-2, 0, 0, 0, 0, 0, 14, 7, 15, 0,
-	0, 0, 16, 29, 0, 0, 6, 18, 19, 20,
-	21, 22, 23, 24, 26, 4, 5, 17, 30, 0,
-	33, 0, 0, 27, 31,
+	1, -2, 1, 3, 6, 7, 8, 9, 0, 11,
+	12, 4, 27, 0, 36, 37, 2, 10, 0, 4,
+	0, 0, 4, 0, 0, 4, 4, 4, 4, 4,
+	4, 13, 5, 14, 0, 0, 4, 30, 34, 0,
+	0, 0, 0, 0, -2, 0, 0, 0, 0, 0,
+	28, 15, 31, 0, 0, 4, 17, 0, 0, 21,
+	22, 23, 24, 25, 26, 16, 32, 0, 35, 0,
+	18, 19, 0, 0, 29, 20, 33,
 }
 var yyTok1 = []int{
 
 	1, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 17, 26, 3,
-	19, 20, 15, 13, 3, 14, 3, 16, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 18, 27, 3,
+	24, 25, 16, 14, 3, 15, 3, 17, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 25, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 21, 3, 22, 3, 3, 3, 3, 3, 3,
+	3, 26, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 23, 3, 24,
+	3, 20, 3, 21, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 22, 3, 23,
 }
 var yyTok2 = []int{
 
 	2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-	12, 18,
+	12, 13, 19,
 }
 var yyTok3 = []int{
 	0,
@@ -474,141 +475,151 @@ yydefault:
 	    yyVAL.statement = &ExpressionStatement{Expr: yyS[yypt-0].expr}
 	  }
 	case 4:
-		//line parser.go.y:82
-		{
-	    yyVAL.statement = &VarDefStatement{VarName: yyS[yypt-2].tok.lit, Expr: yyS[yypt-1].expr}
-	  }
-	case 5:
-		//line parser.go.y:86
-		{
-	    yyVAL.statement = &IfStatement{Expr: yyS[yypt-2].expr, True: yyS[yypt-1].expr}
-	  }
-	case 6:
-		//line parser.go.y:92
+		//line parser.go.y:84
 		{
 	    yyVAL.exprs = []Expression{}
 	  }
-	case 7:
-		//line parser.go.y:96
+	case 5:
+		//line parser.go.y:88
 		{
 	    yyVAL.exprs = append([]Expression{yyS[yypt-1].expr}, yyS[yypt-0].exprs...)
+	  }
+	case 6:
+		//line parser.go.y:93
+		{
+	    yyVAL.expr = &NumberExpression{Lit: yyS[yypt-0].tok.lit}
+	  }
+	case 7:
+		//line parser.go.y:97
+		{
+	    yyVAL.expr = &IdentifierExpression{Lit: yyS[yypt-0].tok.lit}
 	  }
 	case 8:
 		//line parser.go.y:101
 		{
-	    yyVAL.expr = &NumberExpression{Lit: yyS[yypt-0].tok.lit}
+	    yyVAL.expr = &BoolExpression{Bool: yyS[yypt-0].bool}
 	  }
 	case 9:
 		//line parser.go.y:105
 		{
-	    yyVAL.expr = &IdentifierExpression{Lit: yyS[yypt-0].tok.lit}
+	    yyVAL.expr = &NilExpression{}
 	  }
 	case 10:
 		//line parser.go.y:109
 		{
-	    yyVAL.expr = &BoolExpression{Bool: yyS[yypt-0].bool}
+	    yyVAL.expr = &UnaryMinusExpression{SubExpr: yyS[yypt-0].expr}
 	  }
 	case 11:
 		//line parser.go.y:113
 		{
-	    yyVAL.expr = &UnaryMinusExpression{SubExpr: yyS[yypt-0].expr}
+	    yyVAL.expr = &UnaryKeywordExpression{Lit: yyS[yypt-0].tok.lit}
 	  }
 	case 12:
 		//line parser.go.y:117
 		{
-	    yyVAL.expr = &UnaryKeywordExpression{Lit: yyS[yypt-0].tok.lit}
+	    yyVAL.expr = &StringExpression{Lit: yyS[yypt-0].tok.lit}
 	  }
 	case 13:
 		//line parser.go.y:121
 		{
-	    yyVAL.expr = &StringExpression{Lit: yyS[yypt-0].tok.lit}
+	    yyVAL.expr = &VectorExpression{Exprs: yyS[yypt-1].exprs}
 	  }
 	case 14:
 		//line parser.go.y:125
 		{
-	    yyVAL.expr = &VectorExpression{Exprs: yyS[yypt-1].exprs}
+	    yyVAL.expr = &MapExpression{Map: yyS[yypt-1].expr_pairs}
 	  }
 	case 15:
 		//line parser.go.y:129
 		{
-	    yyVAL.expr = &MapExpression{Map: yyS[yypt-1].expr_pairs}
+	    yyVAL.expr = &FnExpression{Fns: yyS[yypt-1].fns}
 	  }
 	case 16:
 		//line parser.go.y:133
 		{
-	    yyVAL.expr = &FnExpression{Fns: yyS[yypt-1].fns}
+	    yyVAL.expr = &FnExpression{Fns: []Fn{Fn{Args: yyS[yypt-2].args, Exprs: yyS[yypt-1].exprs}}}
 	  }
 	case 17:
 		//line parser.go.y:137
 		{
-	    yyVAL.expr = &FnExpression{Fns: []Fn{Fn{Args: yyS[yypt-2].args, Exprs: yyS[yypt-1].exprs}}}
+	    yyVAL.expr = &CallExpression{Expr: yyS[yypt-2].expr, Args: yyS[yypt-1].exprs}
 	  }
 	case 18:
 		//line parser.go.y:141
 		{
-	    yyVAL.expr = &CallExpression{Expr: yyS[yypt-2].expr, Args: yyS[yypt-1].exprs}
+	    yyVAL.expr = &DefExpression{VarName: yyS[yypt-2].tok.lit, Expr: yyS[yypt-1].expr}
 	  }
 	case 19:
-		//line parser.go.y:150
-		{ yyVAL.expr = &BinOpExpression{HS: yyS[yypt-1].exprs, Operator: int('+')} }
+		//line parser.go.y:145
+		{
+	    yyVAL.expr = &IfExpression{Expr: yyS[yypt-2].expr, True: yyS[yypt-1].expr}
+	  }
 	case 20:
-		//line parser.go.y:152
-		{ yyVAL.expr = &BinOpExpression{HS: yyS[yypt-1].exprs, Operator: int('-')} }
+		//line parser.go.y:149
+		{
+	    yyVAL.expr = &IfExpression{Expr: yyS[yypt-3].expr, True: yyS[yypt-2].expr, False: yyS[yypt-1].expr}
+	  }
 	case 21:
-		//line parser.go.y:154
-		{ yyVAL.expr = &BinOpExpression{HS: yyS[yypt-1].exprs, Operator: int('*')} }
+		//line parser.go.y:153
+		{ yyVAL.expr = &BinOpExpression{HS: yyS[yypt-1].exprs, Operator: int('+')} }
 	case 22:
-		//line parser.go.y:156
-		{ yyVAL.expr = &BinOpExpression{HS: yyS[yypt-1].exprs, Operator: int('/')} }
+		//line parser.go.y:155
+		{ yyVAL.expr = &BinOpExpression{HS: yyS[yypt-1].exprs, Operator: int('-')} }
 	case 23:
-		//line parser.go.y:158
-		{ yyVAL.expr = &BinOpExpression{HS: yyS[yypt-1].exprs, Operator: int('%')} }
+		//line parser.go.y:157
+		{ yyVAL.expr = &BinOpExpression{HS: yyS[yypt-1].exprs, Operator: int('*')} }
 	case 24:
-		//line parser.go.y:160
-		{ yyVAL.expr = &BinOpExpression{HS: yyS[yypt-1].exprs, Operator: int('=')} }
+		//line parser.go.y:159
+		{ yyVAL.expr = &BinOpExpression{HS: yyS[yypt-1].exprs, Operator: int('/')} }
 	case 25:
-		//line parser.go.y:164
+		//line parser.go.y:161
+		{ yyVAL.expr = &BinOpExpression{HS: yyS[yypt-1].exprs, Operator: int('%')} }
+	case 26:
+		//line parser.go.y:163
+		{ yyVAL.expr = &BinOpExpression{HS: yyS[yypt-1].exprs, Operator: int('=')} }
+	case 27:
+		//line parser.go.y:167
 		{
 	    yyVAL.expr_pairs = map[Expression]Expression{}
 	  }
-	case 26:
-		//line parser.go.y:168
+	case 28:
+		//line parser.go.y:171
 		{
 	    yyVAL.expr_pairs = yyS[yypt-2].expr_pairs
 	    yyVAL.expr_pairs[yyS[yypt-1].expr] = yyS[yypt-0].expr
 	  }
-	case 27:
-		//line parser.go.y:175
+	case 29:
+		//line parser.go.y:178
 		{
 	    yyVAL.fn = Fn{Args: yyS[yypt-2].args, Exprs: yyS[yypt-1].exprs}
 	  }
-	case 28:
-		//line parser.go.y:181
+	case 30:
+		//line parser.go.y:184
 		{
 	    yyVAL.fns = []Fn{yyS[yypt-0].fn}
 	  }
-	case 29:
-		//line parser.go.y:185
+	case 31:
+		//line parser.go.y:188
 		{
 	    yyVAL.fns = append(yyS[yypt-1].fns, yyS[yypt-0].fn)
 	  }
-	case 30:
-		//line parser.go.y:191
-		{ yyVAL.args = Args{Args: yyS[yypt-1].idents} }
-	case 31:
-		//line parser.go.y:193
-		{ yyVAL.args = Args{Args: yyS[yypt-3].idents, Vararg: true, More: yyS[yypt-1].tok.lit} }
 	case 32:
-		//line parser.go.y:196
-		{ yyVAL.idents = []string{} }
+		//line parser.go.y:194
+		{ yyVAL.args = Args{Args: yyS[yypt-1].idents} }
 	case 33:
-		//line parser.go.y:198
-		{ yyVAL.idents = append(yyS[yypt-1].idents, yyS[yypt-0].tok.lit) }
+		//line parser.go.y:196
+		{ yyVAL.args = Args{Args: yyS[yypt-3].idents, Vararg: true, More: yyS[yypt-1].tok.lit} }
 	case 34:
-		//line parser.go.y:202
-		{ yyVAL.bool = true  }
+		//line parser.go.y:199
+		{ yyVAL.idents = []string{} }
 	case 35:
-		//line parser.go.y:204
+		//line parser.go.y:201
+		{ yyVAL.idents = append(yyS[yypt-1].idents, yyS[yypt-0].tok.lit) }
+	case 36:
+		//line parser.go.y:205
+		{ yyVAL.bool = true  }
+	case 37:
+		//line parser.go.y:207
 		{ yyVAL.bool = false }
 	}
 	goto yystack /* stack new state and value */

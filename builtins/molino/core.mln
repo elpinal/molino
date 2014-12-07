@@ -21,3 +21,34 @@
 ;(cons 44 (cons 1 [91 92 93 94 95]))
 ;((fn [] (cons 101 [1091 1092 1093 1094 1095])))
 ;(cons 3 (vector 4 5 6))
+
+(println 1 2 3)
+(pr-on 1)
+
+(def pr
+  (fn
+;    ([] nil)
+    ([x] (pr-on x))
+    ([x & more]
+     (pr x)
+     (pr " ")
+     (if (next more)
+       ((fn ([] (def temp (next more)) (pr (first more) temp))))
+       (pr more))
+     )))
+
+(pr "8")
+(pr 8 9)
+(if true
+  (pr "true!" ""))
+(if false
+  (pr "true!" "")
+  (pr "false!" ""))
+
+(pr (next (next [1 2 3 4])))
+(pr (first (next [1 2 3 4])))
+(pr (next [1]))
+(pr "
+    ")
+(pr (next [1 2 3 4]) 3 7)
+(pr 1 2 3 4 5 6 7 8 9 10)

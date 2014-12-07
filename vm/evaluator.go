@@ -43,6 +43,14 @@ func (e *Env) Destroy() {
   e.env = nil
 }
 
+func (e *Env) DefineGlobal(k string, v reflect.Value) error {
+  global := e
+  for global.parent != nil {
+    global = global.parent
+  }
+  return global.Define(k, v)
+}
+
 func (e *Env) Define(k string, v reflect.Value) error {
   e.env[k] = v
   return nil
@@ -82,38 +90,13 @@ func Evaluate(statement Statement, env *Env) (reflect.Value, error) {
     }
     //return strconv.Itoa(v), nil
     return v, nil
-  case *VarDefStatement:
-    v, err := evaluateExpr(stmt.Expr, env)
-    if err != nil {
-      return v, err
-    }
-    if v.Kind() == reflect.Interface {
-      v = v.Elem()
-    }
-    return evaluateExprDef(stmt.VarName, v, env)
-    //env[stmt.VarName], _ = v.Interface().(int)
-    //return fmt.Sprintf("Assign %v to %s", v, stmt.VarName), nil
-    //return v, nil
-  case *IfStatement:
-    v, err := evaluateExpr(stmt.Expr, env)
-    if err != nil {
-      return v, err
-    }
-    if toBool(v) {
-      t, err := evaluateExpr(stmt.True, env)
-      if err != nil {
-        return t, err
-      }
-      return t, nil
-    } 
-    return v, nil
   default:
     panic("Unknown Statement type")
   }
 }
 
 func evaluateExprDef(name string, v reflect.Value, env *Env) (reflect.Value, error) {
-  env.env[name] = v
+  env.DefineGlobal(name, v)
   return v, nil
 }
 
@@ -134,6 +117,8 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
     return env.Get(e.Lit)
   case *BoolExpression:
     return reflect.ValueOf(e.Bool), nil
+  case *NilExpression:
+    return reflect.ValueOf(nil), nil
   case *StringExpression:
     return reflect.ValueOf(e.Lit), nil
   case *VectorExpression:
@@ -196,6 +181,15 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
     }
 
     return ret, nil
+  case *DefExpression:
+    v, err := evaluateExpr(e.Expr, env)
+    if err != nil {
+      return v, err
+    }
+    if v.Kind() == reflect.Interface {
+      v = v.Elem()
+    }
+    return evaluateExprDef(e.VarName, v, env)
   case *UnaryMinusExpression:
     v, err := evaluateExpr(e.SubExpr, env)
     if err != nil {
@@ -308,6 +302,27 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
     //env.env[e.Name] = f
     return reflect.ValueOf(f), nil
 
+  case *IfExpression:
+    v, err := evaluateExpr(e.Expr, env)
+    if err != nil {
+      return v, err
+    }
+    if toBool(v) {
+      t, err := evaluateExpr(e.True, env)
+      if err != nil {
+        return t, err
+      }
+      return t, nil
+    } else {
+      if reflect.ValueOf(e.False) != reflect.ValueOf(nil) {
+        f, err := evaluateExpr(e.False, env)
+        if err != nil {
+          return f, err
+        }
+        return f, nil
+      }
+    }
+    return v, nil
   case *BinOpExpression:
     //a := make([]interface{}, len(e.HS))
     //for i, hs := range e.HS {
@@ -359,22 +374,13 @@ func toBool(v reflect.Value) bool {
   if v.Kind() == reflect.Interface {
     v = v.Elem()
   }
-  switch v.Kind() {
-  case reflect.Float32, reflect.Float64:
-    return v.Float() != 0.0
-  case reflect.Int, reflect.Int32, reflect.Int64:
-    return v.Int() != 0
-  case reflect.Bool:
+  switch {
+  case v == reflect.ValueOf(nil):
+    return false
+  case v.Kind() == reflect.Bool:
     return v.Bool()
-  case reflect.String:
-    if v.String() == "true" {
-      return true
-    }
-    if toInt64(v) != 0 {
-      return true
-    }
   }
-  return false
+  return true
 }
 
 

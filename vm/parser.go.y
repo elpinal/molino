@@ -49,7 +49,7 @@ type Args struct {
 %type<idents>     idents
 %type<bool>       bool
 
-%token<tok> IDENT NUMBER KEYWORD STRING VAR IF TRUE FALSE FN
+%token<tok> IDENT NUMBER KEYWORD STRING DEF IF TRUE FALSE NIL FN
 
 %left '+' '-'
 %left '*' '/' '%'
@@ -78,14 +78,6 @@ statement
   {
     $$ = &ExpressionStatement{Expr: $1}
   }
-  | '(' VAR IDENT expr ')'
-  {
-    $$ = &VarDefStatement{VarName: $3.lit, Expr: $4}
-  }
-  | '(' IF expr expr ')'
-  {
-    $$ = &IfStatement{Expr: $3, True: $4}
-  }
 
 exprs
   : 
@@ -108,6 +100,10 @@ expr  : NUMBER
   | bool
   {
     $$ = &BoolExpression{Bool: $1}
+  }
+  | NIL
+  {
+    $$ = &NilExpression{}
   }
   | '-' expr      %prec UNARY
   {
@@ -140,6 +136,18 @@ expr  : NUMBER
   | '(' expr exprs ')'
   {
     $$ = &CallExpression{Expr: $2, Args: $3}
+  }
+  | '(' DEF IDENT expr ')'
+  {
+    $$ = &DefExpression{VarName: $3.lit, Expr: $4}
+  }
+  | '(' IF expr expr ')'
+  {
+    $$ = &IfExpression{Expr: $3, True: $4}
+  }
+  | '(' IF expr expr expr ')'
+  {
+    $$ = &IfExpression{Expr: $3, True: $4, False: $5}
   }
   | '(' '+' exprs ')'
   { $$ = &BinOpExpression{HS: $3, Operator: int('+')} }

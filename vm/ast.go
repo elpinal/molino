@@ -14,21 +14,9 @@ type (
   ExpressionStatement struct {
     Expr Expression
   }
-
-  VarDefStatement struct {
-    VarName string
-    Expr    Expression
-  }
-
-  IfStatement struct {
-    Expr Expression 
-    True Expression 
-  }
 )
 
 func (x *ExpressionStatement) statement() {}
-func (x *VarDefStatement)     statement() {}
-func (x *IfStatement)         statement() {}
 
 type (
   NumberExpression struct {
@@ -41,6 +29,9 @@ type (
 
   BoolExpression struct {
     Bool bool
+  }
+
+  NilExpression struct {
   }
 
   UnaryMinusExpression struct {
@@ -67,9 +58,20 @@ type (
     Fns []Fn
   }
 
+  DefExpression struct {
+    VarName string
+    Expr    Expression
+  }
+
   CallExpression struct {
     Expr Expression
     Args []Expression
+  }
+
+  IfExpression struct {
+    Expr  Expression
+    True  Expression
+    False Expression
   }
 
   BinOpExpression struct {
@@ -87,5 +89,8 @@ func (x *VectorExpression)       expression() {}
 func (x *MapExpression)          expression() {}
 func (x *FnExpression)           expression() {}
 func (x *CallExpression)         expression() {}
+func (x *DefExpression)          expression() {}
+func (x *IfExpression)           expression() {}
 func (x *BinOpExpression)        expression() {}
 func (x *BoolExpression)         expression() {}
+func (x *NilExpression)          expression() {}
