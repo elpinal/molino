@@ -67,7 +67,7 @@
      (pr x)
      (pr " ")
      (if (next more)
-       ((fn ([] (def temp (next more)) (apply pr (first more) temp))))
+       ((fn ([] (next more) (apply pr (first more) (next more)))))
        (apply pr more))
      )))
 

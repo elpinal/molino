@@ -35,6 +35,8 @@ func main() {
 
   go_core.Import(env)
 
+  vm.Runtime()
+
   scanner := new(vm.Scanner)
   scanner.Init(string(body))
   for _, statement := range vm.Parse(scanner) {
