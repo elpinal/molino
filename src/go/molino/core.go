@@ -1,7 +1,7 @@
 package core
 
 import (
-  "../../vm"
+  "../../../vm"
   "reflect"
   "fmt"
   "bytes"

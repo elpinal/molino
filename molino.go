@@ -2,7 +2,7 @@ package main
 
 import (
   "./vm"
-  go_core "./builtins/go"
+  go_core "./src/go/molino"
   "flag"
   "fmt"
   "io/ioutil"
