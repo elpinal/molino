@@ -113,3 +113,8 @@
 ;(apply prn [1 2 3])
 ;(apply prn [1 2 3 4])
 ;(prn "")
+;(prn (quote quoted-object))
+;(prn (quote 3))
+;(prn (quote "a"))
+;(prn (quote nil))
+;(prn (quote :word))

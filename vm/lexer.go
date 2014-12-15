@@ -12,6 +12,7 @@ var keywords = map[string]int{
   "false": FALSE,
   "nil"  : NIL,
   "fn"   : FN,
+  "quote": QUOTE,
 }
 
 type Position struct {

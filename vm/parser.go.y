@@ -49,7 +49,7 @@ type Args struct {
 %type<idents>     idents
 %type<bool>       bool
 
-%token<tok> IDENT NUMBER KEYWORD STRING DEF IF TRUE FALSE NIL FN
+%token<tok> IDENT NUMBER KEYWORD STRING DEF IF TRUE FALSE NIL FN QUOTE
 
 %left '+' '-'
 %left '*' '/' '%'
@@ -148,6 +148,10 @@ expr  : NUMBER
   | '(' IF expr expr expr ')'
   {
     $$ = &IfExpression{Expr: $3, True: $4, False: $5}
+  }
+  | '(' QUOTE expr exprs ')'
+  {
+    $$ = &ConstantExpression{Expr: $3}
   }
   | '(' '=' exprs ')'
   {

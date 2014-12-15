@@ -74,6 +74,10 @@ type (
     False Expression
   }
 
+  ConstantExpression struct {
+    Expr Expression
+  }
+
   EqualExpression struct {
     HS       []Expression
   }
@@ -99,3 +103,4 @@ func (x *BinOpExpression)        expression() {}
 func (x *BoolExpression)         expression() {}
 func (x *NilExpression)          expression() {}
 func (x *EqualExpression)        expression() {}
+func (x *ConstantExpression)     expression() {}

@@ -342,6 +342,22 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
       }
     }
     return v, nil
+  case *ConstantExpression:
+//    fmt.Printf("%#v\n", e.Expr)
+    switch ee := e.Expr.(type) {
+    case *IdentifierExpression:
+//      fmt.Println("007" ,ee.Lit)
+      return reflect.ValueOf(intern(ee.Lit)), nil
+    case *NumberExpression, *StringExpression, *NilExpression, *UnaryKeywordExpression:
+      v, err := evaluateExpr(ee, env)
+      if err != nil {
+        return v, err
+      }
+      return v, nil
+    default:
+      fmt.Printf("009 %#v\n", ee)
+    }
+    return reflect.ValueOf(nil), nil
   case *EqualExpression:
     a, err := evaluateExpr(e.HS[0], env)
     if err != nil {
