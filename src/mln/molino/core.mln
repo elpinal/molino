@@ -120,3 +120,4 @@
 ;(prn (quote "a"))
 ;(prn (quote nil))
 ;(prn (quote :word))
+;(prn (+ 9 (quote -3) 8))

@@ -380,7 +380,7 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
     case *IdentifierExpression:
 //      fmt.Println("007" ,ee.Lit)
       return reflect.ValueOf(intern(ee.Lit)), nil
-    case *NumberExpression, *StringExpression, *NilExpression, *UnaryKeywordExpression:
+    case *NumberExpression, *StringExpression, *NilExpression, *UnaryKeywordExpression, *UnaryMinusExpression:
       v, err := evaluateExpr(ee, env)
       if err != nil {
         return v, err
