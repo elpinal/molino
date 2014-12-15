@@ -24,8 +24,8 @@ func FindOrCreate(name Symbol) Namespace {
 }
 
 func (this Namespace) intern(sym Symbol) Var {
-  if sym.ns != (*string)(nil) {
-    panic("ns is empty!")
+  if sym.ns != "" {
+    panic("ns is not empty!")
   }
   a, isexist := mappings[sym]
   if isexist {
@@ -39,8 +39,8 @@ func (this Namespace) intern(sym Symbol) Var {
 }
 
 func (this Namespace) refer(sym Symbol, v Var) Var {
-  if sym.ns != (*string)(nil) {
-    panic("ns is empty!")
+  if sym.ns != "" {
+    panic("ns is not empty!")
   }
   a, isexist := mappings[sym]
   if isexist {
@@ -48,4 +48,14 @@ func (this Namespace) refer(sym Symbol, v Var) Var {
   }
   mappings[sym] = v
   return v
+}
+
+func getmapping(name Symbol) Var {
+  return mappings[name]
+}
+
+func updatemapping(name Symbol, newval Var) {
+  if _, isexist := mappings[name]; isexist {
+    mappings[name] = newval
+  }
 }

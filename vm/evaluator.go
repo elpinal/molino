@@ -57,11 +57,20 @@ func (e *Env) Define(k string, v reflect.Value) error {
 }
 
 func (e *Env) Get(k string) (reflect.Value, error) {
+//    fmt.Println("0", intern(k))
+    /*
+  if sym := intern(k); sym.ns != "" {
+    fmt.Println("1", sym)
+    v := getmapping(sym)
+    return reflect.ValueOf(v), nil
+  }
+  */
   for {
     if e.parent == nil {
       v, ok := e.env[k]
       if !ok {
-        return reflect.ValueOf(nil), fmt.Errorf("Undefined symbol '%s'", k)
+//        return reflect.ValueOf(nil), fmt.Errorf("Undefined symbol '%s'", k)
+        break
       }
       return v, nil
     }
@@ -69,6 +78,17 @@ func (e *Env) Get(k string) (reflect.Value, error) {
       return v, nil
     }
     e = e.parent
+  }
+  if sym := intern(k); sym.ns == "" {
+    v := getmapping(sym)
+    /*
+    fmt.Println("1", sym, v)
+    fmt.Println("2", mappings)
+    for k, r := range mappings {
+      fmt.Println("000", k.name, r)
+    }
+    */
+    return reflect.ValueOf(v), nil
   }
   return reflect.ValueOf(nil), fmt.Errorf("Undefined symbol '%s'", k)
 }
@@ -150,8 +170,12 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
     if err != nil {
       return reflect.ValueOf(v), err
     }
+//    fmt.Println(v.Interface())
+    if m, isVar := v.Interface().(Var); isVar {
+      v = reflect.ValueOf(m.root)
+    }
     if v.Kind() != reflect.Func {
-      return reflect.ValueOf(v), errors.New(fmt.Sprint("Unknown Function: ", v.Interface()))
+      return reflect.ValueOf(v), errors.New(fmt.Sprint("Unknown Function: ", /*v.Interface(),*/ v, e.Expr))
     }
 
     _, isReflect := v.Interface().(Func)
@@ -173,17 +197,25 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
         args = append(args, reflect.ValueOf(arg))
       }
     }
+//    fmt.Printf("%v\n", v)
     rets := v.Call(args)
+//    fmt.Printf("005 %v\n", rets[0].Interface())
     ev := rets[1].Interface()
     if ev != nil {
       return reflect.ValueOf(nil), ev.(error)
     }
-    var ret reflect.Value
+    //var ret reflect.Value
+    ret, isValue := rets[0].Interface().(reflect.Value)
+    if !isValue {
+      ret = rets[0]
+    }
+    /*
     if !isReflect {
       ret = rets[0].Interface().(reflect.Value)
     } else {
       ret = rets[0].Interface().(reflect.Value) //.Interface().(reflect.Value)
     }
+    */
 
     return ret, nil
   case *DefExpression:

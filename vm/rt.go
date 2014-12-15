@@ -1,7 +1,8 @@
 package vm
 
 import (
-  "fmt"
+  _ "fmt"
+  "reflect"
 )
 
 var MOLINO_NS    Namespace = FindOrCreate(intern("molino.core"))
@@ -11,19 +12,21 @@ var NAMESPACE    Symbol    = intern("ns")
 var VAR Var
 var CURRENT_NS Var = VAR.intern(MOLINO_NS, intern("*ns*"), MOLINO_NS, true)
 
-var inNamespace = func(arg1 Symbol) Namespace {
-    var nsname Symbol = arg1
+var inNamespace = func(arg1 reflect.Value) (Namespace, error) {
+    var nsname Symbol = arg1.Interface().(Symbol)
     var ns Namespace = FindOrCreate(nsname)
 //    CURRENT_NS.set(ns)
-    CURRENT_NS.bindroot(ns)
-    return ns
+    //CURRENT_NS.bindroot(ns)
+    CURRENT_NS.root = ns
+    return ns, nil
 }
 
 
 func Runtime() {
-  fmt.Println(MOLINO_NS, NAMESPACE, *IN_NAMESPACE.name)
+  //fmt.Println(MOLINO_NS, NAMESPACE, IN_NAMESPACE.name)
   var v Var
-  fmt.Println(v.intern(MOLINO_NS, IN_NAMESPACE, inNamespace, true))
+  var s Symbol = intern("user")
+  v.intern(MOLINO_NS, IN_NAMESPACE, inNamespace, true).invoke(reflect.ValueOf(s))
 }
 
 /*

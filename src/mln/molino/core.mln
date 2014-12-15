@@ -1,5 +1,7 @@
 ;; molino.core
 
+(in-ns (quote molino.core))
+
 (def vector
   (fn
     ([a] [a])
