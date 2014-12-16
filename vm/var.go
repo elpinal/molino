@@ -20,12 +20,12 @@ func (this Var) intern(ns Namespace, sym Symbol, root interface{}, replaceRoot b
   var dvout Var = ns.intern(sym)
   /*
   if replaceRoot {
-		dvout.bindroot(root)
+    dvout.bindroot(root)
   }
   */
   dvout.root = root
   updatemapping(sym, dvout)
-	return dvout
+  return dvout
 }
 
 /*
