@@ -78,6 +78,25 @@ func Import(env *vm.Env) {
     }
     return r[0].Interface().(reflect.Value), nil
   }))
+  env.Define("multiply", reflect.ValueOf(func(x, y reflect.Value) (reflect.Value, error) {
+    xx := x.Int()
+    yy := y.Int()
+    return reflect.ValueOf(xx * yy), nil
+  }))
+  env.Define("minus", reflect.ValueOf(func(x, y reflect.Value) (reflect.Value, error) {
+    xx := x.Int()
+    yy := y.Int()
+    return reflect.ValueOf(xx - yy), nil
+  }))
+  env.Define("add", reflect.ValueOf(func(x, y reflect.Value) (reflect.Value, error) {
+    xx := x.Int()
+    yy := y.Int()
+    return reflect.ValueOf(xx + yy), nil
+  }))
+  env.Define("equiv", reflect.ValueOf(func(x, y reflect.Value) (reflect.Value, error) {
+    xx, yy := x.Interface(), y.Interface()
+    return reflect.ValueOf(xx == yy), nil
+  }))
 }
 
 func molinoprint(s reflect.Value) string {

@@ -34,9 +34,11 @@ type (
   NilExpression struct {
   }
 
+  /*
   UnaryMinusExpression struct {
     SubExpr Expression
   }
+  */
 
   UnaryKeywordExpression struct {
     Lit string
@@ -78,19 +80,22 @@ type (
     Expr Expression
   }
 
+/*
   EqualExpression struct {
     HS       []Expression
   }
-
+ */
+/*
   BinOpExpression struct {
     HS       []Expression
     Operator int
   }
+ */
 )
 
 func (x *NumberExpression)       expression() {}
 func (x *IdentifierExpression)   expression() {}
-func (x *UnaryMinusExpression)   expression() {}
+//func (x *UnaryMinusExpression)   expression() {}
 func (x *UnaryKeywordExpression) expression() {}
 func (x *StringExpression)       expression() {}
 func (x *VectorExpression)       expression() {}
@@ -99,8 +104,8 @@ func (x *FnExpression)           expression() {}
 func (x *CallExpression)         expression() {}
 func (x *DefExpression)          expression() {}
 func (x *IfExpression)           expression() {}
-func (x *BinOpExpression)        expression() {}
+//func (x *BinOpExpression)        expression() {}
 func (x *BoolExpression)         expression() {}
 func (x *NilExpression)          expression() {}
-func (x *EqualExpression)        expression() {}
+//func (x *EqualExpression)        expression() {}
 func (x *ConstantExpression)     expression() {}

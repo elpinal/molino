@@ -3,52 +3,36 @@ state 0
 	$accept: .statements $end 
 	statements: .    (1)
 
-	IDENT  shift 5
-	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
-	NIL  shift 7
-	'-'  shift 8
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
 	.  reduce 1 (src line 60)
 
 	statements  goto 1
-	statement  goto 2
-	expr  goto 3
-	bool  goto 6
 
 state 1
 	$accept:  statements.$end 
+	statements:  statements.statement 
 
 	$end  accept
-	.  error
-
-
-state 2
-	statements:  statement.statements 
-	statements: .    (1)
-
 	IDENT  shift 5
 	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
+	KEYWORD  shift 8
+	STRING  shift 9
+	TRUE  shift 13
+	FALSE  shift 14
 	NIL  shift 7
-	'-'  shift 8
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
-	.  reduce 1 (src line 60)
+	'['  shift 10
+	'{'  shift 11
+	'('  shift 12
+	.  error
 
-	statements  goto 16
 	statement  goto 2
 	expr  goto 3
 	bool  goto 6
+
+state 2
+	statements:  statements statement.    (2)
+
+	.  reduce 2 (src line 68)
+
 
 state 3
 	statement:  expr.    (3)
@@ -81,66 +65,34 @@ state 7
 
 
 state 8
-	expr:  '-'.expr 
+	expr:  KEYWORD.    (10)
 
-	IDENT  shift 5
-	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
-	NIL  shift 7
-	'-'  shift 8
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
-	.  error
+	.  reduce 10 (src line 114)
 
-	expr  goto 17
-	bool  goto 6
 
 state 9
-	expr:  KEYWORD.    (11)
+	expr:  STRING.    (11)
 
-	.  reduce 11 (src line 112)
+	.  reduce 11 (src line 118)
 
 
 state 10
-	expr:  STRING.    (12)
-
-	.  reduce 12 (src line 116)
-
-
-state 11
 	expr:  '['.exprs ']' 
 	exprs: .    (4)
 
-	IDENT  shift 5
-	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
-	NIL  shift 7
-	'-'  shift 8
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
 	.  reduce 4 (src line 82)
 
-	exprs  goto 18
-	expr  goto 19
-	bool  goto 6
+	exprs  goto 15
+
+state 11
+	expr:  '{'.expr_pairs '}' 
+	expr_pairs: .    (21)
+
+	.  reduce 21 (src line 177)
+
+	expr_pairs  goto 16
 
 state 12
-	expr:  '{'.expr_pairs '}' 
-	expr_pairs: .    (28)
-
-	.  reduce 28 (src line 171)
-
-	expr_pairs  goto 20
-
-state 13
 	expr:  '('.FN fns ')' 
 	expr:  '('.FN args exprs ')' 
 	expr:  '('.expr exprs ')' 
@@ -148,775 +100,498 @@ state 13
 	expr:  '('.IF expr expr ')' 
 	expr:  '('.IF expr expr expr ')' 
 	expr:  '('.QUOTE expr exprs ')' 
-	expr:  '('.'=' exprs ')' 
-	expr:  '('.'+' exprs ')' 
-	expr:  '('.'-' exprs ')' 
-	expr:  '('.'*' exprs ')' 
-	expr:  '('.'/' exprs ')' 
-	expr:  '('.'%' exprs ')' 
 
 	IDENT  shift 5
 	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	DEF  shift 23
-	IF  shift 24
-	TRUE  shift 14
-	FALSE  shift 15
+	KEYWORD  shift 8
+	STRING  shift 9
+	DEF  shift 19
+	IF  shift 20
+	TRUE  shift 13
+	FALSE  shift 14
 	NIL  shift 7
-	FN  shift 21
-	QUOTE  shift 25
-	'+'  shift 27
-	'-'  shift 28
-	'*'  shift 29
-	'/'  shift 30
-	'%'  shift 31
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
-	'='  shift 26
+	FN  shift 17
+	QUOTE  shift 21
+	'['  shift 10
+	'{'  shift 11
+	'('  shift 12
+	.  error
+
+	expr  goto 18
+	bool  goto 6
+
+state 13
+	bool:  TRUE.    (30)
+
+	.  reduce 30 (src line 215)
+
+
+state 14
+	bool:  FALSE.    (31)
+
+	.  reduce 31 (src line 218)
+
+
+state 15
+	exprs:  exprs.expr 
+	expr:  '[' exprs.']' 
+
+	IDENT  shift 5
+	NUMBER  shift 4
+	KEYWORD  shift 8
+	STRING  shift 9
+	TRUE  shift 13
+	FALSE  shift 14
+	NIL  shift 7
+	'['  shift 10
+	']'  shift 23
+	'{'  shift 11
+	'('  shift 12
 	.  error
 
 	expr  goto 22
 	bool  goto 6
 
-state 14
-	bool:  TRUE.    (37)
-
-	.  reduce 37 (src line 209)
-
-
-state 15
-	bool:  FALSE.    (38)
-
-	.  reduce 38 (src line 212)
-
-
 state 16
-	statements:  statement statements.    (2)
-
-	.  reduce 2 (src line 68)
-
-
-state 17
-	expr:  '-' expr.    (10)
-
-	.  reduce 10 (src line 108)
-
-
-state 18
-	expr:  '[' exprs.']' 
-
-	']'  shift 32
-	.  error
-
-
-state 19
-	exprs:  expr.exprs 
-	exprs: .    (4)
-
-	IDENT  shift 5
-	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
-	NIL  shift 7
-	'-'  shift 8
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
-	.  reduce 4 (src line 82)
-
-	exprs  goto 33
-	expr  goto 19
-	bool  goto 6
-
-state 20
 	expr:  '{' expr_pairs.'}' 
 	expr_pairs:  expr_pairs.expr expr 
 
 	IDENT  shift 5
 	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
+	KEYWORD  shift 8
+	STRING  shift 9
+	TRUE  shift 13
+	FALSE  shift 14
 	NIL  shift 7
-	'-'  shift 8
-	'['  shift 11
-	'{'  shift 12
-	'}'  shift 34
-	'('  shift 13
+	'['  shift 10
+	'{'  shift 11
+	'}'  shift 24
+	'('  shift 12
 	.  error
 
-	expr  goto 35
+	expr  goto 25
 	bool  goto 6
 
-state 21
+state 17
 	expr:  '(' FN.fns ')' 
 	expr:  '(' FN.args exprs ')' 
 
-	'['  shift 39
-	'('  shift 40
+	'['  shift 29
+	'('  shift 30
 	.  error
 
-	fn  goto 38
-	fns  goto 36
-	args  goto 37
+	fn  goto 28
+	fns  goto 26
+	args  goto 27
 
-state 22
+state 18
 	expr:  '(' expr.exprs ')' 
 	exprs: .    (4)
 
-	IDENT  shift 5
-	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
-	NIL  shift 7
-	'-'  shift 8
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
 	.  reduce 4 (src line 82)
 
-	exprs  goto 41
-	expr  goto 19
-	bool  goto 6
+	exprs  goto 31
 
-state 23
+state 19
 	expr:  '(' DEF.IDENT expr ')' 
 
-	IDENT  shift 42
+	IDENT  shift 32
 	.  error
 
 
-state 24
+state 20
 	expr:  '(' IF.expr expr ')' 
 	expr:  '(' IF.expr expr expr ')' 
 
 	IDENT  shift 5
 	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
+	KEYWORD  shift 8
+	STRING  shift 9
+	TRUE  shift 13
+	FALSE  shift 14
 	NIL  shift 7
-	'-'  shift 8
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
+	'['  shift 10
+	'{'  shift 11
+	'('  shift 12
 	.  error
 
-	expr  goto 43
+	expr  goto 33
 	bool  goto 6
 
-state 25
+state 21
 	expr:  '(' QUOTE.expr exprs ')' 
 
 	IDENT  shift 5
 	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
+	KEYWORD  shift 8
+	STRING  shift 9
+	TRUE  shift 13
+	FALSE  shift 14
 	NIL  shift 7
-	'-'  shift 8
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
+	'['  shift 10
+	'{'  shift 11
+	'('  shift 12
 	.  error
 
-	expr  goto 44
+	expr  goto 34
 	bool  goto 6
 
-state 26
-	expr:  '(' '='.exprs ')' 
-	exprs: .    (4)
-
-	IDENT  shift 5
-	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
-	NIL  shift 7
-	'-'  shift 8
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
-	.  reduce 4 (src line 82)
-
-	exprs  goto 45
-	expr  goto 19
-	bool  goto 6
-
-state 27
-	expr:  '(' '+'.exprs ')' 
-	exprs: .    (4)
-
-	IDENT  shift 5
-	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
-	NIL  shift 7
-	'-'  shift 8
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
-	.  reduce 4 (src line 82)
-
-	exprs  goto 46
-	expr  goto 19
-	bool  goto 6
-
-state 28
-	expr:  '-'.expr 
-	expr:  '(' '-'.exprs ')' 
-	exprs: .    (4)
-
-	IDENT  shift 5
-	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
-	NIL  shift 7
-	'-'  shift 8
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
-	.  reduce 4 (src line 82)
-
-	exprs  goto 48
-	expr  goto 47
-	bool  goto 6
-
-state 29
-	expr:  '(' '*'.exprs ')' 
-	exprs: .    (4)
-
-	IDENT  shift 5
-	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
-	NIL  shift 7
-	'-'  shift 8
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
-	.  reduce 4 (src line 82)
-
-	exprs  goto 49
-	expr  goto 19
-	bool  goto 6
-
-state 30
-	expr:  '(' '/'.exprs ')' 
-	exprs: .    (4)
-
-	IDENT  shift 5
-	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
-	NIL  shift 7
-	'-'  shift 8
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
-	.  reduce 4 (src line 82)
-
-	exprs  goto 50
-	expr  goto 19
-	bool  goto 6
-
-state 31
-	expr:  '(' '%'.exprs ')' 
-	exprs: .    (4)
-
-	IDENT  shift 5
-	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
-	NIL  shift 7
-	'-'  shift 8
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
-	.  reduce 4 (src line 82)
-
-	exprs  goto 51
-	expr  goto 19
-	bool  goto 6
-
-state 32
-	expr:  '[' exprs ']'.    (13)
-
-	.  reduce 13 (src line 120)
-
-
-state 33
-	exprs:  expr exprs.    (5)
+state 22
+	exprs:  exprs expr.    (5)
 
 	.  reduce 5 (src line 87)
 
 
-state 34
-	expr:  '{' expr_pairs '}'.    (14)
+state 23
+	expr:  '[' exprs ']'.    (12)
 
-	.  reduce 14 (src line 124)
+	.  reduce 12 (src line 122)
 
 
-state 35
+state 24
+	expr:  '{' expr_pairs '}'.    (13)
+
+	.  reduce 13 (src line 126)
+
+
+state 25
 	expr_pairs:  expr_pairs expr.expr 
 
 	IDENT  shift 5
 	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
+	KEYWORD  shift 8
+	STRING  shift 9
+	TRUE  shift 13
+	FALSE  shift 14
 	NIL  shift 7
-	'-'  shift 8
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
+	'['  shift 10
+	'{'  shift 11
+	'('  shift 12
 	.  error
 
-	expr  goto 52
+	expr  goto 35
 	bool  goto 6
 
-state 36
+state 26
 	expr:  '(' FN fns.')' 
 	fns:  fns.fn 
 
-	'('  shift 40
-	')'  shift 53
+	'('  shift 30
+	')'  shift 36
 	.  error
 
-	fn  goto 54
+	fn  goto 37
 
-state 37
+state 27
 	expr:  '(' FN args.exprs ')' 
 	exprs: .    (4)
 
-	IDENT  shift 5
-	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
-	NIL  shift 7
-	'-'  shift 8
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
 	.  reduce 4 (src line 82)
 
-	exprs  goto 55
-	expr  goto 19
-	bool  goto 6
+	exprs  goto 38
 
-state 38
-	fns:  fn.    (31)
+state 28
+	fns:  fn.    (24)
 
-	.  reduce 31 (src line 188)
+	.  reduce 24 (src line 194)
 
 
-state 39
+state 29
 	args:  '['.idents ']' 
 	args:  '['.idents '&' IDENT ']' 
-	idents: .    (35)
+	idents: .    (28)
 
-	.  reduce 35 (src line 204)
+	.  reduce 28 (src line 210)
 
-	idents  goto 56
+	idents  goto 39
 
-state 40
+state 30
 	fn:  '('.args exprs ')' 
 
-	'['  shift 39
+	'['  shift 29
 	.  error
 
-	args  goto 57
+	args  goto 40
 
-state 41
+state 31
+	exprs:  exprs.expr 
 	expr:  '(' expr exprs.')' 
 
-	')'  shift 58
+	IDENT  shift 5
+	NUMBER  shift 4
+	KEYWORD  shift 8
+	STRING  shift 9
+	TRUE  shift 13
+	FALSE  shift 14
+	NIL  shift 7
+	'['  shift 10
+	'{'  shift 11
+	'('  shift 12
+	')'  shift 41
 	.  error
 
+	expr  goto 22
+	bool  goto 6
 
-state 42
+state 32
 	expr:  '(' DEF IDENT.expr ')' 
 
 	IDENT  shift 5
 	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
+	KEYWORD  shift 8
+	STRING  shift 9
+	TRUE  shift 13
+	FALSE  shift 14
 	NIL  shift 7
-	'-'  shift 8
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
+	'['  shift 10
+	'{'  shift 11
+	'('  shift 12
 	.  error
 
-	expr  goto 59
+	expr  goto 42
 	bool  goto 6
 
-state 43
+state 33
 	expr:  '(' IF expr.expr ')' 
 	expr:  '(' IF expr.expr expr ')' 
 
 	IDENT  shift 5
 	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
+	KEYWORD  shift 8
+	STRING  shift 9
+	TRUE  shift 13
+	FALSE  shift 14
 	NIL  shift 7
-	'-'  shift 8
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
+	'['  shift 10
+	'{'  shift 11
+	'('  shift 12
 	.  error
 
-	expr  goto 60
+	expr  goto 43
 	bool  goto 6
 
-state 44
+state 34
 	expr:  '(' QUOTE expr.exprs ')' 
 	exprs: .    (4)
 
-	IDENT  shift 5
-	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
-	NIL  shift 7
-	'-'  shift 8
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
 	.  reduce 4 (src line 82)
 
-	exprs  goto 61
-	expr  goto 19
-	bool  goto 6
+	exprs  goto 44
 
-state 45
-	expr:  '(' '=' exprs.')' 
+state 35
+	expr_pairs:  expr_pairs expr expr.    (22)
 
-	')'  shift 62
-	.  error
+	.  reduce 22 (src line 182)
 
 
-state 46
-	expr:  '(' '+' exprs.')' 
+state 36
+	expr:  '(' FN fns ')'.    (14)
 
-	')'  shift 63
-	.  error
+	.  reduce 14 (src line 130)
 
 
-47: shift/reduce conflict (shift 5(0), red'n 10(3)) on IDENT
-47: shift/reduce conflict (shift 4(0), red'n 10(3)) on NUMBER
-47: shift/reduce conflict (shift 9(0), red'n 10(3)) on KEYWORD
-47: shift/reduce conflict (shift 10(0), red'n 10(3)) on STRING
-47: shift/reduce conflict (shift 14(0), red'n 10(3)) on TRUE
-47: shift/reduce conflict (shift 15(0), red'n 10(3)) on FALSE
-47: shift/reduce conflict (shift 7(0), red'n 10(3)) on NIL
-47: shift/reduce conflict (shift 11(0), red'n 10(3)) on '['
-47: shift/reduce conflict (shift 12(0), red'n 10(3)) on '{'
-47: shift/reduce conflict (shift 13(0), red'n 10(3)) on '('
- 47: reduce/reduce conflict  (red'ns 10 and 4) on ')'
-state 47
-	exprs:  expr.exprs 
-	expr:  '-' expr.    (10)
-	exprs: .    (4)
+state 37
+	fns:  fns fn.    (25)
+
+	.  reduce 25 (src line 199)
+
+
+state 38
+	exprs:  exprs.expr 
+	expr:  '(' FN args exprs.')' 
 
 	IDENT  shift 5
 	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
+	KEYWORD  shift 8
+	STRING  shift 9
+	TRUE  shift 13
+	FALSE  shift 14
 	NIL  shift 7
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
-	')'  reduce 4 (src line 82)
-	.  reduce 10 (src line 108)
+	'['  shift 10
+	'{'  shift 11
+	'('  shift 12
+	')'  shift 45
+	.  error
 
-	exprs  goto 33
-	expr  goto 19
+	expr  goto 22
 	bool  goto 6
 
-state 48
-	expr:  '(' '-' exprs.')' 
-
-	')'  shift 64
-	.  error
-
-
-state 49
-	expr:  '(' '*' exprs.')' 
-
-	')'  shift 65
-	.  error
-
-
-state 50
-	expr:  '(' '/' exprs.')' 
-
-	')'  shift 66
-	.  error
-
-
-state 51
-	expr:  '(' '%' exprs.')' 
-
-	')'  shift 67
-	.  error
-
-
-state 52
-	expr_pairs:  expr_pairs expr expr.    (29)
-
-	.  reduce 29 (src line 176)
-
-
-state 53
-	expr:  '(' FN fns ')'.    (15)
-
-	.  reduce 15 (src line 128)
-
-
-state 54
-	fns:  fns fn.    (32)
-
-	.  reduce 32 (src line 193)
-
-
-state 55
-	expr:  '(' FN args exprs.')' 
-
-	')'  shift 68
-	.  error
-
-
-state 56
+state 39
 	args:  '[' idents.']' 
 	args:  '[' idents.'&' IDENT ']' 
 	idents:  idents.IDENT 
 
-	IDENT  shift 71
-	']'  shift 69
-	'&'  shift 70
+	IDENT  shift 48
+	']'  shift 46
+	'&'  shift 47
 	.  error
 
 
-state 57
+state 40
 	fn:  '(' args.exprs ')' 
 	exprs: .    (4)
 
-	IDENT  shift 5
-	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
-	NIL  shift 7
-	'-'  shift 8
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
 	.  reduce 4 (src line 82)
 
-	exprs  goto 72
-	expr  goto 19
-	bool  goto 6
+	exprs  goto 49
 
-state 58
-	expr:  '(' expr exprs ')'.    (17)
+state 41
+	expr:  '(' expr exprs ')'.    (16)
 
-	.  reduce 17 (src line 136)
+	.  reduce 16 (src line 138)
 
 
-state 59
+state 42
 	expr:  '(' DEF IDENT expr.')' 
 
-	')'  shift 73
+	')'  shift 50
 	.  error
 
 
-state 60
+state 43
 	expr:  '(' IF expr expr.')' 
 	expr:  '(' IF expr expr.expr ')' 
 
 	IDENT  shift 5
 	NUMBER  shift 4
-	KEYWORD  shift 9
-	STRING  shift 10
-	TRUE  shift 14
-	FALSE  shift 15
+	KEYWORD  shift 8
+	STRING  shift 9
+	TRUE  shift 13
+	FALSE  shift 14
 	NIL  shift 7
-	'-'  shift 8
-	'['  shift 11
-	'{'  shift 12
-	'('  shift 13
-	')'  shift 74
+	'['  shift 10
+	'{'  shift 11
+	'('  shift 12
+	')'  shift 51
 	.  error
 
-	expr  goto 75
+	expr  goto 52
 	bool  goto 6
 
-state 61
+state 44
+	exprs:  exprs.expr 
 	expr:  '(' QUOTE expr exprs.')' 
 
-	')'  shift 76
+	IDENT  shift 5
+	NUMBER  shift 4
+	KEYWORD  shift 8
+	STRING  shift 9
+	TRUE  shift 13
+	FALSE  shift 14
+	NIL  shift 7
+	'['  shift 10
+	'{'  shift 11
+	'('  shift 12
+	')'  shift 53
 	.  error
 
+	expr  goto 22
+	bool  goto 6
 
-state 62
-	expr:  '(' '=' exprs ')'.    (22)
+state 45
+	expr:  '(' FN args exprs ')'.    (15)
 
-	.  reduce 22 (src line 156)
-
-
-state 63
-	expr:  '(' '+' exprs ')'.    (23)
-
-	.  reduce 23 (src line 160)
+	.  reduce 15 (src line 134)
 
 
-state 64
-	expr:  '(' '-' exprs ')'.    (24)
+state 46
+	args:  '[' idents ']'.    (26)
 
-	.  reduce 24 (src line 162)
-
-
-state 65
-	expr:  '(' '*' exprs ')'.    (25)
-
-	.  reduce 25 (src line 164)
+	.  reduce 26 (src line 204)
 
 
-state 66
-	expr:  '(' '/' exprs ')'.    (26)
-
-	.  reduce 26 (src line 166)
-
-
-state 67
-	expr:  '(' '%' exprs ')'.    (27)
-
-	.  reduce 27 (src line 168)
-
-
-state 68
-	expr:  '(' FN args exprs ')'.    (16)
-
-	.  reduce 16 (src line 132)
-
-
-state 69
-	args:  '[' idents ']'.    (33)
-
-	.  reduce 33 (src line 198)
-
-
-state 70
+state 47
 	args:  '[' idents '&'.IDENT ']' 
 
-	IDENT  shift 77
+	IDENT  shift 54
 	.  error
 
 
-state 71
-	idents:  idents IDENT.    (36)
+state 48
+	idents:  idents IDENT.    (29)
 
-	.  reduce 36 (src line 206)
+	.  reduce 29 (src line 212)
 
 
-state 72
+state 49
+	exprs:  exprs.expr 
 	fn:  '(' args exprs.')' 
 
-	')'  shift 78
+	IDENT  shift 5
+	NUMBER  shift 4
+	KEYWORD  shift 8
+	STRING  shift 9
+	TRUE  shift 13
+	FALSE  shift 14
+	NIL  shift 7
+	'['  shift 10
+	'{'  shift 11
+	'('  shift 12
+	')'  shift 55
 	.  error
 
+	expr  goto 22
+	bool  goto 6
 
-state 73
-	expr:  '(' DEF IDENT expr ')'.    (18)
+state 50
+	expr:  '(' DEF IDENT expr ')'.    (17)
 
-	.  reduce 18 (src line 140)
-
-
-state 74
-	expr:  '(' IF expr expr ')'.    (19)
-
-	.  reduce 19 (src line 144)
+	.  reduce 17 (src line 142)
 
 
-state 75
+state 51
+	expr:  '(' IF expr expr ')'.    (18)
+
+	.  reduce 18 (src line 146)
+
+
+state 52
 	expr:  '(' IF expr expr expr.')' 
 
-	')'  shift 79
+	')'  shift 56
 	.  error
 
 
-state 76
-	expr:  '(' QUOTE expr exprs ')'.    (21)
+state 53
+	expr:  '(' QUOTE expr exprs ')'.    (20)
 
-	.  reduce 21 (src line 152)
+	.  reduce 20 (src line 154)
 
 
-state 77
+state 54
 	args:  '[' idents '&' IDENT.']' 
 
-	']'  shift 80
+	']'  shift 57
 	.  error
 
 
-state 78
-	fn:  '(' args exprs ')'.    (30)
+state 55
+	fn:  '(' args exprs ')'.    (23)
 
-	.  reduce 30 (src line 182)
-
-
-state 79
-	expr:  '(' IF expr expr expr ')'.    (20)
-
-	.  reduce 20 (src line 148)
+	.  reduce 23 (src line 188)
 
 
-state 80
-	args:  '[' idents '&' IDENT ']'.    (34)
+state 56
+	expr:  '(' IF expr expr expr ')'.    (19)
 
-	.  reduce 34 (src line 201)
+	.  reduce 19 (src line 150)
 
 
-28 terminals, 11 nonterminals
-39 grammar rules, 81/2000 states
-10 shift/reduce, 1 reduce/reduce conflicts reported
+state 57
+	args:  '[' idents '&' IDENT ']'.    (27)
+
+	.  reduce 27 (src line 207)
+
+
+27 terminals, 11 nonterminals
+32 grammar rules, 58/2000 states
+0 shift/reduce, 0 reduce/reduce conflicts reported
 60 working sets used
-memory: parser 73/30000
-60 extra closures
-298 shift entries, 2 exceptions
-36 goto entries
-36 entries saved by goto default
-Optimizer space used: output 182/30000
-182 table entries, 57 zero
-maximum spread: 28, maximum offset: 60
+memory: parser 36/30000
+39 extra closures
+164 shift entries, 1 exceptions
+25 goto entries
+17 entries saved by goto default
+Optimizer space used: output 248/30000
+248 table entries, 109 zero
+maximum spread: 27, maximum offset: 43

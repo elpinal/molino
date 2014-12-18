@@ -65,9 +65,9 @@ statements
       l.statements = $$
     }
   }
-  | statement statements
+  | statements statement
   {
-    $$ = append([]Statement{$1}, $2...)
+    $$ = append($1, $2)
     if l, isLexerWrapper := yylex.(*LexerWrapper); isLexerWrapper {
       l.statements = $$
     }
@@ -84,9 +84,9 @@ exprs
   {
     $$ = []Expression{}
   }
-  | expr exprs
+  | exprs expr
   {
-    $$ = append([]Expression{$1}, $2...)
+    $$ = append($1, $2)
   }
 
 expr  : NUMBER
@@ -105,10 +105,12 @@ expr  : NUMBER
   {
     $$ = &NilExpression{}
   }
+/*
   | '-' expr      %prec UNARY
   {
     $$ = &UnaryMinusExpression{SubExpr: $2}
   }
+*/
   | KEYWORD
   {
     $$ = &UnaryKeywordExpression{Lit: $1.lit}
@@ -153,10 +155,13 @@ expr  : NUMBER
   {
     $$ = &ConstantExpression{Expr: $3}
   }
+/*
   | '(' '=' exprs ')'
   {
     $$ = &EqualExpression{HS: $3}
   }
+*/
+/*
   | '(' '+' exprs ')'
   { $$ = &BinOpExpression{HS: $3, Operator: int('+')} }
   | '(' '-' exprs ')'
@@ -167,6 +172,7 @@ expr  : NUMBER
   { $$ = &BinOpExpression{HS: $3, Operator: int('/')} }
   | '(' '%' exprs ')'
   { $$ = &BinOpExpression{HS: $3, Operator: int('%')} }
+*/
 
 expr_pairs
   :

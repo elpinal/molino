@@ -80,15 +80,10 @@ func (e *Env) Get(k string) (reflect.Value, error) {
     e = e.parent
   }
   if sym := intern(k); sym.ns == "" {
-    v := getmapping(sym)
-    /*
-    fmt.Println("1", sym, v)
-    fmt.Println("2", mappings)
-    for k, r := range mappings {
-      fmt.Println("000", k.name, r)
+    v, isexist := CURRENT_NS.root.(Namespace).getmapping(sym)
+    if isexist {
+      return reflect.ValueOf(v), nil
     }
-    */
-    return reflect.ValueOf(v), nil
   }
   return reflect.ValueOf(nil), fmt.Errorf("Undefined symbol '%s'", k)
 }
@@ -134,7 +129,19 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
 //    } else {
 //      return reflect.ValueOf(0), fmt.Errorf("Undefined variable: %s", e.Lit)
 //    }
-    return env.Get(e.Lit)
+  a, err := env.Get(e.Lit)
+  if err != nil {
+    if e.Lit == "in-ns" {
+      return reflect.ValueOf(IN_NAMESPACE), nil
+    } else {
+      x := analyzeSymbol(intern(e.Lit))
+      fmt.Println("8013:", x)
+      return reflect.ValueOf(x), nil
+      //      return reflect.ValueOf(nil), err
+    }
+  } else {
+    return a, nil
+  }
   case *BoolExpression:
     return reflect.ValueOf(e.Bool), nil
   case *NilExpression:
@@ -172,10 +179,13 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
     }
 //    fmt.Println(v.Interface())
     if m, isVar := v.Interface().(Var); isVar {
+      fmt.Printf("8012: %#v\n", v)
       v = reflect.ValueOf(m.root)
     }
     if v.Kind() != reflect.Func {
-      return reflect.ValueOf(v), errors.New(fmt.Sprint("Unknown Function: ", /*v.Interface(),*/ v, e.Expr))
+      fmt.Printf("8011: %#v\n", v)
+      fmt.Printf("not func: %#v\n" , e.Expr)
+      return reflect.ValueOf(v), errors.New(fmt.Sprint("Unknown Function: ", /*v.Interface(),*/ v, e.Expr, v.Kind()))
     }
 
     _, isReflect := v.Interface().(Func)
@@ -219,6 +229,7 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
 
     return ret, nil
   case *DefExpression:
+    /*
     v, err := evaluateExpr(e.Expr, env)
     if err != nil {
       return v, err
@@ -226,7 +237,17 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
     if v.Kind() == reflect.Interface {
       v = v.Elem()
     }
-    return evaluateExprDef(e.VarName, v, env)
+    */
+//    intern(e.VarName)
+    o, is := lookupVar(intern(e.VarName), true)
+    if !is {
+      return reflect.ValueOf(nil), errors.New("def error:")
+    }
+    fmt.Printf("7011: %#v\n", reflect.ValueOf(o))
+    CURRENT_NS.root.(Namespace).intern(intern(e.VarName))
+    return reflect.ValueOf(e.VarName), nil
+    //return evaluateExprDef(e.VarName, v, env)
+    /*
   case *UnaryMinusExpression:
     v, err := evaluateExpr(e.SubExpr, env)
     if err != nil {
@@ -234,6 +255,7 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
     }
     return reflect.ValueOf((-v.Int())), nil
     //return fmt.Errorf("Error of minus %v", v), err
+    */
   case *UnaryKeywordExpression:
     var v Keyword = Keyword(e.Lit)
     /*
@@ -380,16 +402,18 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
     case *IdentifierExpression:
 //      fmt.Println("007" ,ee.Lit)
       return reflect.ValueOf(intern(ee.Lit)), nil
-    case *NumberExpression, *StringExpression, *NilExpression, *UnaryKeywordExpression, *UnaryMinusExpression:
+    case *NumberExpression, *StringExpression, *NilExpression, *UnaryKeywordExpression: //, *UnaryMinusExpression:
       v, err := evaluateExpr(ee, env)
       if err != nil {
         return v, err
       }
       return v, nil
+//    case *CallExpression:  // as list
     default:
-      fmt.Printf("009 %#v\n", ee)
+      fmt.Printf("Warn number 9011: %#v\n", ee)
     }
     return reflect.ValueOf(nil), nil
+    /*
   case *EqualExpression:
     a, err := evaluateExpr(e.HS[0], env)
     if err != nil {
@@ -401,9 +425,11 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
       if err != nil {
         return reflect.ValueOf(nil), err
       }
-      x = (a == b) == x
+      x = (a.Interface() == b.Interface()) == x
     }
     return reflect.ValueOf(x), nil
+    */
+/*
   case *BinOpExpression:
     //a := make([]interface{}, len(e.HS))
     //for i, hs := range e.HS {
@@ -439,6 +465,7 @@ func evaluateExpr(expr Expression, env *Env) (reflect.Value, error) {
       }
     }
     return reflect.ValueOf(b), nil
+ */
   default:
     panic("Unknown Expression type")
   }
@@ -526,4 +553,72 @@ func toInt64(v reflect.Value) int64 {
     }
   }
   return 0
+}
+
+func lookupVar(sym Symbol, internNew bool) (Var, bool) {
+  var v Var
+  fmt.Printf("001: %#v\n", sym)
+  if sym.ns != "" {
+    ns, isexist := namespaceFor(CURRENT_NS.root.(Namespace), sym)
+    if !isexist {
+      return v, isexist
+    }
+    var name Symbol = intern(sym.name)
+    if internNew && ns.name == CURRENT_NS.root.(Namespace).name {
+      v = CURRENT_NS.root.(Namespace).intern(name)
+    } else {
+      var interned bool
+      v, interned = ns.findInternedVar(name)
+      if !interned {
+        return v, interned
+      }
+    }
+  } else {
+    o, isMapped := CURRENT_NS.root.(Namespace).mappings[sym]
+    if !isMapped {
+      if internNew {
+        v = CURRENT_NS.root.(Namespace).intern(intern(sym.name))
+      }
+    } else {
+      v = o
+    }
+  }
+  return v, true
+}
+
+func namespaceFor(inns Namespace, sym Symbol) (Namespace, bool) {
+  //note, presumes non-nil sym.ns
+  // first check against currentNS' aliases...
+  var nsSym Symbol = intern(sym.ns)
+//  var ns Namespace = inns.lookupAlias(nsSym)
+//  if(ns == null) {
+    // ...otherwise check the Namespaces map.
+    ns, isexist := findNamespace(nsSym)
+//  }
+  return ns, isexist
+}
+
+func analyzeSymbol(sym Symbol) Var {
+  return resolveIn(CURRENT_NS.root.(Namespace), sym)
+}
+
+func resolveIn(n Namespace, sym Symbol) Var {
+  if sym.ns != "" {
+    ns, isexist := namespaceFor(n, sym)
+    if !isexist {
+      panic("No such namespace: " + sym.ns)
+    }
+    v, interned := ns.findInternedVar(intern(sym.name))
+    if !interned {
+      panic("No such var: " + sym.ns + "/" + sym.name)
+    }
+    return v
+  }
+  o, _ := n.getmapping(sym)
+  for _, s := range namespaces {
+    for k, _ := range s.mappings {
+      fmt.Println(k)
+    }
+  }
+  return o
 }

@@ -24,7 +24,7 @@ func (this Var) intern(ns Namespace, sym Symbol, root interface{}, replaceRoot b
   }
   */
   dvout.root = root
-  updatemapping(sym, dvout)
+  ns.updatemapping(sym, dvout)
   return dvout
 }
 

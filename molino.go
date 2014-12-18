@@ -64,3 +64,7 @@ func main() {
  */
   }
 }
+
+func refImport(env *vm.Env) {
+  go_core.Import(env)
+}
