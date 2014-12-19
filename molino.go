@@ -2,7 +2,7 @@ package main
 
 import (
   "./vm"
-  go_core "./src/go/molino"
+  "./src/go/molino/lang"
   "flag"
   "fmt"
   "io/ioutil"
@@ -32,8 +32,6 @@ func main() {
     }
   }
   os.Args = fs.Args()
-
-  go_core.Import(env)
 
   vm.Runtime()
 
