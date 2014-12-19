@@ -11,17 +11,6 @@ type Token struct {
   pos Position
 }
 
-type Fn struct {
-  Args  Args
-  Exprs []Expression
-}
-
-type Args struct {
-  Args   []string
-  Vararg bool
-  More   string
-}
-
 %}
 
 %union{
@@ -30,30 +19,14 @@ type Args struct {
   exprs      []Expression
   expr       Expression
   tok        Token
-  expr_pairs map[Expression]Expression
-  fn         Fn
-  fns        []Fn
-  args       Args
-  idents     []string
-  bool       bool
 }
 
 %type<statements> statements
 %type<statement>  statement
 %type<exprs>      exprs
 %type<expr>       expr
-%type<expr_pairs> expr_pairs
-%type<fn>         fn
-%type<fns>        fns
-%type<args>       args
-%type<idents>     idents
-%type<bool>       bool
 
-%token<tok> IDENT NUMBER KEYWORD STRING DEF IF TRUE FALSE NIL FN QUOTE
-
-%left '+' '-'
-%left '*' '/' '%'
-%right UNARY
+%token<tok> IDENT NUMBER
 
 %%
 
@@ -76,7 +49,7 @@ statements
 statement
   : expr
   {
-    $$ = &ExpressionStatement{Expr: $1}
+    $$ = &ExpressionStatement{$1}
   }
 
 exprs
@@ -89,137 +62,30 @@ exprs
     $$ = append($1, $2)
   }
 
-expr  : NUMBER
+expr
+  : NUMBER
   {
-    $$ = &NumberExpression{Lit: $1.lit}
+    $$ = &NumberExpression{$1.lit}
   }
   | IDENT
   {
-    $$ = &IdentifierExpression{Lit: $1.lit}
-  }
-  | bool
-  {
-    $$ = &BoolExpression{Bool: $1}
-  }
-  | NIL
-  {
-    $$ = &NilExpression{}
-  }
-/*
-  | '-' expr      %prec UNARY
-  {
-    $$ = &UnaryMinusExpression{SubExpr: $2}
-  }
-*/
-  | KEYWORD
-  {
-    $$ = &UnaryKeywordExpression{Lit: $1.lit}
-  }
-  | STRING
-  {
-    $$ = &StringExpression{Lit: $1.lit}
+    $$ = &IdentifierExpression{$1.lit}
   }
   | '[' exprs ']'
   {
-    $$ = &VectorExpression{Exprs: $2}
+    $$ = &VectorExpression{$2}
   }
-  | '{' expr_pairs '}'
+  | '{' exprs '}'
   {
-    $$ = &MapExpression{Map: $2}
+    $$ = &MapExpression{$2}
   }
-  | '(' FN fns ')'
+  | '(' exprs ')'
   {
-    $$ = &FnExpression{Fns: $3}
+    $$ = &CallExpression{$2}
   }
-  | '(' FN args exprs ')'
-  {
-    $$ = &FnExpression{Fns: []Fn{Fn{Args: $3, Exprs: $4}}}
-  }
-  | '(' expr exprs ')'
-  {
-    $$ = &CallExpression{Expr: $2, Args: $3}
-  }
-  | '(' DEF IDENT expr ')'
-  {
-    $$ = &DefExpression{VarName: $3.lit, Expr: $4}
-  }
-  | '(' IF expr expr ')'
-  {
-    $$ = &IfExpression{Expr: $3, True: $4}
-  }
-  | '(' IF expr expr expr ')'
-  {
-    $$ = &IfExpression{Expr: $3, True: $4, False: $5}
-  }
-  | '(' QUOTE expr exprs ')'
-  {
-    $$ = &ConstantExpression{Expr: $3}
-  }
-/*
-  | '(' '=' exprs ')'
-  {
-    $$ = &EqualExpression{HS: $3}
-  }
-*/
-/*
-  | '(' '+' exprs ')'
-  { $$ = &BinOpExpression{HS: $3, Operator: int('+')} }
-  | '(' '-' exprs ')'
-  { $$ = &BinOpExpression{HS: $3, Operator: int('-')} }
-  | '(' '*' exprs ')'
-  { $$ = &BinOpExpression{HS: $3, Operator: int('*')} }
-  | '(' '/' exprs ')'
-  { $$ = &BinOpExpression{HS: $3, Operator: int('/')} }
-  | '(' '%' exprs ')'
-  { $$ = &BinOpExpression{HS: $3, Operator: int('%')} }
-*/
-
-expr_pairs
-  :
-  {
-    $$ = map[Expression]Expression{}
-  }
-  | expr_pairs expr expr
-  {
-    $$ = $1
-    $$[$2] = $3
-  }
-
-fn
-  : '(' args exprs ')'
-  {
-    $$ = Fn{Args: $2, Exprs: $3}
-  }
-
-fns
-  : fn
-  {
-    $$ = []Fn{$1}
-  }
-  | fns fn
-  {
-    $$ = append($1, $2)
-  }
-
-args
-  : '[' idents ']'
-  { $$ = Args{Args: $2} }
-  | '[' idents '&' IDENT ']'
-  { $$ = Args{Args: $2, Vararg: true, More: $4.lit} }
-
-idents
-  : { $$ = []string{} }
-  | idents IDENT
-  { $$ = append($1, $2.lit) }
-
-bool
-  : TRUE
-  { $$ = true  }
-  | FALSE
-  { $$ = false }
 
 %%
-
+/*
 type LexerWrapper struct {
   s          *Scanner
   recentLit  string
@@ -250,3 +116,4 @@ func Parse(s *Scanner) []Statement {
   }
   return l.statements
 }
+*/

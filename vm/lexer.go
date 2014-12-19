@@ -6,22 +6,36 @@ import (
   "strconv"
 )
 
+/*
 const (
   EOF     = -1
   UNKNOWN = 0
 )
+*/
 
-var keywords = map[string]int{
-  "def"  : DEF,
-  "if"   : IF,
-  "true" : TRUE,
-  "false": FALSE,
-  "nil"  : NIL,
-  "fn"   : FN,
-  "quote": QUOTE,
+var QUOTE Symbol = intern("quote")
+
+var macros = map[rune]int {
+  '"' : StringReader(),
+  ';' : CommentReader(),
+  '\'' : WrappingReader(QUOTE),
+//  '@' : WrappingReader(DEREF),
+//  '^' : MetaReader(),
+//  '`' : SyntaxQuoteReader(),
+//  '~' : UnquoteReader(),
+  '(' : ListReader(),
+  ')' : UnmatchedDelimiterReader(),
+  '[' : VectorReader(),
+  ']' : UnmatchedDelimiterReader(),
+  '{' : MapReader(),
+  '}' : UnmatchedDelimiterReader(),
+  '\\' : CharacterReader(),
+//  '%' : ArgReader(),
+//  '#' : DispatchReader(),
 }
 
-var intPat *regexp.Regexp = regexp.MustCompile("^([-+]?)(?:(0)|([1-9][0-9]*)|0[xX]([0-9A-Fa-f]+)|0([0-7]+)|([1-9][0-9]?)[rR]([0-9A-Za-z]+)|0[0-9]+)$")
+var symbolPat *regexp.Regexp = regexp.MustCompile("^[:]?([^/0-9].*/)?(/|[^/0-9][^/]*)$")
+var intPat    *regexp.Regexp = regexp.MustCompile("^([-+]?)(?:(0)|([1-9][0-9]*)|0[xX]([0-9A-Fa-f]+)|0([0-7]+)|([1-9][0-9]?)[rR]([0-9A-Za-z]+)|0[0-9]+)$")
 
 
 type Position struct {
@@ -30,102 +44,91 @@ type Position struct {
 }
 
 type Scanner struct {
-  src      []rune
-  offset   int
-  lineHead int
-  line     int
+  src      []rune // source
+  offset   int    // 
+  lineHead int    // 
+  line     int    // 
 }
 
 func (s *Scanner) Init(src string) {
   s.src = []rune(src)
 }
 
-func (s *Scanner) Scan() (tok int, lit string, pos Position) {
-  for isWhiteSpace(s.peek()) || s.peek() == ';' {
-    s.skipWhiteSpace()
-    s.skipComment()
-  }
-  pos = s.position()
-  switch ch := s.peek(); {
-  case isLetter(ch), ch == '*', ch == '=':
-    lit = s.scanIdentifier()
-    if keyword, ok := keywords[lit]; ok {
-      tok = keyword
-    } else {
-      tok = IDENT
+func (s *Scanner) Scan() interface{} { //(tok int, lit string, pos Position)
+  for {
+    pos = s.position()
+    ch := s.read()
+    for isWhitespace(ch) {
+      ch = s.read()
     }
-  case isDigit(ch):
-    tok, lit = NUMBER, s.scanNumber()
-  default:
-    switch ch {
-    case -1:
-      tok = EOF
-    case '(', ')', '[', ']', '{', '}', '&':
-      tok = int(ch)
-      lit = string(ch)
-    case '+', '-':
-      s.next()
-      if isDigit(s.peek()) {
-        s.back()
-        tok = NUMBER
-        lit = s.scanNumber()
-        s.back()
-      } else {
-        s.back()
-        tok = IDENT
-        lit = s.scanIdentifier()
+    if ch == -1 {
+      //
+    }
+    if isDigit(ch) {
+      var n int64 = s.readNumber(ch)
+      return n
+    }
+    macroFn, ismacro := getMacro(ch)
+    if ismacro {
+      ret := macroFn()
+      //
+      if ret == s {
+        continue
       }
-    case '"':
-      tok = STRING
-      lit = s.scanString()
-    case ':':
-      s.next()
-      tok = KEYWORD
-      lit = s.scanIdentifier()
-      s.back()
+      return ret
     }
-    s.next()
+    if ch == '+' || ch == '-' {
+      ch2 := s.read()
+      if isDigit(ch2) {
+        s.unread()
+        var n int64 = s.readNumber(ch)
+        return n
+      }
+      s.unread()
+    }
+    var token string = s.readToken(ch)
+    return interpretToken(token)
   }
-  return
+  return nil
 }
 
-// ========================================
-
-func isLetter(ch rune) bool {
-  return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
-}
 
 func isDigit(ch rune) bool {
   return '0' <= ch && ch <= '9'
 }
 
-func isSign(ch rune) bool {
-  return /*ch == '&' ||*/ ch == '?' || ch == '-' || ch == '*' || ch == '.' || ch == '+' || ch == '='
+func isWhitespace(ch rune) bool {
+  return ch == ' ' || ch == '\t' || ch == '\n' || ch == ','
 }
 
-func isWhiteSpace(ch rune) bool {
-  return ch == ' ' || ch == '\t' || ch == '\n'
+func getMacro(ch rune) (int, bool) {
+  m, n := macros[ch]
+  return m, n
 }
 
-func (s *Scanner) peek() rune {
+func isMacro(ch rune) bool {
+  _, n := macros[ch]
+  return n
+}
+
+func isTerminatingMacro(ch rune) bool {
+  return ch != '#' && ch != '\'' && ch != '%' && isMacro(ch)
+}
+
+func (s *Scanner) read() rune {
   if !s.reachEOF() {
-    return s.src[s.offset]
-  } else {
-    return -1
-  }
-}
-
-func (s *Scanner) next() {
-  if !s.reachEOF() {
-    if s.peek() == '\n' {
-      s.lineHead = s.offset + 1
+    s.offset++
+    ch := s.src[s.offset]
+    if ch == '\n' {
+      s.lineHead = s.offset
       s.line++
     }
-    s.offset++
+    return ch
   }
+  return -1
 }
 
-func (s *Scanner) back() {
+func (s *Scanner) unread() {
   s.offset--
 }
 
@@ -137,39 +140,34 @@ func (s *Scanner) position() Position {
   return Position{Line: s.line + 1, Column: s.offset - s.lineHead + 1}
 }
 
-func (s *Scanner) skipWhiteSpace() {
-  for isWhiteSpace(s.peek()) {
-    s.next()
+func (s *Scanner) readToken(initch rune) string {
+  var ret []rune = []rune{initch}
+  for {
+    if ch := s.read(); ch == -1 || isWhitespace(ch) || isTerminatingMacro(ch) {
+      s.unread()
+      return string(ret)
+    } else {
+      ret = append(ret, ch)
+    }
   }
 }
 
-func (s *Scanner) scanIdentifier() string {
-  var ret []rune
-  for isLetter(s.peek()) || isDigit(s.peek()) || isSign(s.peek()) {
-    ret = append(ret, s.peek())
-    s.next()
-  }
-  return string(ret)
-}
-
-func (s *Scanner) scanNumber() string {
-  var ret []rune
-//  for isDigit(s.peek()) {
+func (s *Scanner) readNumber(initch rune) int64 {
+  var ret []rune = []rune{initch}
   loop:
   for {
-    if ch := s.peek(); ch == -1 || isWhiteSpace(ch) || ch == '(' || ch == ')' {
+    if ch := s.read(); ch == -1 || isWhitespace(ch) || isMacro(ch) {
+      s.unread()
       break loop
+    } else {
+      ret = append(ret, ch)
     }
-    ret = append(ret, s.peek())
-//    fmt.Println("009 -- ", string(ret))
-    s.next()
   }
-//  return string(ret)
   n, notmatch := matchNumber(string(ret))
   if !notmatch {
     panic("Invalid number: " + string(ret))
   }
-  return strconv.FormatInt(n, 10)
+  return n //strconv.FormatInt(n, 10)
 }
 
 func matchNumber(x string) (int64, bool) {
@@ -201,34 +199,33 @@ func matchNumber(x string) (int64, bool) {
   return -1, false
 }
 
-func (s *Scanner) scanString() string {
-  var ret []rune
-  s.next()
-  for s.peek() != '"' {
-    if s.reachEOF() {
-      panic("unterminated string meets end of file\n       syntax error, unexpected end-of-input, expecting keyword_end")
-    }
-    if s.peek() == '\\' {
-      s.next()
-      if s.peek() == '"' {
-        ret = append(ret, s.peek())
-        s.next()
-      } else {
-        ret = append(ret, '\\', s.peek())
-      }
-    } else {
-      ret = append(ret, s.peek())
-      s.next()
-    }
+func interpretToken(s string) interface{} {
+  if s == "nil" {
+    return nil
+  } else if s == "true" {
+    return true
+  } else if s == "false" {
+    return false
   }
-  return string(ret)
+  ret, isValid := matchSymbol(s)
+  if isValid {
+    return ret
+  }
+
+  panic("Invalid token: " + s)
 }
 
-func (s *Scanner) skipComment() {
-  if s.peek() == ';' {
-    for s.peek() != '\n' {
-      s.next()
+func matchSymbol(s string) (interface{}, bool) {
+  m := symbolPat.FindStringSubmatch(s)
+  if m != nil {
+    isKeyword := s[0] == ':'
+    if isKeyword {
+      sym := intern(s[1:])
+      return /*Keyword.intern(s)*/ sym, true
+    } else {
+      sym := intern(s)
+      return sym, true
     }
-    s.next()
   }
+  return nil, false
 }
