@@ -7,7 +7,6 @@ import (
   "io/ioutil"
   "log"
   "os"
-  _ "reflect"
 )
 
 var fs = flag.NewFlagSet(os.Args[0], 1)
@@ -15,7 +14,6 @@ var e  = fs.String("e", "", "One line of program")
 
 func main() {
   fs.Parse(os.Args[1:])
-  env := vm.NewEnv()
   var body []byte
   var source string
   if *e != "" {
@@ -32,19 +30,14 @@ func main() {
   }
   os.Args = fs.Args()
 
-  vm.Runtime()
+  lang.Runtime()
 
-  scanner := new(vm.Scanner)
   scanner.Init(string(body))
-  for _, statement := range vm.Parse(scanner) {
-    _, err := vm.Run(statement, env)
+  for _, statement := range lang.Parse(scanner) {
+    _, err := lang.Run(statement, env)
     if err != nil {
       fmt.Printf("%s: ", source)
       log.Fatal(err)
     }
   }
-}
-
-func refImport(env *vm.Env) {
-  go_core.Import(env)
 }
