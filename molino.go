@@ -45,23 +45,6 @@ func main() {
       fmt.Printf("%s: ", source)
       log.Fatal(err)
     }
-    //fmt.Println(s)
-/*
-    var keyword vm.Keyword
-    o, ok := s.Interface().(fmt.Stringer)
-    switch {
-    case s.Kind() != reflect.String && ok:
-      fmt.Println(o)
-    case s.Kind() == reflect.Slice:
-      fmt.Println(s.Interface())
-    case s.Kind() == reflect.Map:
-      fmt.Println(s.Interface())
-    case s.Type() == reflect.TypeOf(keyword):
-      fmt.Printf(":%v\n", s.Interface())
-    default:
-      fmt.Printf("%#v\n", s.Interface())
-    }
- */
   }
 }
 
