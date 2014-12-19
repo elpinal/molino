@@ -1,17 +1,9 @@
 package vm
 
 import (
-  _ "fmt"
   "regexp"
   "strconv"
 )
-
-/*
-const (
-  EOF     = -1
-  UNKNOWN = 0
-)
-*/
 
 var QUOTE Symbol = intern("quote")
 
