@@ -1,7 +1,6 @@
 package main
 
 import (
-  "./vm"
   "./src/go/molino/lang"
   "flag"
   "fmt"
