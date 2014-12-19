@@ -29,8 +29,10 @@ var inNamespace = func(arg1 reflect.Value) (Namespace, error) {
 func Runtime() {
   //fmt.Println(MOLINO_NS, NAMESPACE, IN_NAMESPACE.name)
   var v Var
+  //var s Symbol = intern("user")
   v = v.intern(MOLINO_NS, IN_NAMESPACE, inNamespace, true)
   doInit()
+  //v.invoke(reflect.ValueOf(s))
 }
 
 func doInit() {
