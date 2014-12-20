@@ -42,43 +42,43 @@ type Reader struct {
   line     int    // 
 }
 
-func (s *Reader) Init(src string) {
-  s.src = []rune(src)
+func (r *Reader) Init(src string) {
+  r.src = []rune(src)
 }
 
-func (s *Reader) Read() interface{} { //(tok int, lit string, pos Position)
+func (r *Reader) Read() interface{} { //(tok int, lit string, pos Position)
   for {
-    pos = s.position()
-    ch := s.read()
+    pos = r.position()
+    ch := r.read()
     for isWhitespace(ch) {
-      ch = s.read()
+      ch = r.read()
     }
     if ch == -1 {
       //
     }
     if isDigit(ch) {
-      var n int64 = s.readNumber(ch)
+      var n int64 = r.readNumber(ch)
       return n
     }
     macroFn, ismacro := getMacro(ch)
     if ismacro {
       ret := macroFn()
       //
-      if ret == s {
+      if ret == r {
         continue
       }
       return ret
     }
     if ch == '+' || ch == '-' {
-      ch2 := s.read()
+      ch2 := r.read()
       if isDigit(ch2) {
-        s.unread()
-        var n int64 = s.readNumber(ch)
+        r.unread()
+        var n int64 = r.readNumber(ch)
         return n
       }
-      s.unread()
+      r.unread()
     }
-    var token string = s.readToken(ch)
+    var token string = r.readToken(ch)
     return interpretToken(token)
   }
 }
@@ -106,36 +106,36 @@ func isTerminatingMacro(ch rune) bool {
   return ch != '#' && ch != '\'' && ch != '%' && isMacro(ch)
 }
 
-func (s *Reader) read() rune {
-  if !s.reachEOF() {
-    s.offset++
-    ch := s.src[s.offset]
+func (r *Reader) read() rune {
+  if !r.reachEOF() {
+    r.offset++
+    ch := r.src[r.offset]
     if ch == '\n' {
-      s.lineHead = s.offset
-      s.line++
+      r.lineHead = r.offset
+      r.line++
     }
     return ch
   }
   return -1
 }
 
-func (s *Reader) unread() {
-  s.offset--
+func (r *Reader) unread() {
+  r.offset--
 }
 
-func (s *Reader) reachEOF() bool {
-  return len(s.src) <= s.offset
+func (r *Reader) reachEOF() bool {
+  return len(r.src) <= r.offset
 }
 
-func (s *Reader) position() Position {
-  return Position{Line: s.line + 1, Column: s.offset - s.lineHead + 1}
+func (r *Reader) position() Position {
+  return Position{Line: r.line + 1, Column: r.offset - r.lineHead + 1}
 }
 
-func (s *Reader) readToken(initch rune) string {
+func (r *Reader) readToken(initch rune) string {
   var ret []rune = []rune{initch}
   for {
-    if ch := s.read(); ch == -1 || isWhitespace(ch) || isTerminatingMacro(ch) {
-      s.unread()
+    if ch := r.read(); ch == -1 || isWhitespace(ch) || isTerminatingMacro(ch) {
+      r.unread()
       return string(ret)
     } else {
       ret = append(ret, ch)
@@ -143,12 +143,12 @@ func (s *Reader) readToken(initch rune) string {
   }
 }
 
-func (s *Reader) readNumber(initch rune) int64 {
+func (r *Reader) readNumber(initch rune) int64 {
   var ret []rune = []rune{initch}
   loop:
   for {
-    if ch := s.read(); ch == -1 || isWhitespace(ch) || isMacro(ch) {
-      s.unread()
+    if ch := r.read(); ch == -1 || isWhitespace(ch) || isMacro(ch) {
+      r.unread()
       break loop
     } else {
       ret = append(ret, ch)
