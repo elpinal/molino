@@ -1,4 +1,4 @@
-package vm
+package lang
 
 import (
   "strings"
