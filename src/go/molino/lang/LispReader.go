@@ -81,7 +81,6 @@ func (s *Scanner) Scan() interface{} { //(tok int, lit string, pos Position)
     var token string = s.readToken(ch)
     return interpretToken(token)
   }
-  return nil
 }
 
 
