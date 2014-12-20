@@ -161,8 +161,8 @@ func (s *Reader) readNumber(initch rune) int64 {
   return n //strconv.FormatInt(n, 10)
 }
 
-func matchNumber(x string) (int64, bool) {
-  m := intPat.FindStringSubmatch(x)
+func matchNumber(s string) (int64, bool) {
+  m := intPat.FindStringSubmatch(s)
   if m != nil {
     if m[2] != "" {
       return 0, true
