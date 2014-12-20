@@ -32,8 +32,8 @@ func main() {
 
   lang.Runtime()
 
-  scanner.Init(string(body))
-  for _, statement := range lang.Parse(scanner) {
+  reader.Init(string(body))
+  for _, statement := range lang.Parse(reader) {
     _, err := lang.Run(statement, env)
     if err != nil {
       fmt.Printf("%s: ", source)

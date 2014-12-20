@@ -35,18 +35,18 @@ type Position struct {
   Column int
 }
 
-type Scanner struct {
+type Reader struct {
   src      []rune // source
   offset   int    // 
   lineHead int    // 
   line     int    // 
 }
 
-func (s *Scanner) Init(src string) {
+func (s *Reader) Init(src string) {
   s.src = []rune(src)
 }
 
-func (s *Scanner) Scan() interface{} { //(tok int, lit string, pos Position)
+func (s *Reader) Read() interface{} { //(tok int, lit string, pos Position)
   for {
     pos = s.position()
     ch := s.read()
@@ -106,7 +106,7 @@ func isTerminatingMacro(ch rune) bool {
   return ch != '#' && ch != '\'' && ch != '%' && isMacro(ch)
 }
 
-func (s *Scanner) read() rune {
+func (s *Reader) read() rune {
   if !s.reachEOF() {
     s.offset++
     ch := s.src[s.offset]
@@ -119,19 +119,19 @@ func (s *Scanner) read() rune {
   return -1
 }
 
-func (s *Scanner) unread() {
+func (s *Reader) unread() {
   s.offset--
 }
 
-func (s *Scanner) reachEOF() bool {
+func (s *Reader) reachEOF() bool {
   return len(s.src) <= s.offset
 }
 
-func (s *Scanner) position() Position {
+func (s *Reader) position() Position {
   return Position{Line: s.line + 1, Column: s.offset - s.lineHead + 1}
 }
 
-func (s *Scanner) readToken(initch rune) string {
+func (s *Reader) readToken(initch rune) string {
   var ret []rune = []rune{initch}
   for {
     if ch := s.read(); ch == -1 || isWhitespace(ch) || isTerminatingMacro(ch) {
@@ -143,7 +143,7 @@ func (s *Scanner) readToken(initch rune) string {
   }
 }
 
-func (s *Scanner) readNumber(initch rune) int64 {
+func (s *Reader) readNumber(initch rune) int64 {
   var ret []rune = []rune{initch}
   loop:
   for {

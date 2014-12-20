@@ -46,9 +46,9 @@ func load(scriptbase string) {
   }
   env := NewEnv()
   refImport(env)
-  scanner := new(Scanner)
-  scanner.Init(string(body))
-  for _, statement := range Parse(scanner) {
+  reader := new(Reader)
+  reader.Init(string(body))
+  for _, statement := range Parse(reader) {
     fmt.Printf("%#v\n", statement.(*ExpressionStatement).Expr)
     _, err := Run(statement, env)
     if err != nil {
