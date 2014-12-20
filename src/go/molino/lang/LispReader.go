@@ -46,7 +46,7 @@ func (r *Reader) Init(src string) {
   r.src = []rune(src)
 }
 
-func (r *Reader) Read() interface{} { //(tok int, lit string, pos Position)
+func (r *Reader) Read() (interface{}, bool) { //(tok int, lit string, pos Position)
   for {
     pos = r.position()
     ch := r.read()
@@ -54,11 +54,11 @@ func (r *Reader) Read() interface{} { //(tok int, lit string, pos Position)
       ch = r.read()
     }
     if ch == -1 {
-      //
+      return ch, true
     }
     if isDigit(ch) {
       var n int64 = r.readNumber(ch)
-      return n
+      return n, false
     }
     macroFn, ismacro := getMacro(ch)
     if ismacro {
@@ -67,19 +67,19 @@ func (r *Reader) Read() interface{} { //(tok int, lit string, pos Position)
       if ret == r {
         continue
       }
-      return ret
+      return ret, false
     }
     if ch == '+' || ch == '-' {
       ch2 := r.read()
       if isDigit(ch2) {
         r.unread()
         var n int64 = r.readNumber(ch)
-        return n
+        return n, false
       }
       r.unread()
     }
     var token string = r.readToken(ch)
-    return interpretToken(token)
+    return interpretToken(token), false
   }
 }
 
