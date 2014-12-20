@@ -5,8 +5,6 @@ import (
   "reflect"
   "io/ioutil"
   "log"
-  "bytes"
-  "errors"
 )
 
 var MOLINO_NS    Namespace = FindOrCreate(intern("molino.core"))
