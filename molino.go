@@ -3,7 +3,6 @@ package main
 import (
   "./src/go/molino/lang"
   "flag"
-  "fmt"
   "io/ioutil"
   "log"
   "os"
@@ -31,13 +30,4 @@ func main() {
   os.Args = fs.Args()
 
   lang.Runtime()
-
-  reader.Init(string(body))
-  for _, statement := range lang.Parse(reader) {
-    _, err := lang.Run(statement, env)
-    if err != nil {
-      fmt.Printf("%s: ", source)
-      log.Fatal(err)
-    }
-  }
 }
