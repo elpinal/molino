@@ -1,7 +1,6 @@
 package lang
 
 import (
-  "fmt"
   "reflect"
   "io/ioutil"
   "log"
@@ -44,13 +43,5 @@ func load(scriptbase string) {
   }
   reader := new(Reader)
   reader.Init(string(body))
-  for _, statement := range Parse(reader) {
-    fmt.Printf("%#v\n", statement.(*ExpressionStatement).Expr)
-    _, err := Run(statement, env)
-    if err != nil {
-      fmt.Printf("%s: ", scriptbase)
-      log.Fatal(err)
-    }
-  }
 }
 

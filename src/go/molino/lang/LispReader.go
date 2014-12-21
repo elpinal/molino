@@ -47,7 +47,7 @@ func (r *Reader) Init(src string) {
 
 func (r *Reader) Read() (interface{}, bool) { //(tok int, lit string, pos Position)
 	for {
-		pos = r.position()
+		//pos = r.position()
 		ch := r.read()
 		for isWhitespace(ch) {
 			ch = r.read()
