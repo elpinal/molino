@@ -14,7 +14,7 @@ func (f StringReader) invoke(r *Reader,doublequote rune) interface{} {
 			panic("EOF while reading string")
 		}
 		if ch == '\\' {
-			ch := r.read()
+			ch = r.read()
 			if ch == -1 {
 				panic("EOF while reading string")
 			}
@@ -36,6 +36,16 @@ func (f StringReader) invoke(r *Reader,doublequote rune) interface{} {
 				if !( ( '0' <= ch && ch <= '9' ) || ( 'a' <= ch && ch <= 'f' ) ) {
 					panic("Invalid unicode escape \\u" + string(ch))
 				}
+			default:
+				if isDigit(ch) {
+					//ch =
+					//if {
+					//	panic("Octal escape sequence must be in range [0, 377].")
+					//}
+				} else {
+					panic("Unsupported escape character: \\" + string(ch))
+				}
+			}
 		}
 		ret = append(ret, ch)
 	}
