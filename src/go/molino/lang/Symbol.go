@@ -1,22 +1,22 @@
 package lang
 
 import (
-  "strings"
+	"strings"
 )
 
 type Symbol struct {
-  ns   string
-  name string
-//  _meta map[...]...
+	ns   string
+	name string
+	//  _meta map[...]...
 }
 
 func intern(nsname string) Symbol {
-  var i int = strings.Index(nsname, "/")
-  if i == -1 || strings.EqualFold(nsname, "/") {
-    return Symbol{name: nsname}
-  } else {
-    ns := nsname[0:i]
-    name := nsname[i+1:]
-    return Symbol{ns: ns, name: name}
-  }
+	var i int = strings.Index(nsname, "/")
+	if i == -1 || strings.EqualFold(nsname, "/") {
+		return Symbol{name: nsname}
+	} else {
+		ns := nsname[0:i]
+		name := nsname[i+1:]
+		return Symbol{ns: ns, name: name}
+	}
 }
