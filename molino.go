@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"fmt"
 )
 
 var fs = flag.NewFlagSet(os.Args[0], 1)
@@ -30,4 +31,9 @@ func main() {
 	os.Args = fs.Args()
 
 	lang.Runtime()
+	reader := new(lang.Reader)
+	reader.Init(string(body))
+	ret, eof := reader.Read()
+	fmt.Println(ret, eof)
+	_ = source
 }

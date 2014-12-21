@@ -106,8 +106,8 @@ func isTerminatingMacro(ch rune) bool {
 
 func (r *Reader) read() rune {
 	if !r.reachEOF() {
-		r.offset++
 		ch := r.src[r.offset]
+		r.offset++
 		if ch == '\n' {
 			r.lineHead = r.offset
 			r.line++
