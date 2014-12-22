@@ -280,9 +280,11 @@ func (f CommentReader) invoke(r *Reader, semicolon rune) interface{} {
 	}
 	return r
 }
+
 func (f UnmatchedDelimiterReader) invoke(r *Reader, rightdelim rune) interface{} {
 	panic("Unmatched delimiter: " + string(rightdelim))
 }
+
 func readUnicodeChar(r *Reader, initch rune, base int, length int, exact bool) rune {
 	uc64, err := strconv.ParseInt(string(initch), base, 0)
 	if err != nil {
