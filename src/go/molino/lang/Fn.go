@@ -43,10 +43,10 @@ func (f StringReader) invoke(r *Reader,doublequote rune) interface{} {
 				ch = readUnicodeChar(r, ch, 16, 4, true)
 			default:
 				if isDigit(ch) {
-					//ch =
-					//if {
-					//	panic("Octal escape sequence must be in range [0, 377].")
-					//}
+					ch = readUnicodeChar(r, ch, 8, 3, false)
+					if ch > 0377{
+						panic("Octal escape sequence must be in range [0, 377].")
+					}
 				} else {
 					panic("Unsupported escape character: \\" + string(ch))
 				}
