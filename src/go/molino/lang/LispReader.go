@@ -16,7 +16,7 @@ var macros = map[rune]Fn{
 	//'`':  SyntaxQuoteReader{},
 	//'~':  UnquoteReader{},
 	//'(': ListReader{},
-	//')': UnmatchedDelimiterReader{},
+	')': UnmatchedDelimiterReader{},
 	//'[': VectorReader{},
 	//']': UnmatchedDelimiterReader{},
 	//'{': MapReader{},
@@ -29,6 +29,8 @@ var macros = map[rune]Fn{
 type StringReader struct {
 }
 type CommentReader struct {
+}
+type UnmatchedDelimiterReader struct {
 }
 
 var symbolPat *regexp.Regexp = regexp.MustCompile("^[:]?([^/0-9].*/)?(/|[^/0-9][^/]*)$")
@@ -278,7 +280,9 @@ func (f CommentReader) invoke(r *Reader, semicolon rune) interface{} {
 	}
 	return r
 }
-
+func (f UnmatchedDelimiterReader) invoke(r *Reader, rightdelim rune) interface{} {
+	panic("Unmatched delimiter: " + string(rightdelim))
+}
 func readUnicodeChar(r *Reader, initch rune, base int, length int, exact bool) rune {
 	uc64, err := strconv.ParseInt(string(initch), base, 0)
 	if err != nil {
