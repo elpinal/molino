@@ -9,24 +9,26 @@ var QUOTE Symbol = intern("quote")
 
 var macros = map[rune]Fn{
 	'"': StringReader{},
-	//';': CommentReader(),
-	//'\'': WrappingReader(QUOTE),
-	//'@':  WrappingReader(DEREF),
-	//'^':  MetaReader(),
-	//'`':  SyntaxQuoteReader(),
-	//'~':  UnquoteReader(),
-	//'(': ListReader(),
-	//')': UnmatchedDelimiterReader(),
-	//'[': VectorReader(),
-	//']': UnmatchedDelimiterReader(),
-	//'{': MapReader(),
-	//'}': UnmatchedDelimiterReader(),
-	//'\\': CharacterReader(),
-	//'%':  ArgReader(),
-	//'#':  DispatchReader(),
+	';': CommentReader{},
+	//'\'': WrappingReader{QUOTE},
+	//'@':  WrappingReader{DEREF},
+	//'^':  MetaReader{},
+	//'`':  SyntaxQuoteReader{},
+	//'~':  UnquoteReader{},
+	//'(': ListReader{},
+	//')': UnmatchedDelimiterReader{},
+	//'[': VectorReader{},
+	//']': UnmatchedDelimiterReader{},
+	//'{': MapReader{},
+	//'}': UnmatchedDelimiterReader{},
+	//'\\': CharacterReader{},
+	//'%':  ArgReader{},
+	//'#':  DispatchReader{},
 }
 
 type StringReader struct {
+}
+type CommentReader struct {
 }
 
 var symbolPat *regexp.Regexp = regexp.MustCompile("^[:]?([^/0-9].*/)?(/|[^/0-9][^/]*)$")
@@ -223,7 +225,7 @@ func matchSymbol(s string) (interface{}, bool) {
 }
 
 
-func (f StringReader) invoke(r *Reader,doublequote rune) interface{} {
+func (f StringReader) invoke(r *Reader, doublequote rune) interface{} {
 	var ret []rune
 	for ch := r.read(); ch != '"'; ch = r.read() {
 		if ch == -1 {
@@ -267,6 +269,14 @@ func (f StringReader) invoke(r *Reader,doublequote rune) interface{} {
 		ret = append(ret, ch)
 	}
 	return string(ret)
+}
+
+func (f CommentReader) invoke(r *Reader, semicolon rune) interface{} {
+	var ch rune
+	for ch != -1 && ch != '\n' && ch != '\r' {
+		ch = r.read()
+	}
+	return r
 }
 
 func readUnicodeChar(r *Reader, initch rune, base int, length int, exact bool) rune {

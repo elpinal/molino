@@ -5,4 +5,7 @@
 "tab->\t<-tab"
 "lr!!\rcr?"
 "\u3042"
-88 45 32
+88 45 32; hello world!
+;; echo hello!
+; this is comment
+0xFF; io ; 
