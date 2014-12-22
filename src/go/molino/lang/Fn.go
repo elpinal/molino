@@ -1,5 +1,9 @@
 package lang
 
+import (
+	"strconv"
+)
+
 type Fn interface {
 	invoke(*Reader, rune) interface{}
 }
@@ -36,6 +40,7 @@ func (f StringReader) invoke(r *Reader,doublequote rune) interface{} {
 				if !( ( '0' <= ch && ch <= '9' ) || ( 'a' <= ch && ch <= 'f' ) ) {
 					panic("Invalid unicode escape \\u" + string(ch))
 				}
+				ch = readUnicodeChar(r, ch, 16, 4, true)
 			default:
 				if isDigit(ch) {
 					//ch =
@@ -50,4 +55,29 @@ func (f StringReader) invoke(r *Reader,doublequote rune) interface{} {
 		ret = append(ret, ch)
 	}
 	return string(ret)
+}
+
+func readUnicodeChar(r *Reader, initch rune, base int, length int, exact bool) rune {
+	uc64, err := strconv.ParseInt(string(initch), base, 0)
+	if err != nil {
+		panic("Invalid digit: " + string(initch))
+	}
+	uc := int(uc64)
+	i := 1
+	for ; i < length; i++ {
+		ch := r.read()
+		if ch == -1 || isWhitespace(ch) || isMacro(ch) {
+			r.unread()
+			break
+		}
+		d64, err := strconv.ParseInt(string(ch), base, 32)
+		if err != nil {
+			panic("Invalid digit: " + string(ch))
+		}
+		uc = uc * base + int(d64)
+	}
+	if i != length && exact {
+		panic("Invalid character length: " + strconv.Itoa(i) + ", should be: " + strconv.Itoa(length))
+	}
+	return rune(uc)
 }
