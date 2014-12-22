@@ -117,6 +117,7 @@ func (r *Reader) read() rune {
 		}
 		return ch
 	}
+	r.offset++
 	return -1
 }
 
@@ -146,11 +147,10 @@ func (r *Reader) readToken(initch rune) string {
 
 func (r *Reader) readNumber(initch rune) int64 {
 	var ret []rune = []rune{initch}
-loop:
 	for {
 		if ch := r.read(); ch == -1 || isWhitespace(ch) || isMacro(ch) {
 			r.unread()
-			break loop
+			break
 		} else {
 			ret = append(ret, ch)
 		}
