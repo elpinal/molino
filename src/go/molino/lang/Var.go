@@ -18,22 +18,17 @@ type Unbound struct {
 
 func (this Var) intern(ns Namespace, sym Symbol, root interface{}, replaceRoot bool) Var {
 	var dvout Var = ns.intern(sym)
-	/*
-	  if replaceRoot {
-	    dvout.bindroot(root)
-	  }
-	*/
-	dvout.root = root
+	if replaceRoot {
+		dvout.bindroot(root)
+	}
 	ns.updatemapping(sym, dvout)
 	return dvout
 }
 
-/*
-func (this Var) bindroot(root interface{}) {
+func (this *Var) bindroot(root interface{}) {
 //  oldroot := this.root
   this.root = root
 }
-*/
 
 func (v Var) invoke(arg1 interface{}) interface{} {
 	fn := reflect.ValueOf(v.root)
