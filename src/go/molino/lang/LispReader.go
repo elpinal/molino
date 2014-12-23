@@ -15,7 +15,7 @@ var macros = map[rune]Fn{
 	//'^':  MetaReader{},
 	//'`':  SyntaxQuoteReader{},
 	//'~':  UnquoteReader{},
-	//'(': ListReader{},
+	'(': ListReader{},
 	')': UnmatchedDelimiterReader{},
 	//'[': VectorReader{},
 	//']': UnmatchedDelimiterReader{},
@@ -31,6 +31,8 @@ type StringReader struct {
 type CommentReader struct {
 }
 type UnmatchedDelimiterReader struct {
+}
+type ListReader struct {
 }
 
 var symbolPat *regexp.Regexp = regexp.MustCompile("^[:]?([^/0-9].*/)?(/|[^/0-9][^/]*)$")
@@ -279,6 +281,10 @@ func (f CommentReader) invoke(r *Reader, semicolon rune) interface{} {
 		ch = r.read()
 	}
 	return r
+}
+
+func (f ListReader) invoke(r *Reader, leftparam rune) interface{} {
+	return nil
 }
 
 func (f UnmatchedDelimiterReader) invoke(r *Reader, rightdelim rune) interface{} {
