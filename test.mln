@@ -9,3 +9,5 @@
 ;; echo hello!
 ; this is comment
 0xFF; io ; 
+(1 2 3)
+("a" 2 "p")

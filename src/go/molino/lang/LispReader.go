@@ -7,7 +7,7 @@ import (
 
 var QUOTE Symbol = intern("quote")
 
-var macros = map[rune]ReaderFn{
+var macros = map[rune]ReaderFn {
 	'"': StringReader{},
 	';': CommentReader{},
 	//'\'': WrappingReader{QUOTE},
@@ -284,7 +284,8 @@ func (f CommentReader) invoke(r *Reader, semicolon rune) interface{} {
 }
 
 func (f ListReader) invoke(r *Reader, leftparam rune) interface{} {
-	return nil
+	var list []interface{} = readDelimitedList(')', r)
+	return list
 }
 
 func (f UnmatchedDelimiterReader) invoke(r *Reader, rightdelim rune) interface{} {
@@ -314,4 +315,32 @@ func readUnicodeChar(r *Reader, initch rune, base int, length int, exact bool) r
 		panic("Invalid character length: " + strconv.Itoa(i) + ", should be: " + strconv.Itoa(length))
 	}
 	return rune(uc)
+}
+
+func readDelimitedList(delim rune, r *Reader) []interface{} {
+	var a []interface{}
+	for {
+		ch := r.read()
+		for isWhitespace(ch) {
+			ch = r.read()
+		}
+		if ch == -1 {
+			panic("EOF while reading")
+		}
+		if ch == delim {
+			break
+		}
+		macroFn, ismacro := getMacro(ch)
+		if ismacro {
+			mret := macroFn.invoke(r, ch)
+			if mret != r {
+				a = append(a, mret)
+			}
+		} else {
+			r.unread()
+			o, _ := r.Read()
+			a = append(a, o)
+		}
+	}
+	return a
 }
