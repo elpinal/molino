@@ -34,7 +34,7 @@ func (this Namespace) intern(sym Symbol) Var {
 		return a
 	}
 	var v Var = Var{ns: this, sym: sym}
-	unbound := &Unbound{&v}
+	unbound := Unbound{v}
 	v.root = unbound
 	this.mappings[sym] = v
 	return v

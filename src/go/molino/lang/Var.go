@@ -13,7 +13,7 @@ type Var struct {
 }
 
 type Unbound struct {
-	*Var
+	Var
 }
 
 func (this Var) intern(ns Namespace, sym Symbol, root interface{}, replaceRoot bool) Var {
