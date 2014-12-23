@@ -7,7 +7,7 @@ import (
 
 var QUOTE Symbol = intern("quote")
 
-var macros = map[rune]Fn{
+var macros = map[rune]ReaderFn{
 	'"': StringReader{},
 	';': CommentReader{},
 	//'\'': WrappingReader{QUOTE},
@@ -99,7 +99,7 @@ func isWhitespace(ch rune) bool {
 	return ch == ' ' || ch == '\t' || ch == '\n' || ch == ','
 }
 
-func getMacro(ch rune) (Fn, bool) {
+func getMacro(ch rune) (ReaderFn, bool) {
 	m, n := macros[ch]
 	return m, n
 }
