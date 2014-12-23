@@ -1,10 +1,5 @@
 package lang
 
-import (
-	_ "fmt"
-	_ "reflect"
-)
-
 type Namespace struct {
 	name     Symbol
 	mappings map[Symbol]Var
