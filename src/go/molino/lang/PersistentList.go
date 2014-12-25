@@ -82,7 +82,7 @@ func (e EmptyList) more() ISeq {
 	return e
 }
 func (e EmptyList) cons(o interface{}) PersistentList {
-	return PersistentList{}
+	return PersistentList{_first: o, _rest: nil, _count: 1}
 }
 
 func (e EmptyList) empty() IPersistentCollection {
