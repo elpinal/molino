@@ -14,3 +14,9 @@ func TestVarIntern(t *testing.T) {
 		t.Errorf("Expect: %s, but %s", ret.root, 4)
 	}
 }
+
+func TestEmptyList(t *testing.T) {
+	var e EmptyList
+	var _ ISeq = e
+	var _ IPersistentList = e
+}
