@@ -285,6 +285,9 @@ func (f CommentReader) invoke(r *Reader, semicolon rune) interface{} {
 
 func (f ListReader) invoke(r *Reader, leftparam rune) interface{} {
 	var list []interface{} = readDelimitedList(')', r)
+	if list == nil {
+		//return
+	}
 	return list
 }
 
