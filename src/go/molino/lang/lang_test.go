@@ -20,3 +20,8 @@ func TestEmptyList(t *testing.T) {
 	var _ ISeq = e
 	var _ IPersistentList = e
 }
+
+func TestPersistentList(t *testing.T) {
+	var l PersistentList
+	var _ IPersistentList = l
+}

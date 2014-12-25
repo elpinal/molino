@@ -2,13 +2,28 @@ package lang
 
 type PersistentList struct {
 	_first interface{}
-	_rest []interface{}
+	_rest IPersistentList
 	_count int
 }
 
 type EmptyList struct {
 	Obj
 }
+
+
+func (l PersistentList) first() interface{} {
+	return l._first
+}
+
+func (l PersistentList) count() int {
+	return l._count
+}
+
+func (l PersistentList) empty() IPersistentCollection {
+	return EmptyList{}
+}
+
+
 
 func (e EmptyList) equals(o interface{}) bool {
 	return o == nil
