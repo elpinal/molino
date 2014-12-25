@@ -11,6 +11,19 @@ type EmptyList struct {
 	Obj
 }
 
+func (l PersistentList) create(init []interface{}) IPersistentList {
+	var ret IPersistentList = EmptyList{}
+	for i := len(init) - 1; i >= 0; i-- {
+		switch ret.(type) {
+		case EmptyList:
+			ret = ret.(EmptyList).cons(init[i])
+		case PersistentList:
+			ret = ret.(PersistentList).cons(init[i])
+		}
+	}
+	return ret
+}
+
 func (l PersistentList) equiv(obj interface{}) bool {
 	//
 	switch obj.(type) {
@@ -48,6 +61,10 @@ func (l PersistentList) more() ISeq {
 
 func (l PersistentList) count() int {
 	return l._count
+}
+
+func (l PersistentList) cons(o interface{}) PersistentList {
+	return PersistentList{_first: o, _rest: l, _count: l._count + 1}
 }
 
 func (l PersistentList) empty() IPersistentCollection {

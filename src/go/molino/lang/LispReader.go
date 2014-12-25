@@ -288,7 +288,7 @@ func (f ListReader) invoke(r *Reader, leftparam rune) interface{} {
 	if list == nil {
 		return EmptyList{}
 	}
-	return list
+	return PersistentList.create(PersistentList{}, list)
 }
 
 func (f UnmatchedDelimiterReader) invoke(r *Reader, rightdelim rune) interface{} {
