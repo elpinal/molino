@@ -1,6 +1,7 @@
 package lang
 
 type PersistentList struct {
+	ASeq
 	_first interface{}
 	_rest IPersistentList
 	_count int
@@ -10,9 +11,39 @@ type EmptyList struct {
 	Obj
 }
 
+func (l PersistentList) equiv(obj interface{}) bool {
+	//
+	switch obj.(type) {
+	case Sequential:
+	default:
+		return false
+	}
+	var ms ISeq = seq(obj)
+	for s := l.seq(); &s != (*ISeq)(nil); s, ms = s.next(), ms.next() {
+		if ms == nil {
+			return false
+		}
+	}
+	return ms == nil
+}
 
 func (l PersistentList) first() interface{} {
 	return l._first
+}
+
+func (l PersistentList) next() ISeq {
+	if l._count == 1 {
+		return nil
+	}
+	return l._rest.(PersistentList)
+}
+
+func (l PersistentList) more() ISeq {
+	var s = l.next()
+	if s == nil {
+		return EmptyList{}
+	}
+	return s
 }
 
 func (l PersistentList) count() int {
@@ -21,6 +52,14 @@ func (l PersistentList) count() int {
 
 func (l PersistentList) empty() IPersistentCollection {
 	return EmptyList{}
+}
+
+func (l PersistentList) peek() interface{} {
+	return l._first
+}
+
+func (l PersistentList) pop() IPersistentStack { //IPersistentList
+	return l._rest
 }
 
 

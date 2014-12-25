@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"log"
 	"reflect"
+	"fmt"
 )
 
 var MOLINO_NS Namespace = FindOrCreate(intern("molino.core"))
@@ -42,4 +43,19 @@ func load(scriptbase string) {
 	}
 	reader := new(Reader)
 	reader.Init(string(body))
+}
+
+
+////////////// Collections support /////////////////////////////////
+
+func seq(coll interface{}) ISeq {
+	if s, ok := coll.(ISeq); ok {
+		return s
+	}
+	return seqFrom(coll)
+}
+
+func seqFrom(coll interface{}) ISeq {
+	//
+	panic("Don't know how to create ISeq from: " + fmt.Sprint(coll))
 }
