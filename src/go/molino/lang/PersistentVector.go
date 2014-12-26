@@ -81,9 +81,10 @@ func (t TransientVector) pushTail(level uint, parent PersistentVector_Node, tail
 		nodeToInsert = tailnode
 	} else {
 		if child, ok := parent.array[subidx].(PersistentVector_Node); ok {
-			nodeToInsert = //t.pushTail()
+			nodeToInsert = newPath(level - 5, tailnode)
 		} else {
-			panic("Unknown Error")
+			//panic("Unknown Error")
+			nodeToInsert = t.pushTail(level - 5, child, tailnode)
 		}
 	}
 	ret.array[subidx] = nodeToInsert
