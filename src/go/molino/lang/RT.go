@@ -59,3 +59,18 @@ func seqFrom(coll interface{}) ISeq {
 	//
 	panic("Don't know how to create ISeq from: " + fmt.Sprint(coll))
 }
+
+
+
+func print(x interface{}) string {
+	switch x.(type) {
+	case nil:
+		return "nil"
+	case string:
+		return x.(string)
+	case ISeq:
+		return "ISeq"
+	default:
+		return "Unknown"
+	}
+}

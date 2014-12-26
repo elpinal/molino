@@ -11,6 +11,31 @@ type EmptyList struct {
 	Obj
 }
 
+/*
+func (l PersistentList) String() string {
+	return print(l)
+}
+*/
+
+/*
+func (l PersistentList) listprint() string {
+	var ret []rune
+	ret = append(ret, '(')
+	ret = append(ret, ')')
+	return string(ret)
+}
+
+func (l PersistentList) printInnerSeq() []rune {
+	var ret []rune
+	ret = append(ret, '(')
+	for s := l; s != nil; s = s.next() {
+		ret =
+	}
+	ret = append(ret, ')')
+	return string(ret)
+}
+*/
+
 func (l PersistentList) create(init []interface{}) IPersistentList {
 	var ret IPersistentList = EmptyList{}
 	for i := len(init) - 1; i >= 0; i-- {
