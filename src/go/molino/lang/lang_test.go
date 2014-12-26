@@ -25,9 +25,11 @@ func TestPersistentList(t *testing.T) {
 	var l PersistentList
 	//var _ IPersistentList = l
 	var _ ISeq = l
-	x := l.equiv(l)
+	//x := l.equiv(l)
+	/*
 	if true {
 		t.Errorf("%#v", x)
 	}
+*/
 
 }
