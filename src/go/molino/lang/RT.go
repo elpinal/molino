@@ -56,6 +56,12 @@ func seq(coll interface{}) ISeq {
 }
 
 func seqFrom(coll interface{}) ISeq {
+	if c, ok := coll.([]interface{}); ok {
+		if len(c) == 0 {
+			return nil
+		}
+		return nil //c
+	}
 	//
 	panic("Don't know how to create ISeq from: " + fmt.Sprintf("%T\n", coll))
 }
