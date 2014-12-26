@@ -33,7 +33,10 @@ func main() {
 	lang.Runtime()
 	reader := new(lang.Reader)
 	reader.Init(string(body))
-	for ret, eof := reader.Read(); !eof; ret, eof = reader.Read() {
+	for ret, eof, err := reader.Read(); !eof; ret, eof, err = reader.Read() {
+		if err != nil {
+			log.Fatal(err)
+		}
 		fmt.Println(ret)
 	}
 	_ = source

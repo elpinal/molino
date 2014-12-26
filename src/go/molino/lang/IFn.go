@@ -5,6 +5,6 @@ type IFn interface {
 }
 
 type ReaderFn interface {
-	invoke(*Reader, rune) interface{}
+	invoke(*Reader, rune) (interface{}, error)
 }
 

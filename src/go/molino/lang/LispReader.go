@@ -3,6 +3,7 @@ package lang
 import (
 	"regexp"
 	"strconv"
+	"errors"
 )
 
 var QUOTE Symbol = intern("quote")
@@ -54,7 +55,7 @@ func (r *Reader) Init(src string) {
 	r.src = []rune(src)
 }
 
-func (r *Reader) Read() (interface{}, bool) { //(tok int, lit string, pos Position)
+func (r *Reader) Read() (interface{}, bool, error) { //(tok int, lit string, pos Position)
 	for {
 		//pos = r.position()
 		ch := r.read()
@@ -62,32 +63,35 @@ func (r *Reader) Read() (interface{}, bool) { //(tok int, lit string, pos Positi
 			ch = r.read()
 		}
 		if ch == -1 {
-			return ch, true
+			return ch, true, nil
 		}
 		if isDigit(ch) {
 			var n int64 = r.readNumber(ch)
-			return n, false
+			return n, false, nil
 		}
 		macroFn, ismacro := getMacro(ch)
 		if ismacro {
-			ret := macroFn.invoke(r, ch)
+			ret, err := macroFn.invoke(r, ch)
+			if err != nil {
+				return nil, false, err
+			}
 			//
 			if ret == r {
 				continue
 			}
-			return ret, false
+			return ret, false, nil
 		}
 		if ch == '+' || ch == '-' {
 			ch2 := r.read()
 			if isDigit(ch2) {
 				r.unread()
 				var n int64 = r.readNumber(ch)
-				return n, false
+				return n, false, nil
 			}
 			r.unread()
 		}
 		var token string = r.readToken(ch)
-		return interpretToken(token), false
+		return interpretToken(token), false, nil
 	}
 }
 
@@ -229,16 +233,16 @@ func matchSymbol(s string) (interface{}, bool) {
 }
 
 
-func (f StringReader) invoke(r *Reader, doublequote rune) interface{} {
+func (f StringReader) invoke(r *Reader, doublequote rune) (interface{}, error) {
 	var ret []rune
 	for ch := r.read(); ch != '"'; ch = r.read() {
 		if ch == -1 {
-			panic("EOF while reading string")
+			return nil, errors.New("EOF while reading string")
 		}
 		if ch == '\\' {
 			ch = r.read()
 			if ch == -1 {
-				panic("EOF while reading string")
+				return nil, errors.New("EOF while reading string")
 			}
 			switch ch {
 			case 't':
@@ -256,43 +260,46 @@ func (f StringReader) invoke(r *Reader, doublequote rune) interface{} {
 			case 'u':
 				ch = r.read()
 				if !( ( '0' <= ch && ch <= '9' ) || ( 'a' <= ch && ch <= 'f' ) ) {
-					panic("Invalid unicode escape \\u" + string(ch))
+					return nil, errors.New("Invalid unicode escape \\u" + string(ch))
 				}
 				ch = readUnicodeChar(r, ch, 16, 4, true)
 			default:
 				if isDigit(ch) {
 					ch = readUnicodeChar(r, ch, 8, 3, false)
 					if ch > 0377{
-						panic("Octal escape sequence must be in range [0, 377].")
+						return nil, errors.New("Octal escape sequence must be in range [0, 377].")
 					}
 				} else {
-					panic("Unsupported escape character: \\" + string(ch))
+					return nil, errors.New("Unsupported escape character: \\" + string(ch))
 				}
 			}
 		}
 		ret = append(ret, ch)
 	}
-	return string(ret)
+	return string(ret), nil
 }
 
-func (f CommentReader) invoke(r *Reader, semicolon rune) interface{} {
+func (f CommentReader) invoke(r *Reader, semicolon rune) (interface{}, error) {
 	var ch rune
 	for ch != -1 && ch != '\n' && ch != '\r' {
 		ch = r.read()
 	}
-	return r
+	return r, nil
 }
 
-func (f ListReader) invoke(r *Reader, leftparam rune) interface{} {
-	var list []interface{} = readDelimitedList(')', r)
-	if list == nil {
-		return EmptyList{}
+func (f ListReader) invoke(r *Reader, leftparam rune) (interface{}, error) {
+	list, err := readDelimitedList(')', r)
+	if err != nil {
+		return list, err
 	}
-	return PersistentList.create(PersistentList{}, list)
+	if list == nil {
+		return EmptyList{}, nil
+	}
+	return PersistentList.create(PersistentList{}, list), nil
 }
 
-func (f UnmatchedDelimiterReader) invoke(r *Reader, rightdelim rune) interface{} {
-	panic("Unmatched delimiter: " + string(rightdelim))
+func (f UnmatchedDelimiterReader) invoke(r *Reader, rightdelim rune) (interface{}, error) {
+	return nil, errors.New("Unmatched delimiter: " + string(rightdelim))
 }
 
 func readUnicodeChar(r *Reader, initch rune, base int, length int, exact bool) rune {
@@ -320,7 +327,7 @@ func readUnicodeChar(r *Reader, initch rune, base int, length int, exact bool) r
 	return rune(uc)
 }
 
-func readDelimitedList(delim rune, r *Reader) []interface{} {
+func readDelimitedList(delim rune, r *Reader) ([]interface{}, error) {
 	var a []interface{}
 	for {
 		ch := r.read()
@@ -335,15 +342,21 @@ func readDelimitedList(delim rune, r *Reader) []interface{} {
 		}
 		macroFn, ismacro := getMacro(ch)
 		if ismacro {
-			mret := macroFn.invoke(r, ch)
+			mret, err := macroFn.invoke(r, ch)
+			if err != nil {
+				return a, err
+			}
 			if mret != r {
 				a = append(a, mret)
 			}
 		} else {
 			r.unread()
-			o, _ := r.Read()
+			o, _, err := r.Read()
+			if err != nil {
+				return a, err
+			}
 			a = append(a, o)
 		}
 	}
-	return a
+	return a, nil
 }
