@@ -33,3 +33,9 @@ func TestPersistentList(t *testing.T) {
 */
 
 }
+
+func TestASeq(t *testing.T) {
+	var a ASeq
+	var _ Obj = a.Obj
+	var _ ISeq = a
+}
