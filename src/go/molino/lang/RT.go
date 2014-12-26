@@ -57,7 +57,7 @@ func seq(coll interface{}) ISeq {
 
 func seqFrom(coll interface{}) ISeq {
 	//
-	panic("Don't know how to create ISeq from: " + fmt.Sprint(coll))
+	panic("Don't know how to create ISeq from: " + fmt.Sprintf("%T\n", coll))
 }
 
 
