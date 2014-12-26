@@ -193,6 +193,12 @@ func matchNumber(s string) (int64, error) {
 			radix = 16
 		} else if n = m[5]; n != "" {
 			radix = 8
+		} else if n = m[7]; n != "" {
+			var err error
+			radix, err = strconv.Atoi(m[6])
+			if err != nil {
+				return -1, err
+			}
 		}
 		if n == "" {
 			return -1, errors.New("Invalid number: " + s)
