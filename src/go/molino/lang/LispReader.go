@@ -276,10 +276,18 @@ func (f StringReader) invoke(r *Reader, doublequote rune) (interface{}, error) {
 				if !( ( '0' <= ch && ch <= '9' ) || ( 'a' <= ch && ch <= 'f' ) ) {
 					return nil, errors.New("Invalid unicode escape \\u" + string(ch))
 				}
-				ch = readUnicodeChar(r, ch, 16, 4, true)
+				var err error
+				ch, err = readUnicodeChar(r, ch, 16, 4, true)
+				if err != nil {
+					return nil, err
+				}
 			default:
 				if isDigit(ch) {
-					ch = readUnicodeChar(r, ch, 8, 3, false)
+					var err error
+					ch, err = readUnicodeChar(r, ch, 8, 3, false)
+					if err != nil {
+						return nil, err
+					}
 					if ch > 0377{
 						return nil, errors.New("Octal escape sequence must be in range [0, 377].")
 					}
@@ -316,10 +324,10 @@ func (f UnmatchedDelimiterReader) invoke(r *Reader, rightdelim rune) (interface{
 	return nil, errors.New("Unmatched delimiter: " + string(rightdelim))
 }
 
-func readUnicodeChar(r *Reader, initch rune, base int, length int, exact bool) rune {
+func readUnicodeChar(r *Reader, initch rune, base int, length int, exact bool) (rune, error) {
 	uc64, err := strconv.ParseInt(string(initch), base, 0)
 	if err != nil {
-		panic("Invalid digit: " + string(initch))
+		return -1, errors.New("Invalid digit: " + string(initch))
 	}
 	uc := int(uc64)
 	i := 1
@@ -331,14 +339,14 @@ func readUnicodeChar(r *Reader, initch rune, base int, length int, exact bool) r
 		}
 		d64, err := strconv.ParseInt(string(ch), base, 32)
 		if err != nil {
-			panic("Invalid digit: " + string(ch))
+			return -1, errors.New("Invalid digit: " + string(ch))
 		}
 		uc = uc * base + int(d64)
 	}
 	if i != length && exact {
-		panic("Invalid character length: " + strconv.Itoa(i) + ", should be: " + strconv.Itoa(length))
+		return -1, errors.New("Invalid character length: " + strconv.Itoa(i) + ", should be: " + strconv.Itoa(length))
 	}
-	return rune(uc)
+	return rune(uc), nil
 }
 
 func readDelimitedList(delim rune, r *Reader) ([]interface{}, error) {
