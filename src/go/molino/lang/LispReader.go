@@ -18,7 +18,7 @@ var macros = map[rune]ReaderFn {
 	//'~':  UnquoteReader{},
 	'(': ListReader{},
 	')': UnmatchedDelimiterReader{},
-	//'[': VectorReader{},
+	'[': VectorReader{},
 	']': UnmatchedDelimiterReader{},
 	//'{': MapReader{},
 	//'}': UnmatchedDelimiterReader{},
@@ -34,6 +34,8 @@ type CommentReader struct {
 type UnmatchedDelimiterReader struct {
 }
 type ListReader struct {
+}
+type VectorReader struct {
 }
 
 var symbolPat *regexp.Regexp = regexp.MustCompile("^[:]?([^/0-9].*/)?(/|[^/0-9][^/]*)$")
@@ -318,6 +320,14 @@ func (f ListReader) invoke(r *Reader, leftparam rune) (interface{}, error) {
 		return EmptyList{}, nil
 	}
 	return PersistentList.create(PersistentList{}, list), nil
+}
+
+func (f VectorReader) invoke(r *Reader, leftparam rune) (interface{}, error) {
+	list, err := readDelimitedList(']', r)
+	if err != nil {
+		return list, err
+	}
+	return LazilyPersistentVector.create(LazilyPersistentVector{}, list), nil
 }
 
 func (f UnmatchedDelimiterReader) invoke(r *Reader, rightdelim rune) (interface{}, error) {
