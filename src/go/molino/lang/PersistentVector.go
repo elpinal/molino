@@ -25,7 +25,9 @@ var PersistentVector_EMPTY = PersistentVector{cnt: 0, shift: 5, root: Persistent
 
 func (v PersistentVector) create(items ISeq) PersistentVector {
 	var ret = PersistentVector_EMPTY.asTransient()
-	_ = ret
+	for ; items != nil; items = items.next() {
+		ret = ret.conj(items.first())
+	}
 	return PersistentVector{}
 }
 
