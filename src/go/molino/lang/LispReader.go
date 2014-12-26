@@ -66,7 +66,10 @@ func (r *Reader) Read() (interface{}, bool, error) { //(tok int, lit string, pos
 			return ch, true, nil
 		}
 		if isDigit(ch) {
-			var n int64 = r.readNumber(ch)
+			n, err := r.readNumber(ch)
+			if err != nil {
+				return n, false, err
+			}
 			return n, false, nil
 		}
 		macroFn, ismacro := getMacro(ch)
@@ -85,7 +88,10 @@ func (r *Reader) Read() (interface{}, bool, error) { //(tok int, lit string, pos
 			ch2 := r.read()
 			if isDigit(ch2) {
 				r.unread()
-				var n int64 = r.readNumber(ch)
+				n, err := r.readNumber(ch)
+				if err != nil {
+					return n, false, err
+				}
 				return n, false, nil
 			}
 			r.unread()
@@ -155,7 +161,7 @@ func (r *Reader) readToken(initch rune) string {
 	}
 }
 
-func (r *Reader) readNumber(initch rune) int64 {
+func (r *Reader) readNumber(initch rune) (int64, error) {
 	var ret []rune = []rune{initch}
 	for {
 		if ch := r.read(); ch == -1 || isWhitespace(ch) || isMacro(ch) {
@@ -165,18 +171,18 @@ func (r *Reader) readNumber(initch rune) int64 {
 			ret = append(ret, ch)
 		}
 	}
-	n, notmatch := matchNumber(string(ret))
-	if !notmatch {
-		panic("Invalid number: " + string(ret))
+	n, err := matchNumber(string(ret))
+	if err != nil {
+		return 0, err
 	}
-	return n //strconv.FormatInt(n, 10)
+	return n, nil
 }
 
-func matchNumber(s string) (int64, bool) {
+func matchNumber(s string) (int64, error) {
 	m := intPat.FindStringSubmatch(s)
 	if m != nil {
 		if m[2] != "" {
-			return 0, true
+			return 0, nil
 		}
 		var negate bool = m[1] == "-"
 		radix := 10
@@ -185,20 +191,22 @@ func matchNumber(s string) (int64, bool) {
 			radix = 10
 		} else if n = m[4]; n != "" {
 			radix = 16
+		} else if n = m[5]; n != "" {
+			radix = 8
 		}
 		if n == "" {
-			return -1, false
+			return -1, errors.New("Invalid number: " + s)
 		}
 		ret, err := strconv.ParseInt(n, radix, 64)
 		if err != nil {
-			panic("error!")
+			return -1, err
 		}
 		if negate {
 			ret = -ret
 		}
-		return ret, true
+		return ret, nil
 	}
-	return -1, false
+	return -1, errors.New("Invalid number: " + s)
 }
 
 func interpretToken(s string) interface{} {
@@ -335,7 +343,7 @@ func readDelimitedList(delim rune, r *Reader) ([]interface{}, error) {
 			ch = r.read()
 		}
 		if ch == -1 {
-			panic("EOF while reading")
+			return nil, errors.New("EOF while reading")
 		}
 		if ch == delim {
 			break

@@ -35,6 +35,7 @@ func main() {
 	reader.Init(string(body))
 	for ret, eof, err := reader.Read(); !eof; ret, eof, err = reader.Read() {
 		if err != nil {
+			// log.SetFlags(log.Lshortfile)
 			log.Fatal(err)
 		}
 		fmt.Println(ret)
