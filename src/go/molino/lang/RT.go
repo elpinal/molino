@@ -60,7 +60,8 @@ func seqFrom(coll interface{}) ISeq {
 		if len(c) == 0 {
 			return nil
 		}
-		return nil //c
+		ret, _ := IteratorSeq.create(IteratorSeq{}, &Iterator{0, c})
+		return ret
 	}
 	//
 	panic("Don't know how to create ISeq from: " + fmt.Sprintf("%T\n", coll))
