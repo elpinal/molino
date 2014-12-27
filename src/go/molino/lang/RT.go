@@ -67,7 +67,21 @@ func seqFrom(coll interface{}) ISeq {
 	panic("Don't know how to create ISeq from: " + fmt.Sprintf("%T\n", coll))
 }
 
+func first(x interface{}) interface{} {
+	var seq ISeq = seq(x)
+	if seq == nil {
+		return nil
+	}
+	return seq.first()
+}
 
+func next(x interface{}) ISeq {
+	var seq ISeq = seq(x)
+	if seq == nil {
+		return nil
+	}
+	return seq.next()
+}
 
 func print(x interface{}) string {
 	switch x.(type) {

@@ -1,0 +1,23 @@
+package lang
+
+type SeqIterator struct {
+	seq   interface{}
+	nexts interface{}
+}
+
+var START interface{}
+
+func (s SeqIterator) hasNext() bool {
+	if s.seq == s {
+		s.seq = START
+		s.nexts = seq(s.nexts)
+	} else if s.seq == s.nexts {
+		s.nexts = next(s.seq)
+	}
+	return s.nexts != nil
+}
+
+func (s SeqIterator) next() interface{} {
+	s.seq = s.nexts
+	return first(s.nexts)
+}

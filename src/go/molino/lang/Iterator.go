@@ -1,5 +1,6 @@
 package lang
 
+/*
 type Iterator struct {
 	n int
 	slice []interface{}
@@ -12,4 +13,10 @@ func (i *Iterator) next() interface{} {
 	}
 	i.n++
 	return i.slice[nn]
+}
+*/
+
+type Iterator interface {
+	hasNext() bool
+	next()    interface{}
 }
