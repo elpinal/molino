@@ -21,7 +21,7 @@ var macros = map[rune]ReaderFn {
 	'[': VectorReader{},
 	']': UnmatchedDelimiterReader{},
 	//'{': MapReader{},
-	//'}': UnmatchedDelimiterReader{},
+	'}': UnmatchedDelimiterReader{},
 	//'\\': CharacterReader{},
 	//'%':  ArgReader{},
 	//'#':  DispatchReader{},
