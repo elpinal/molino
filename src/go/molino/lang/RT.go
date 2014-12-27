@@ -60,6 +60,8 @@ func seqFrom(coll interface{}) ISeq {
 	case Iterable:
 		ret, _ := IteratorSeq.create(IteratorSeq{}, coll.(Iterable).iterator())
 		return ret
+	case []interface{}:
+		return createFromObject(coll.([]interface{}))
 	}
 	//
 	panic("Don't know how to create ISeq from: " + fmt.Sprintf("%T\n", coll))
