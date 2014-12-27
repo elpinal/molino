@@ -7,7 +7,7 @@ type SeqIterator struct {
 
 var START interface{}
 
-func (s SeqIterator) hasNext() bool {
+func (s *SeqIterator) hasNext() bool {
 	if s.seq == s {
 		s.seq = START
 		s.nexts = seq(s.nexts)
@@ -17,7 +17,7 @@ func (s SeqIterator) hasNext() bool {
 	return s.nexts != nil
 }
 
-func (s SeqIterator) next() interface{} {
+func (s *SeqIterator) next() interface{} {
 	if !s.hasNext() {
 		panic("Index out of range")
 	}

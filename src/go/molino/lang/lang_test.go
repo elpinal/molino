@@ -39,3 +39,16 @@ func TestASeq(t *testing.T) {
 	var _ Obj = a.Obj
 	var _ ISeq = a
 }
+
+func TestList(t *testing.T) {
+	var i []interface{}
+	var _ List = i
+
+	var x interface{} = []interface{}{}
+	var _ List = x.([]interface{})
+
+	var l List
+	var _ interface{} = l
+	var _ Iterable = l
+	var _ Iterator = l.iterator()
+}

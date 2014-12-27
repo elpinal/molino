@@ -2,7 +2,7 @@ package lang
 
 type IteratorSeq struct {
 	ASeq
-	iter *Iterator
+	iter Iterator
 	state State
 }
 
@@ -11,8 +11,8 @@ type State struct {
 	_rest interface{}
 }
 
-func (s IteratorSeq) create(iter *Iterator) (IteratorSeq, bool) {
-	if len(iter.slice) <= iter.n {
+func (s IteratorSeq) create(iter Iterator) (IteratorSeq, bool) {
+	if iter.hasNext() {
 		return IteratorSeq{}, false
 	}
 	state := State{}
