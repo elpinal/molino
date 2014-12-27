@@ -18,6 +18,9 @@ func (s SeqIterator) hasNext() bool {
 }
 
 func (s SeqIterator) next() interface{} {
+	if !s.hasNext() {
+		panic("Index out of range")
+	}
 	s.seq = s.nexts
 	return first(s.nexts)
 }
