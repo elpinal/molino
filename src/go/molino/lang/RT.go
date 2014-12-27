@@ -85,7 +85,9 @@ func next(x interface{}) ISeq {
 
 
 func RT_map(init []interface{}) IPersistentMap {
-	//
+	if init == nil {
+		return PersistentArrayMap{}
+	}
 }
 
 func print(x interface{}) string {
