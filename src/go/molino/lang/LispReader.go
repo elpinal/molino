@@ -334,7 +334,7 @@ func (f MapReader) invoke(r *Reader, leftparam rune) (interface{}, error) {
 		return a, errors.New("Map literal must contain an even number of forms")
 	}
 	//
-	return a, nil
+	return RT_map(a), nil
 }
 
 func (f UnmatchedDelimiterReader) invoke(r *Reader, rightdelim rune) (interface{}, error) {

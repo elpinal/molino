@@ -83,6 +83,11 @@ func next(x interface{}) ISeq {
 	return seq.next()
 }
 
+
+func RT_map(init []interface{}) IPersistentMap {
+	//
+}
+
 func print(x interface{}) string {
 	switch x.(type) {
 	case nil:
