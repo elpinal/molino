@@ -1,14 +1,14 @@
 package lang
 
 import (
+	"errors"
 	"regexp"
 	"strconv"
-	"errors"
 )
 
 var QUOTE Symbol = intern("quote")
 
-var macros = map[rune]ReaderFn {
+var macros = map[rune]ReaderFn{
 	'"': StringReader{},
 	';': CommentReader{},
 	//'\'': WrappingReader{QUOTE},
@@ -27,18 +27,12 @@ var macros = map[rune]ReaderFn {
 	//'#':  DispatchReader{},
 }
 
-type StringReader struct {
-}
-type CommentReader struct {
-}
-type UnmatchedDelimiterReader struct {
-}
-type ListReader struct {
-}
-type VectorReader struct {
-}
-type MapReader struct {
-}
+type StringReader struct{}
+type CommentReader struct{}
+type ListReader struct{}
+type VectorReader struct{}
+type MapReader struct{}
+type UnmatchedDelimiterReader struct{}
 
 var symbolPat *regexp.Regexp = regexp.MustCompile("^[:]?([^/0-9].*/)?(/|[^/0-9][^/]*)$")
 var intPat *regexp.Regexp = regexp.MustCompile("^([-+]?)(?:(0)|([1-9][0-9]*)|0[xX]([0-9A-Fa-f]+)|0([0-7]+)|([1-9][0-9]?)[rR]([0-9A-Za-z]+)|0[0-9]+)$")
@@ -250,7 +244,6 @@ func matchSymbol(s string) (interface{}, bool) {
 	return nil, false
 }
 
-
 func (f StringReader) invoke(r *Reader, doublequote rune) (interface{}, error) {
 	var ret []rune
 	for ch := r.read(); ch != '"'; ch = r.read() {
@@ -277,7 +270,7 @@ func (f StringReader) invoke(r *Reader, doublequote rune) (interface{}, error) {
 				ch = '\f'
 			case 'u':
 				ch = r.read()
-				if !( ( '0' <= ch && ch <= '9' ) || ( 'a' <= ch && ch <= 'f' ) ) {
+				if !(('0' <= ch && ch <= '9') || ('a' <= ch && ch <= 'f')) {
 					return nil, errors.New("Invalid unicode escape \\u" + string(ch))
 				}
 				var err error
@@ -292,7 +285,7 @@ func (f StringReader) invoke(r *Reader, doublequote rune) (interface{}, error) {
 					if err != nil {
 						return nil, err
 					}
-					if ch > 0377{
+					if ch > 0377 {
 						return nil, errors.New("Octal escape sequence must be in range [0, 377].")
 					}
 				} else {
@@ -362,7 +355,7 @@ func readUnicodeChar(r *Reader, initch rune, base int, length int, exact bool) (
 		if err != nil {
 			return -1, errors.New("Invalid digit: " + string(ch))
 		}
-		uc = uc * base + int(d64)
+		uc = uc*base + int(d64)
 	}
 	if i != length && exact {
 		return -1, errors.New("Invalid character length: " + strconv.Itoa(i) + ", should be: " + strconv.Itoa(length))
