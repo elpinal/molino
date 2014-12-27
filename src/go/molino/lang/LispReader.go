@@ -53,7 +53,7 @@ func (r *Reader) Init(src string) {
 	r.src = []rune(src)
 }
 
-func (r *Reader) Read() (interface{}, bool, error) { //(tok int, lit string, pos Position)
+func (r *Reader) Read() (interface{}, bool, error) {
 	for {
 		//pos = r.position()
 		ch := r.read()
