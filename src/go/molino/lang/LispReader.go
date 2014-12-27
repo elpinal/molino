@@ -330,6 +330,9 @@ func (f MapReader) invoke(r *Reader, leftparam rune) (interface{}, error) {
 	if err != nil {
 		return a, err
 	}
+	if (len(a) & 1) == 1 {
+		return a, errors.New("Map literal must contain an even number of forms")
+	}
 	//
 	return a, nil
 }
