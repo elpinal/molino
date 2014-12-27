@@ -28,7 +28,7 @@ func (v PersistentVector) create(items ISeq) PersistentVector {
 	for ; items != nil; items = items.next() {
 		ret = ret.conj(items.first())
 	}
-	return PersistentVector{}
+	return ret.persistent()
 }
 
 func (v PersistentVector) asTransient() TransientVector {
@@ -39,13 +39,9 @@ func (v PersistentVector) length() int {
 	return v.cnt
 }
 
-func newPath(level uint, node PersistentVector_Node) PersistentVector_Node {
-	if level == 0 {
-		return node
-	}
-	var ret = PersistentVector_Node{array: [32]interface{}{}}
-	ret.array[0] = newPath(level - 5, node)
-	return ret
+func (t TransientVector) persistent() PersistentVector {
+	var trimmedTail [32]interface{} = t.tail
+	return PersistentVector{t.cnt, t.shift, t.root, trimmedTail}
 }
 
 func (t TransientVector) conj(val interface{}) TransientVector {
@@ -90,6 +86,15 @@ func (t TransientVector) pushTail(level uint, parent PersistentVector_Node, tail
 		}
 	}
 	ret.array[subidx] = nodeToInsert
+	return ret
+}
+
+func newPath(level uint, node PersistentVector_Node) PersistentVector_Node {
+	if level == 0 {
+		return node
+	}
+	var ret = PersistentVector_Node{array: [32]interface{}{}}
+	ret.array[0] = newPath(level - 5, node)
 	return ret
 }
 
