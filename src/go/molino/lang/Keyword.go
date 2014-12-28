@@ -13,7 +13,7 @@ func (k Keyword) intern(sym Symbol) Keyword {
 
 func (k Keyword) String() string {
 	if k._str == "" {
-		k._str = ":" + k.sym.name //
+		k._str = ":" + k.sym.String()
 	}
 	return k._str
 }
