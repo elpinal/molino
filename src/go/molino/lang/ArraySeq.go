@@ -12,6 +12,9 @@ func createFromObject(array interface{}) ISeq {
 	}
 	switch array.(type) {
 	case []interface{}:
+		if len(array.([]interface{})) == 0 {
+			return nil
+		}
 		return ArraySeq{array: array.([]interface{}), i: 0}
 	}
 	return nil
