@@ -52,3 +52,12 @@ func TestList(t *testing.T) {
 	var _ Iterable = l
 	var _ Iterator = l.iterator()
 }
+
+func BenchmarkPersistentVector(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		var a []interface{} = []interface{}{1, 2, 3}
+		var x ISeq = seq(a)
+		var y = PersistentVector.create(PersistentVector{}, x)
+		var _ = y
+	}
+}
