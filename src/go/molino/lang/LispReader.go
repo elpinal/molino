@@ -235,7 +235,7 @@ func matchSymbol(s string) (interface{}, bool) {
 		isKeyword := s[0] == ':'
 		if isKeyword {
 			sym := intern(s[1:])
-			return /*Keyword.intern(s)*/ sym, true
+			return Keyword.intern(Keyword{}, sym), true
 		} else {
 			sym := intern(s)
 			return sym, true
