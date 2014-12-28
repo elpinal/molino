@@ -53,6 +53,28 @@ func TestList(t *testing.T) {
 	var _ Iterator = l.iterator()
 }
 
+func TestPrint(t *testing.T) {
+	var s Symbol = intern("test")
+	if s.String() != "test" {
+		t.Errorf("\"%s\" (type Symbol) must be \"test\"\n", s)
+	}
+
+	var n Symbol = intern("London/Prelude")
+	if n.String() != "London/Prelude" {
+		t.Errorf("\"%s\" (type Symbol) must be \"London/Prelude\"\n", n)
+	}
+
+	var k Keyword = Keyword.intern(Keyword{}, s)
+	if k.String() != ":test" {
+		t.Errorf("\"%s\" (type Keyword) must be \":test\"\n", k)
+	}
+
+	var l Keyword = Keyword.intern(Keyword{}, n)
+	if l.String() != ":London/Prelude" {
+		t.Errorf("\"%s\" (type Keyword) must be \":London/Prelude\"\n", l)
+	}
+}
+
 func BenchmarkPersistentVector(b *testing.B) {
 	var a []interface{} = []interface{}{1, 2, 3}
 	b.ResetTimer()
