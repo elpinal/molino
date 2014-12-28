@@ -4,22 +4,22 @@ type PersistentVector struct {
 	cnt   int
 	shift uint
 	root  PersistentVector_Node
-	tail  [32]interface{}
+	tail  []interface{}
 }
 
 type PersistentVector_Node struct {
 	//edit
-	array [32]interface{}
+	array []interface{}
 }
 
 type TransientVector struct {
 	cnt   int
 	shift uint
 	root  PersistentVector_Node
-	tail  [32]interface{}
+	tail  []interface{}
 }
 
-var PersistentVector_EMPTY_NODE = PersistentVector_Node{array: [32]interface{}{}}
+var PersistentVector_EMPTY_NODE = PersistentVector_Node{array: make([]interface{}, 0, 8)}
 
 var PersistentVector_EMPTY = PersistentVector{cnt: 0, shift: 5, root: PersistentVector_EMPTY_NODE}
 
@@ -40,7 +40,7 @@ func (v PersistentVector) length() int {
 }
 
 func (t TransientVector) persistent() PersistentVector {
-	var trimmedTail [32]interface{} = t.tail
+	var trimmedTail []interface{} = t.tail
 	return PersistentVector{t.cnt, t.shift, t.root, trimmedTail}
 }
 
@@ -48,17 +48,18 @@ func (t TransientVector) conj(val interface{}) TransientVector {
 	i := t.cnt
 	//room is tail? = i is not multiples of 32?
 	if i - t.tailoff() < 32 {
-		t.tail[i & 0x01f] = val
+		//t.tail[i & 0x01f] = val
+		t.tail = append(t.tail, val)
 		t.cnt++
 		return t
 	}
 	var newroot PersistentVector_Node
 	var tailnode PersistentVector_Node = PersistentVector_Node{array: t.tail}
-	t.tail = [32]interface{}{}
+	t.tail = make([]interface{}, 0, 8)
 	t.tail[0] = val
 	var newshift uint = t.shift
 	if (t.cnt >> 5) > (1 << t.shift) {
-		newroot = PersistentVector_Node{array: [32]interface{}{}}
+		newroot = PersistentVector_Node{array: make([]interface{}, 0, 8)}
 		newroot.array[0] = t.root
 		newroot.array[1] = newPath(t.shift, tailnode)
 		newshift += 5
@@ -93,7 +94,7 @@ func newPath(level uint, node PersistentVector_Node) PersistentVector_Node {
 	if level == 0 {
 		return node
 	}
-	var ret = PersistentVector_Node{array: [32]interface{}{}}
+	var ret = PersistentVector_Node{array: make([]interface{}, 0, 8)}
 	ret.array[0] = newPath(level - 5, node)
 	return ret
 }
