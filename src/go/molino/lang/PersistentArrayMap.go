@@ -14,9 +14,21 @@ func (a PersistentArrayMap) assoc(key, val interface{}) IPersistentMap {
 	return PersistentArrayMap{}
 }
 
-func (a PersistentArrayMap) indexOf(key interface{}) int {
+func (a PersistentArrayMap) indexOfObject(key interface{}) int {
 	//
-	return 0
+	return -1
+}
+
+func (a PersistentArrayMap) indexOf(key interface{}) int {
+	if k, ok := key.(Keyword); ok {
+		for i := 0; i < len(a.array); i += 2 {
+			if k == a.array[i] {
+				return i
+			}
+		}
+		return -1
+	}
+	return a.indexOfObject(key)
 }
 
 /*
