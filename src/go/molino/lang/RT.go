@@ -88,6 +88,8 @@ func RT_map(init []interface{}) IPersistentMap {
 	if init == nil {
 		return PersistentArrayMap{}
 	}
+	//
+	return PersistentArrayMap{}
 }
 
 func print(x interface{}) string {

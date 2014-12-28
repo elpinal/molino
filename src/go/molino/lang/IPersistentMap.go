@@ -1,6 +1,6 @@
 package lang
 
 type IPersistentMap interface {
-	Iterable
+	//Iterable
 	assoc(interface{}, interface{}) IPersistentMap
 }
