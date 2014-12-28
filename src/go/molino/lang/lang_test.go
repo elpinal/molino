@@ -54,8 +54,9 @@ func TestList(t *testing.T) {
 }
 
 func BenchmarkPersistentVector(b *testing.B) {
+	var a []interface{} = []interface{}{1, 2, 3}
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		var a []interface{} = []interface{}{1, 2, 3}
 		var x ISeq = seq(a)
 		var y = PersistentVector.create(PersistentVector{}, x)
 		var _ = y
