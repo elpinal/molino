@@ -23,10 +23,28 @@ func (a PersistentArrayMap) createWithCheck(init []interface{}) PersistentArrayM
 
 func (a PersistentArrayMap) assoc(key, val interface{}) IPersistentMap {
 	i := a.indexOf(key)
-	var newarray []interface{}
-	var _, _ = i, newarray
+	var newArray []interface{}
+	if i >= 0 {
+		if a.array[i + 1] == val {
+			return a
+		}
+		newArray = a.array
+		newArray[i + 1] = val
+	} else {
+		/*
+		if len(a.array) > HASHTABLE_THRESHOLD {
+			return //
+		}
+		*/
+		newArray = make([]interface{}, 2, len(a.array) + 2)
+		if len(a.array) > 0 {
+			newArray = append(newArray, a.array...)
+		}
+		newArray[0] = key
+		newArray[1] = val
+	}
 	//
-	return PersistentArrayMap{}
+	return PersistentArrayMap{array: newArray}
 }
 
 func (a PersistentArrayMap) indexOfObject(key interface{}) int {
