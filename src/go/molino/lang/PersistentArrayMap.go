@@ -28,7 +28,8 @@ func (a PersistentArrayMap) assoc(key, val interface{}) IPersistentMap {
 		if a.array[i + 1] == val {
 			return a
 		}
-		newArray = a.array
+		newArray = make([]interface{}, len(a.array))
+		copy(newArray, a.array)
 		newArray[i + 1] = val
 	} else {
 		/*
