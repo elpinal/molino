@@ -44,7 +44,6 @@ func (a PersistentArrayMap) assoc(key, val interface{}) IPersistentMap {
 		newArray[0] = key
 		newArray[1] = val
 	}
-	//
 	return PersistentArrayMap{array: newArray}
 }
 

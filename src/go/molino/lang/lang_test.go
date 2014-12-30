@@ -77,11 +77,14 @@ func TestPrint(t *testing.T) {
 
 func TestPersistentArrayMap(t *testing.T) {
 	s1, s2, s3, s4 := intern(":k1"), intern(":k2"), intern(":k3"), intern(":k4")
-	k1, k2, k3, k4 := Keyword.intern(Keyword{}, s1), Keyword.intern(Keyword{}, s2), Keyword.intern(Keyword{}, s3), Keyword.intern(Keyword{}, s4)
+	k1, k2, k3, k4 :=
+		Keyword.intern(Keyword{}, s1), Keyword.intern(Keyword{}, s2), Keyword.intern(Keyword{}, s3), Keyword.intern(Keyword{}, s4)
 
 	var i = []interface{}{k1, 9001, k2, 9002, k3, 9003}
 	m := PersistentArrayMap.createWithCheck(PersistentArrayMap{}, i)
-	am1, am2, am3 := m.assoc(k1, 9001).(PersistentArrayMap), m.assoc(k1, 10001).(PersistentArrayMap), m.assoc(k4, 9004).(PersistentArrayMap)
+	am1, am2, am3 :=
+		m.assoc(k1, 9001).(PersistentArrayMap), m.assoc(k1, 10001).(PersistentArrayMap), m.assoc(k4, 9004).(PersistentArrayMap)
+
 	if am1.array[1] != 9001 {
 		t.Errorf("Expect 9001, but %v\n", am1.array[1])
 	}
