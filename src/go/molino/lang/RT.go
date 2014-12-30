@@ -90,8 +90,7 @@ func RT_map(init []interface{}) IPersistentMap {
 	} else if len(init) <= HASHTABLE_THRESHOLD {
 		return PersistentArrayMap.createWithCheck(PersistentArrayMap{}, init)
 	}
-	//
-	return PersistentArrayMap{} // PersistentHashMap.(PersistentHashMap{}, init)
+	return PersistentHashMap.createWithCheck(PersistentHashMap{}, init)
 }
 
 func print(x interface{}) string {
