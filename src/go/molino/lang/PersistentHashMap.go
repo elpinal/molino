@@ -17,6 +17,12 @@ type INode interface {
 	assoc(int, int, interface{}, interface{}, Box) INode
 }
 
+type BitmapIndexedNode struct {
+	bitmap int
+	array  []interface{}
+}
+
+
 func (h PersistentHashMap) createWithCheck(init []interface{}) PersistentHashMap {
 	var ret ITransientMap = PersistentHashMap{}.asTransient()
 	for i := 0; i < len(init); i += 2 {
@@ -52,6 +58,7 @@ func (t TransientHashMap) doAssoc(key, val interface{}) ITransientMap {
 		return t
 	}
 	t.leafFlag.val = nil
+	//var n INode = root.assoc(0, hash(key), key, t.leafFlag)
 	//
 	if t.leafFlag.val != nil {
 		t.count++
@@ -65,4 +72,41 @@ func (t TransientHashMap) persistent() IPersistentMap {
 
 func (t TransientHashMap) doPersistent() IPersistentMap {
 	return PersistentHashMap{count: t.count}
+}
+
+func (b BitmapIndexedNode) index(bit int) int {
+	return bitCount(b.bitmap & (bit - 1))
+}
+
+func (b BitmapIndexedNode) assoc(shift int, hash int, key interface{}, val interface{}, addedLeaf Box) INode {
+	//
+	return BitmapIndexedNode{}
+}
+
+func (b BitmapIndexedNode) assoc6(shift int, hash int, key interface{}, val interface{}, addedLeaf Box) INode {
+	bit := bitpos(hash, shift)
+	idx := b.index(bit)
+	_ = idx
+	//
+	return BitmapIndexedNode{}
+}
+
+func mask(hash, shift int) uint {
+	if shift < 0 {
+		panic("Stupid shift")
+	}
+	return uint((hash >> uint(shift)) & 0x01f)
+}
+
+func bitpos(hash, shift int) int {
+	return 1 << mask(hash, shift)
+}
+
+func bitCount(i int) int {
+	i = i - ((i >> 1) & 0x55555555)
+	i = (i & 0x33333333) + ((i >> 2) & 0x33333333)
+	i = (i + (i >> 4)) & 0x0f0f0f0f
+	i = i + (i >> 8)
+	i = i + (i >> 16)
+	return i & 0x3f
 }
