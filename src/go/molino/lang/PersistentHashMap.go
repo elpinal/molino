@@ -10,6 +10,7 @@ type TransientHashMap struct {
 	count    int
 	hasNil   bool
 	nilValue interface{}
+	leafFlag Box
 }
 
 func (h PersistentHashMap) createWithCheck(init []interface{}) PersistentHashMap {
@@ -46,7 +47,11 @@ func (t TransientHashMap) doAssoc(key, val interface{}) ITransientMap {
 		}
 		return t
 	}
+	t.leafFlag.val = nil
 	//
+	if t.leafFlag.val != nil {
+		t.count++
+	}
 	return t
 }
 
