@@ -13,6 +13,10 @@ type TransientHashMap struct {
 	leafFlag Box
 }
 
+type INode interface {
+	assoc(int, int, interface{}, interface{}, Box) INode
+}
+
 func (h PersistentHashMap) createWithCheck(init []interface{}) PersistentHashMap {
 	var ret ITransientMap = PersistentHashMap{}.asTransient()
 	for i := 0; i < len(init); i += 2 {
