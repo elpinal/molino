@@ -99,6 +99,39 @@ func TestPersistentArrayMap(t *testing.T) {
 	}
 }
 
+func TestBitCount(t *testing.T) {
+	var i = make([]int, 11)
+
+	i = []int{0, 1, 2, 10, 64, 99, 100, 999, 9000, 39201, 666666}
+	for _, n := range i {
+		r := bitCount(n)
+		switch {
+		case n == i[0] && r != 0:
+			t.Errorf("Expect 0, but %v\n", r)
+		case n == i[1] && r != 1:
+			t.Errorf("Expect 1, but %v\n", r)
+		case n == i[2] && r != 1:
+			t.Errorf("Expect 1, but %v\n", r)
+		case n == i[3] && r != 2:
+			t.Errorf("Expect 2, but %v\n", r)
+		case n == i[4] && r != 1:
+			t.Errorf("Expect 1, but %v\n", r)
+		case n == i[5] && r != 4:
+			t.Errorf("Expect 4, but %v\n", r)
+		case n == i[6] && r != 3:
+			t.Errorf("Expect 3, but %v\n", r)
+		case n == i[7] && r != 8:
+			t.Errorf("Expect 8, but %v\n", r)
+		case n == i[8] && r != 5:
+			t.Errorf("Expect 5, but %v\n", r)
+		case n == i[9] && r != 6:
+			t.Errorf("Expect 6, but %v\n", r)
+		case n == i[10] && r != 8:
+			t.Errorf("Expect 8, but %v\n", r)
+		}
+	}
+}
+
 func BenchmarkPersistentVector(b *testing.B) {
 	var a []interface{} = []interface{}{1, 2, 3}
 	b.ResetTimer()
