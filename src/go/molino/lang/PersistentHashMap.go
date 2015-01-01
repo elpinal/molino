@@ -15,6 +15,7 @@ type TransientHashMap struct {
 
 type INode interface {
 	assoc(int, int, interface{}, interface{}, Box) INode
+	assoc6(int, int, interface{}, interface{}, Box) INode
 }
 
 type BitmapIndexedNode struct {
@@ -74,6 +75,7 @@ func (t TransientHashMap) doPersistent() IPersistentMap {
 	return PersistentHashMap{count: t.count}
 }
 
+
 func (b BitmapIndexedNode) index(bit int) int {
 	return bitCount(b.bitmap & (bit - 1))
 }
@@ -86,7 +88,30 @@ func (b BitmapIndexedNode) assoc(shift int, hash int, key interface{}, val inter
 func (b BitmapIndexedNode) assoc6(shift int, hash int, key interface{}, val interface{}, addedLeaf Box) INode {
 	bit := bitpos(hash, shift)
 	idx := b.index(bit)
-	_ = idx
+	if (b.bitmap & bit) != 0 {
+		keyOrNil := b.array[2 * idx]
+		valOrNode := b.array[2 * idx + 1]
+		if keyOrNil == nil {
+			var n INode = valOrNode.(INode).assoc6(shift + 5, hash, key, val, addedLeaf)
+			if n == valOrNode {
+				return b
+			}
+			//
+		}
+		if key == keyOrNil {
+			if val == valOrNode {
+				return b
+			}
+			//
+		}
+		addedLeaf.val = addedLeaf
+		//return 
+	}
+	n := bitCount(b.bitmap)
+	if n * 2 < len(b.array) {
+		addedLeaf.val = addedLeaf
+		//
+	}
 	//
 	return BitmapIndexedNode{}
 }
