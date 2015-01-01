@@ -100,9 +100,9 @@ func TestPersistentArrayMap(t *testing.T) {
 }
 
 func TestBitCount(t *testing.T) {
-	var i = make([]int, 11)
+	var i = make([]int, 12)
 
-	i = []int{0, 1, 2, 10, 64, 99, 100, 999, 9000, 39201, 666666}
+	i = []int{0, 1, 2, 10, 64, 99, 100, 999, 9000, 39201, 666666, -90000000}
 	for _, n := range i {
 		r := bitCount(n)
 		switch {
@@ -128,6 +128,8 @@ func TestBitCount(t *testing.T) {
 			t.Errorf("Expect 6, but %v\n", r)
 		case n == i[10] && r != 8:
 			t.Errorf("Expect 8, but %v\n", r)
+		case n == i[11] && r != 15:
+			t.Errorf("Expect 15, but %v\n", r)
 		}
 	}
 }
