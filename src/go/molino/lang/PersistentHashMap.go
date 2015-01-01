@@ -15,12 +15,13 @@ type TransientHashMap struct {
 
 type INode interface {
 	assoc(int, int, interface{}, interface{}, Box) INode
-	assoc6(int, int, interface{}, interface{}, Box) INode
+	assoc6(chan bool, int, int, interface{}, interface{}, Box) INode
 }
 
 type BitmapIndexedNode struct {
 	bitmap int
 	array  []interface{}
+	edit   chan bool
 }
 
 
@@ -85,27 +86,49 @@ func (b BitmapIndexedNode) assoc(shift int, hash int, key interface{}, val inter
 	return BitmapIndexedNode{}
 }
 
-func (b BitmapIndexedNode) assoc6(shift int, hash int, key interface{}, val interface{}, addedLeaf Box) INode {
+func (b BitmapIndexedNode) ensureEditable(edit chan bool) BitmapIndexedNode {
+	if b.edit == edit {
+		return b
+	}
+	n := bitCount(b.bitmap)
+	var newArray []interface{}
+	if n >= 0 {
+		newArray = make([]interface{}, 2 * (n + 1))
+	} else {
+		newArray = make([]interface{}, 4)
+	}
+	copy(newArray, b.array)
+	return BitmapIndexedNode{edit: edit, bitmap: b.bitmap, array: newArray}
+}
+
+func (b BitmapIndexedNode) editAndSet(edit chan bool, i int, a interface{}) BitmapIndexedNode {
+	var editable BitmapIndexedNode = b.ensureEditable(edit)
+	editable.array[i] = a
+	return editable
+}
+
+func (b BitmapIndexedNode) assoc6(edit chan bool, shift int, hash int, key interface{}, val interface{}, addedLeaf Box) INode {
 	bit := bitpos(hash, shift)
 	idx := b.index(bit)
 	if (b.bitmap & bit) != 0 {
 		keyOrNil := b.array[2 * idx]
 		valOrNode := b.array[2 * idx + 1]
 		if keyOrNil == nil {
-			var n INode = valOrNode.(INode).assoc6(shift + 5, hash, key, val, addedLeaf)
+			var n INode = valOrNode.(INode).assoc6(edit, shift + 5, hash, key, val, addedLeaf)
 			if n == valOrNode {
 				return b
 			}
-			//
+			return b.editAndSet(edit, 2 * idx + 1, n)
 		}
 		if key == keyOrNil {
 			if val == valOrNode {
 				return b
 			}
-			//
+			return b.editAndSet(edit, 2 * idx + 1, val)
 		}
 		addedLeaf.val = addedLeaf
-		//return 
+		//
+		return b.editAndSet(edit, 2 * idx, nil, 2 * idx + 1, createNode(edit, shift + 5, keyOrNil, valOrNode, hash, key, val))
 	}
 	n := bitCount(b.bitmap)
 	if n * 2 < len(b.array) {
