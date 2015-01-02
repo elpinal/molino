@@ -25,6 +25,11 @@ type BitmapIndexedNode struct {
 }
 
 
+func hash(k interface{}) int {
+	//
+	return 0
+}
+
 func (h PersistentHashMap) createWithCheck(init []interface{}) PersistentHashMap {
 	var ret ITransientMap = PersistentHashMap{}.asTransient()
 	for i := 0; i < len(init); i += 2 {
@@ -128,7 +133,8 @@ func (b BitmapIndexedNode) assoc6(edit chan bool, shift int, hash int, key inter
 		}
 		addedLeaf.val = addedLeaf
 		//
-		return b.editAndSet(edit, 2 * idx, nil, 2 * idx + 1, createNode(edit, shift + 5, keyOrNil, valOrNode, hash, key, val))
+		//return b.editAndSet(edit, 2 * idx, nil, 2 * idx + 1, createNode(edit, shift + 5, keyOrNil, valOrNode, hash, key, val))
+		return BitmapIndexedNode{}
 	}
 	n := bitCount(b.bitmap)
 	if n * 2 < len(b.array) {
@@ -157,4 +163,11 @@ func bitCount(i int) int {
 	i = i + (i >> 8)
 	i = i + (i >> 16)
 	return i & 0x3f
+}
+
+func createNode(edit chan bool, shift int, key1 interface{}, val1 interface{}, key2hash int, key2 interface{}, val2 interface{}) INode {
+	key1hash := hash(key1)
+	_ = key1hash
+	//
+	return BitmapIndexedNode{}
 }
