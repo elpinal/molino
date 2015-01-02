@@ -4,6 +4,11 @@ type Expr interface {
 	eval() interface{}
 }
 
+type NilExpr struct {}
+type BoolExpr struct {
+	val bool
+}
+
 func eval(form interface{}) interface{} {
 	//
 	expr := analyze(form)
@@ -13,13 +18,25 @@ func eval(form interface{}) interface{} {
 func analyze(form interface{}) Expr {
 	//
 	if form == nil {
-		return NIL_EXPR
+		return NilExpr{}
 	} else if form == true {
-		return TRUE_EXPR
+		return BoolExpr{true}
 	} else if form == false {
-		return FALSE_EXPR
+		return BoolExpr{false}
 	}
 	//
 	return nil //
 	//
+}
+
+
+func (_ NilExpr) eval() interface{} {
+	return nil
+}
+
+func (e BoolExpr) eval() interface{} {
+	if e.val {
+		return true
+	}
+	return false
 }
