@@ -10,6 +10,9 @@ type NilExpr struct {}
 type BoolExpr struct {
 	val bool
 }
+type NumberExpr struct {
+	n int64
+}
 
 func eval(form interface{}) interface{} {
 	//
@@ -25,6 +28,10 @@ func analyze(form interface{}) Expr {
 		return BoolExpr{true}
 	} else if form == false {
 		return BoolExpr{false}
+	}
+	switch form.(type) {
+	case int64:
+		return NumberExpr{form.(int64)}
 	}
 	//
 	return nil //
@@ -52,4 +59,8 @@ func (e BoolExpr) eval() interface{} {
 		return true
 	}
 	return false
+}
+
+func (e NumberExpr) eval() interface{} {
+	return e.n
 }
