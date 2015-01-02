@@ -1,5 +1,7 @@
 package lang
 
+type Compiler struct {}
+
 type Expr interface {
 	eval() interface{}
 }
@@ -27,6 +29,17 @@ func analyze(form interface{}) Expr {
 	//
 	return nil //
 	//
+}
+
+func (_ Compiler) load(rdr *Reader) (interface{}, error) {
+	var ret interface{}
+	for r, eof, err := rdr.Read(); !eof; r, eof, err = rdr.Read() {
+		if err != nil {
+			return nil, err
+		}
+		ret = eval(r)
+	}
+	return ret, nil
 }
 
 

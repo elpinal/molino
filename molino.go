@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"fmt"
+//	"fmt"
 )
 
 var fs = flag.NewFlagSet(os.Args[0], 1)
@@ -31,14 +31,18 @@ func main() {
 	os.Args = fs.Args()
 
 	lang.Runtime()
+	/*
 	reader := new(lang.Reader)
 	reader.Init(string(body))
-	for ret, eof, err := reader.Read(); !eof; ret, eof, err = reader.Read() {
+	var ret interface{}
+	for r, eof, err := reader.Read(); !eof; r, eof, err = reader.Read() {
 		if err != nil {
 			// log.SetFlags(log.Lshortfile)
 			log.Fatal(err)
 		}
-		fmt.Println(ret)
+		fmt.Println(r)
+		ret = eval(r)
 	}
-	_ = source
+*/
+	_, _ = source, body
 }

@@ -43,6 +43,12 @@ func load(scriptbase string) {
 	}
 	reader := new(Reader)
 	reader.Init(string(body))
+	var ret interface{}
+	ret, err = Compiler.load(Compiler{}, reader)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(ret)
 }
 
 
