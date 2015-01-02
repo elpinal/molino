@@ -30,8 +30,12 @@ func analyze(form interface{}) Expr {
 		return BoolExpr{false}
 	}
 	switch form.(type) {
+//	case Symbol:
+//		return analyzeSymbol(form.(Symbol))
 	case int64:
 		return NumberExpr{form.(int64)}
+	case ISeq:
+		return analyzeSeq(form.(ISeq))
 	}
 	//
 	return nil //
@@ -49,6 +53,22 @@ func (_ Compiler) load(rdr *Reader) (interface{}, error) {
 	return ret, nil
 }
 
+/*
+func analyzeSymbol(sym Symbol) Expr {
+	//
+	return //
+}
+*/
+
+func analyzeSeq(form ISeq) Expr {
+	op := first(form)
+	if op == nil {
+		panic("Can't call nil")
+	}
+	//
+	return nil //
+	//
+}
 
 func (_ NilExpr) eval() interface{} {
 	return nil
