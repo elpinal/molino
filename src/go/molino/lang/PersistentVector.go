@@ -23,12 +23,21 @@ var PersistentVector_EMPTY_NODE = PersistentVector_Node{array: make([]interface{
 
 var PersistentVector_EMPTY = PersistentVector{cnt: 0, shift: 5, root: PersistentVector_EMPTY_NODE}
 
-func (v PersistentVector) create(items ISeq) PersistentVector {
-	var ret = PersistentVector_EMPTY.asTransient()
-	for ; items != nil; items = items.next() {
-		ret = ret.conj(items.first())
+func (v PersistentVector) create(obj interface{}) PersistentVector {
+	if items, ok := obj.(ISeq); ok {
+		var ret = PersistentVector_EMPTY.asTransient()
+		for ; items != nil; items = items.next() {
+			ret = ret.conj(items.first())
+		}
+		return ret.persistent()
+	} else if items, ok := obj.(List); ok {
+		var ret = PersistentVector_EMPTY.asTransient()
+		for item, _ := range items {
+			ret = ret.conj(item)
+		}
+		return ret.persistent()
 	}
-	return ret.persistent()
+	panic("can't create PersistentVector")
 }
 
 func (v PersistentVector) asTransient() TransientVector {

@@ -8,8 +8,8 @@ type SeqIterator struct {
 var START interface{}
 
 func (s *SeqIterator) hasNext() bool {
-	if s.seq == s {
-		s.seq = START
+	if s.seq == START {
+		s.seq = nil
 		s.nexts = seq(s.nexts)
 	} else if s.seq == s.nexts {
 		s.nexts = next(s.seq)

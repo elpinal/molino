@@ -134,6 +134,14 @@ func TestBitCount(t *testing.T) {
 	}
 }
 
+func TestPersistentVector(t *testing.T) {
+	var a []interface{} = []interface{}{1, 2, 3, 4, 5, 6, 7, 8}
+	result := LazilyPersistentVector{}.create(a)
+	if result.(PersistentVector).cnt != 8 {
+		t.Errorf("%v: %v should be 8", result.(PersistentVector), result.(PersistentVector).cnt)
+	}
+}
+
 func BenchmarkPersistentVector(b *testing.B) {
 	var a []interface{} = []interface{}{1, 2, 3}
 	b.ResetTimer()
