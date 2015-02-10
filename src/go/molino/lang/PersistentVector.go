@@ -44,8 +44,51 @@ func (v PersistentVector) asTransient() TransientVector {
 	return TransientVector{cnt: v.cnt, shift: v.shift, root: v.root}
 }
 
+func (v PersistentVector) tailoff() int {
+	if v.cnt < 32 {
+		return 0
+	}
+	return ((v.cnt - 1) >> 5) << 5
+}
+
+func (v PersistentVector) arrayFor(i int) []interface{} {
+	if i >= 0 && i < v.cnt {
+		if i >= v.tailoff() {
+			return v.tail
+		}
+		var node PersistentVector_Node = v.root
+		for level := v.shift; level > 0; level -= 5 {
+			node = node.array[(i >> level) & 0x01f].(PersistentVector_Node)
+		}
+		return node.array
+	}
+	panic("index out of range")
+}
+
+func (v PersistentVector) nth(i int) interface{} {
+	var node []interface{} = v.arrayFor(i)
+	return node[i & 0x01f]
+}
+
+func (v PersistentVector) count() int {
+	return v.cnt
+}
+
 func (v PersistentVector) length() int {
 	return v.cnt
+}
+
+func (v PersistentVector) cons(val interface{}) IPersistentVector {
+	//i := v.cnt
+	if v.cnt - v.tailoff() < 32 {
+		var newTail []interface{} = make([]interface{}, len(v.tail) + 1)
+		copy(newTail, v.tail)
+		newTail[len(v.tail)] = val
+		return PersistentVector{v.cnt + 1, v.shift, v.root, newTail}
+	}
+	// create new room
+	panic("can't cons")
+	//
 }
 
 func (t TransientVector) persistent() PersistentVector {

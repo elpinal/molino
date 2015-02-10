@@ -1,5 +1,9 @@
 package lang
 
+import (
+	"fmt"
+)
+
 type Compiler struct {}
 
 type Expr interface {
@@ -43,7 +47,8 @@ func analyze(form interface{}) Expr {
 		return VectorExpr{}.parse(form.(IPersistentVector))
 	}
 	//
-	return nil //
+	//return nil //
+	panic(fmt.Sprintf("Can't analyze: %s", form))
 	//
 }
 
@@ -91,13 +96,22 @@ func (e NumberExpr) eval() interface{} {
 }
 
 func (_ VectorExpr) parse(form IPersistentVector) Expr {
-	var ret Expr = VectorExpr{form}
+	var args IPersistentVector = PersistentVector_EMPTY
+	for i := 0; i < form.count(); i++ {
+		var v Expr = analyze(form.nth(i))
+		args = args.cons(v)
+	}
+	//
+	var ret Expr = VectorExpr{args}
 	return ret
 	//
 }
 
-func (_ VectorExpr) eval() interface{} {
+func (e VectorExpr) eval() interface{} {
 	var ret IPersistentVector = PersistentVector_EMPTY
+	for i := 0; i < e.args.count(); i++ {
+		ret = ret.cons(e.args.nth(i).(Expr).eval())
+	}
 	return ret
 	//
 }
