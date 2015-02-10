@@ -32,7 +32,7 @@ func (v PersistentVector) create(obj interface{}) PersistentVector {
 		return ret.persistent()
 	} else if items, ok := obj.(List); ok {
 		var ret = PersistentVector_EMPTY.asTransient()
-		for item, _ := range items {
+		for _, item := range items {
 			ret = ret.conj(item)
 		}
 		return ret.persistent()
