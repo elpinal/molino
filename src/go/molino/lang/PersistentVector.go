@@ -86,8 +86,37 @@ func (v PersistentVector) cons(val interface{}) IPersistentVector {
 		newTail[len(v.tail)] = val
 		return PersistentVector{v.cnt + 1, v.shift, v.root, newTail}
 	}
-	// create new room
-	panic("can't cons")
+	var newroot PersistentVector_Node
+	tailnode := PersistentVector_Node{v.tail}
+	newshift := v.shift
+	if (v.cnt >> 5) > (1 << v.shift) {
+		newroot = PersistentVector_Node{array: make([]interface{}, 0, 8)}
+		newroot.array = append(newroot.array, v.root, newPath(v.shift, tailnode))
+		newshift += 5
+	} else {
+		newroot = v.pushTail(v.shift, v.root, tailnode)
+	}
+	return PersistentVector{v.cnt + 1, newshift, newroot, []interface{}{val}}
+	//
+}
+
+func (v PersistentVector) pushTail(level uint, parent PersistentVector_Node, tailnode PersistentVector_Node) PersistentVector_Node {
+	var subidx = ((v.cnt - 1) >> level) & 0x01f
+	var ret = PersistentVector_Node{parent.array}
+	var nodeToInsert PersistentVector_Node
+	if level == 5 {
+		nodeToInsert = tailnode
+	} else {
+		var child = parent.array[subidx].(PersistentVector_Node)
+		if child.array != nil { //
+			nodeToInsert = v.pushTail(level-5, child, tailnode)
+		} else {
+			nodeToInsert = newPath(level-5, tailnode)
+		}
+	}
+	//ret.array[subidx] = nodeToInsert
+	ret.array = append(ret.array, nodeToInsert)
+	return ret
 	//
 }
 
@@ -108,7 +137,7 @@ func (t TransientVector) conj(val interface{}) TransientVector {
 	var newroot PersistentVector_Node
 	var tailnode PersistentVector_Node = PersistentVector_Node{array: t.tail}
 	t.tail = make([]interface{}, 0, 8)
-	t.tail[0] = val
+	t.tail = append(t.tail, val)
 	var newshift uint = t.shift
 	if (t.cnt >> 5) > (1 << t.shift) {
 		newroot = PersistentVector_Node{array: make([]interface{}, 0, 8)}
@@ -138,7 +167,8 @@ func (t TransientVector) pushTail(level uint, parent PersistentVector_Node, tail
 			nodeToInsert = t.pushTail(level - 5, child, tailnode)
 		}
 	}
-	ret.array[subidx] = nodeToInsert
+	//ret.array[subidx] = nodeToInsert
+	ret.array = append(ret.array, nodeToInsert)
 	return ret
 }
 
