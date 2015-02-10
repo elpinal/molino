@@ -13,6 +13,9 @@ type BoolExpr struct {
 type NumberExpr struct {
 	n int64
 }
+type VectorExpr struct {
+	args IPersistentVector
+}
 
 func eval(form interface{}) interface{} {
 	//
@@ -36,6 +39,8 @@ func analyze(form interface{}) Expr {
 		return NumberExpr{form.(int64)}
 	case ISeq:
 		return analyzeSeq(form.(ISeq))
+	case IPersistentVector:
+		return VectorExpr{}.parse(form.(IPersistentVector))
 	}
 	//
 	return nil //
@@ -83,4 +88,16 @@ func (e BoolExpr) eval() interface{} {
 
 func (e NumberExpr) eval() interface{} {
 	return e.n
+}
+
+func (_ VectorExpr) parse(form IPersistentVector) Expr {
+	var ret Expr = VectorExpr{form}
+	return ret
+	//
+}
+
+func (_ VectorExpr) eval() interface{} {
+	var ret IPersistentVector = PersistentVector_EMPTY
+	return ret
+	//
 }
