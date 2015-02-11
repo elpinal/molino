@@ -20,6 +20,9 @@ type NumberExpr struct {
 type VectorExpr struct {
 	args IPersistentVector
 }
+type MapExpr struct {
+	keyvals IPersistentVector
+}
 
 func eval(form interface{}) interface{} {
 	//
@@ -45,6 +48,8 @@ func analyze(form interface{}) Expr {
 		return analyzeSeq(form.(ISeq))
 	case IPersistentVector:
 		return VectorExpr{}.parse(form.(IPersistentVector))
+	case IPersistentMap:
+		return MapExpr{}.parse(form.(IPersistentMap))
 	}
 	//
 	//return nil //
@@ -114,4 +119,24 @@ func (e VectorExpr) eval() interface{} {
 	}
 	return ret
 	//
+}
+
+func (_ MapExpr) parse(form IPersistentMap) Expr {
+	var keyvals = PersistentVector_EMPTY
+	//
+	for s := seq(form); s != nil; s = s.next() {
+		//
+	}
+	var ret Expr = MapExpr{keyvals}
+	//
+	return ret
+	//
+}
+
+func (e MapExpr) eval() interface{} {
+	ret := make([]interface{}, 0, e.keyvals.count())
+	for i := 0; i < e.keyvals.count(); i++ {
+		ret = append(ret, e.keyvals.nth(i).(Expr).eval())
+	}
+	return RT_map(ret)
 }

@@ -8,6 +8,11 @@ type PersistentArrayMap struct {
 	array []interface{}
 }
 
+type Seq struct {
+	array []interface{}
+	i     int
+}
+
 var HASHTABLE_THRESHOLD int = 16
 
 func (a PersistentArrayMap) createWithCheck(init []interface{}) PersistentArrayMap {
@@ -70,3 +75,54 @@ func (a PersistentArrayMap) iterator() Iterator {
 	return IteratorSeq{}
 }
 */
+
+func (a PersistentArrayMap) seq() ISeq {
+	if len(a.array) > 0 {
+		return Seq{a.array, 0}
+	}
+	return nil
+}
+
+func (a Seq) empty() IPersistentCollection {
+	return EmptyList{}
+}
+
+func (a Seq) equiv(obj interface{}) bool {
+	switch obj.(type) {
+	case Sequential, List:
+		var ms ISeq = seq(obj)
+		for s := a.seq(); s != nil; s, ms = s.next(), ms.next() {
+			if ms == nil || s.first() != ms.first() {
+				return false
+			}
+		}
+	}
+	return false
+}
+
+func (a Seq) more() ISeq {
+	s := a.next()
+	if s == nil {
+		return EmptyList{}
+	}
+	return s
+}
+
+func (a Seq) seq() ISeq {
+	return a
+}
+
+func (a Seq) first() interface{} {
+	return MapEntry{a.array[a.i], a.array[a.i+1]}
+}
+
+func (a Seq) next() ISeq {
+	if a.i + 2 < len(a.array) {
+		return Seq{a.array, a.i + 2}
+	}
+	return nil
+}
+
+func (a Seq) count() int {
+	return (len(a.array) - 1) / 2
+}

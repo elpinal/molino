@@ -142,6 +142,12 @@ func TestPersistentVector(t *testing.T) {
 	}
 }
 
+func TestSeqable(t * testing.T) {
+	var i = []interface{}{1, 3, 9, 27, 81, 243}
+	m := PersistentArrayMap{}.createWithCheck(i)
+	var _ Seqable = m
+}
+
 func BenchmarkPersistentVector(b *testing.B) {
 	var a []interface{} = []interface{}{1, 2, 3}
 	b.ResetTimer()

@@ -63,6 +63,8 @@ func seq(coll interface{}) ISeq {
 
 func seqFrom(coll interface{}) ISeq {
 	switch coll.(type) {
+	case Seqable:
+		return coll.(Seqable).seq()
 	case Iterable:
 		ret, _ := IteratorSeq.create(IteratorSeq{}, coll.(Iterable).iterator())
 		return ret
