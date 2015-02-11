@@ -122,9 +122,14 @@ func (e VectorExpr) eval() interface{} {
 }
 
 func (_ MapExpr) parse(form IPersistentMap) Expr {
-	var keyvals = PersistentVector_EMPTY
+	var keyvals IPersistentVector = PersistentVector_EMPTY
 	//
 	for s := seq(form); s != nil; s = s.next() {
+		var e IMapEntry = s.first().(IMapEntry)
+		var k Expr = analyze(e.key())
+		var v Expr = analyze(e.val())
+		keyvals = keyvals.cons(k)
+		keyvals = keyvals.cons(v)
 		//
 	}
 	var ret Expr = MapExpr{keyvals}
