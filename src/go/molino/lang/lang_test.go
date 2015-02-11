@@ -148,6 +148,36 @@ func TestSeqable(t * testing.T) {
 	var _ Seqable = m
 }
 
+func TestMap(t * testing.T) {
+	var i = []interface{}{1, 3, 9, 27, 81, 243}
+	m := PersistentArrayMap{}.createWithCheck(i)
+	var _ Seq = m.seq().(Seq)
+
+	var e MapEntry = m.seq().first().(MapEntry)
+	if e.key() != 1 {
+		t.Errorf("%v should be 1", e.key())
+	}
+	if e.val() != 3 {
+		t.Errorf("%v should be 3", e.val())
+	}
+
+	var es MapEntry = m.seq().next().first().(MapEntry)
+	if es.key() != 9 {
+		t.Errorf("%v should be 9", es.key())
+	}
+	if es.val() != 27 {
+		t.Errorf("%v should be 27", es.val())
+	}
+
+	var ess MapEntry = m.seq().next().next().first().(MapEntry)
+	if ess.key() != 81 {
+		t.Errorf("%v should be 81", ess.key())
+	}
+	if ess.val() != 243 {
+		t.Errorf("%v should be 243", ess.val())
+	}
+}
+
 func BenchmarkPersistentVector(b *testing.B) {
 	var a []interface{} = []interface{}{1, 2, 3}
 	b.ResetTimer()
