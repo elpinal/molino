@@ -35,10 +35,10 @@ type VarExpr struct {
 	v Var
 }
 
-var LOCAL_ENV Var = Var{ns: nil, sym: nil, root: nil}
+var LOCAL_ENV Var = Var{}
 var CONSTANTS Var = Var{}.create()
 var CONSTANT_IDS Var = Var{}.create()
-var VARS Var = Var{ns: nil, sym: nil}
+var VARS Var = Var{}
 var NS Symbol = intern("ns")
 var IN_NS Symbol = intern("in-ns")
 

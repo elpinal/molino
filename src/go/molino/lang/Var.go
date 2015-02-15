@@ -37,6 +37,12 @@ func (this Var) intern(ns Namespace, sym Symbol, root interface{}, replaceRoot b
 	return dvout
 }
 
+func (v Var) create() Var {
+	ret := Var{}
+	ret.root = Unbound{ret}
+	return ret
+}
+
 func (this *Var) bindroot(root interface{}) {
 	//  oldroot := this.root
 	this.root = root
