@@ -26,7 +26,15 @@ func (a PersistentArrayMap) createWithCheck(init []interface{}) PersistentArrayM
 	return PersistentArrayMap{array: init}
 }
 
-func (a PersistentArrayMap) assoc(key, val interface{}) IPersistentMap {
+func (a PersistentArrayMap) entryAt(key interface{}) IMapEntry {
+	var i int = a.indexOf(key)
+	if i >= 0 {
+		return MapEntry{_key: a.array[i], _val: a.array[i+1]}
+	}
+	return nil
+}
+
+func (a PersistentArrayMap) assoc(key, val interface{}) Associative {
 	i := a.indexOf(key)
 	var newArray []interface{}
 	if i >= 0 {
@@ -54,6 +62,11 @@ func (a PersistentArrayMap) assoc(key, val interface{}) IPersistentMap {
 
 func (a PersistentArrayMap) indexOfObject(key interface{}) int {
 	//
+	for i := 0; i < len(a.array); i += 2 {
+		if key == a.array[i] {
+			return i
+		}
+	}
 	return -1
 }
 
@@ -125,4 +138,8 @@ func (a Seq) next() ISeq {
 
 func (a Seq) count() int {
 	return (len(a.array) - 1) / 2
+}
+
+func (a Seq) cons(o interface{}) ISeq {
+	return Cons{_first: o, _more: a}
 }

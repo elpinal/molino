@@ -62,7 +62,7 @@ func (h PersistentHashMap) entryAt(key interface{}) IMapEntry {
 	return h.root.find(0, hash(key), key)
 }
 
-func (h PersistentHashMap) assoc(key, val interface{}) IPersistentMap {
+func (h PersistentHashMap) assoc(key, val interface{}) Associative {
 	//var ret ITransientMap = PersistentHashMap{}.asTransient()
 	//
 	return PersistentHashMap{}

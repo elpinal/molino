@@ -100,6 +100,25 @@ func next(x interface{}) ISeq {
 	return seq.next()
 }
 
+func get(coll, key interface{}) interface{} {
+	//
+	return getFrom(coll, key)
+}
+
+func getFrom(coll, key interface{}) interface{} {
+	if coll == nil {
+		return nil
+	}
+	//
+	return nil
+}
+
+func assoc(coll, key, val interface{}) Associative {
+	if coll == nil {
+		return PersistentArrayMap{array: []interface{}{key, val}}
+	}
+	return coll.(Associative).assoc(key, val)
+}
 
 func RT_map(init []interface{}) IPersistentMap {
 	if init == nil {

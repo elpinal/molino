@@ -39,12 +39,7 @@ func (l PersistentList) printInnerSeq() []rune {
 func (l PersistentList) create(init []interface{}) IPersistentList {
 	var ret IPersistentList = EmptyList{}
 	for i := len(init) - 1; i >= 0; i-- {
-		switch ret.(type) {
-		case EmptyList:
-			ret = ret.(EmptyList).cons(init[i])
-		case PersistentList:
-			ret = ret.(PersistentList).cons(init[i])
-		}
+		ret = ret.(ISeq).cons(init[i]).(IPersistentList)
 	}
 	return ret
 }
@@ -88,7 +83,7 @@ func (l PersistentList) count() int {
 	return l._count
 }
 
-func (l PersistentList) cons(o interface{}) PersistentList {
+func (l PersistentList) cons(o interface{}) ISeq {
 	return PersistentList{_first: o, _rest: l, _count: l._count + 1}
 }
 
@@ -123,7 +118,7 @@ func (e EmptyList) next() ISeq {
 func (e EmptyList) more() ISeq {
 	return e
 }
-func (e EmptyList) cons(o interface{}) PersistentList {
+func (e EmptyList) cons(o interface{}) ISeq {
 	return PersistentList{_first: o, _rest: nil, _count: 1}
 }
 

@@ -5,5 +5,5 @@ type ISeq interface {
 	first() interface{}
 	next() ISeq
 	more() ISeq
-	//cons(interface{}) ISeq
+	cons(interface{}) ISeq
 }
