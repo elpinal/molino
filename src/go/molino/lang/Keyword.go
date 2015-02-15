@@ -11,6 +11,10 @@ func (k Keyword) intern(sym Symbol) Keyword {
 	return kw
 }
 
+func (k Keyword) internFromString(nsname string) Keyword {
+	return k.intern(intern(nsname))
+}
+
 func (k Keyword) String() string {
 	if k._str == "" {
 		k._str = ":" + k.sym.String()

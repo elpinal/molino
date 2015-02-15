@@ -34,6 +34,10 @@ type MapExpr struct {
 type VarExpr struct {
 	v Var
 }
+type LocalBindingExpr struct {
+	b LocalBinding
+	tag Symbol
+}
 
 var LOCAL_ENV Var = Var{}
 var CONSTANTS Var = Var{}.create()
@@ -87,11 +91,11 @@ func (_ Compiler) load(rdr *Reader) (interface{}, error) {
 }
 
 func analyzeSymbol(sym Symbol) Expr {
-	//
+	var tag Symbol = tagOf(sym)
 	if sym.ns == "" {
 		var b LocalBinding = referenceLocal(sym)
 		if b.sym.name != "" {
-			return LocalBindingExpr{}
+			return LocalBindingExpr{b: b, tag: tag}
 		}
 		//
 	} else {
@@ -189,12 +193,27 @@ func (e VarExpr) eval() interface{} {
 	return e.v.deref()
 }
 
+func (e LocalBindingExpr) eval() interface{} {
+	panic("Can't eval locals")
+}
+
 func referenceLocal(sym Symbol) LocalBinding {
 	var b LocalBinding = get(LOCAL_ENV.deref(), sym).(LocalBinding)
 	if b.sym.name != "" {
 		//
 	}
 	return b
+}
+
+func tagOf(o interface{}) Symbol {
+	tag := get(meta(o), TAG_KEY)
+	switch tag.(type) {
+	case Symbol:
+		return tag.(Symbol)
+	case string:
+		return intern(tag.(string))
+	}
+	return Symbol{}
 }
 
 func namespaceFor(inns Namespace, sym Symbol) Namespace {

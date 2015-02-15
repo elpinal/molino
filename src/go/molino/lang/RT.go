@@ -11,6 +11,8 @@ var MOLINO_NS Namespace = FindOrCreate(intern("molino.core"))
 var IN_NAMESPACE Symbol = intern("in-ns")
 var NAMESPACE Symbol = intern("ns")
 
+var TAG_KEY Keyword = Keyword{}.internFromString("tag")
+
 var CURRENT_NS Var = Var{}.intern(MOLINO_NS, intern("*ns*"), MOLINO_NS, true)
 
 var NS_VAR Var = Var{}.intern(MOLINO_NS, intern("ns"), false, true)
@@ -75,6 +77,13 @@ func seqFrom(coll interface{}) ISeq {
 	}
 	//
 	panic("Don't know how to create ISeq from: " + fmt.Sprintf("%T\n", coll))
+}
+
+func meta(x interface{}) IPersistentMap {
+	if m, ok := x.(IMeta); ok {
+		return m.meta()
+	}
+	return nil
 }
 
 func conj(coll IPersistentCollection, x interface{}) IPersistentCollection {
