@@ -19,6 +19,14 @@ type TransientVector struct {
 	tail  []interface{}
 }
 
+type ChunkedSeq struct {
+	ASeq
+	vec    PersistentVector
+	node   []interface{}
+	i      int
+	offset int
+}
+
 var PersistentVector_EMPTY_NODE = PersistentVector_Node{array: make([]interface{}, 0, 8)}
 
 var PersistentVector_EMPTY = PersistentVector{cnt: 0, shift: 5, root: PersistentVector_EMPTY_NODE}
@@ -120,6 +128,58 @@ func (v PersistentVector) pushTail(level uint, parent PersistentVector_Node, tai
 	//
 }
 
+func (v PersistentVector) empty() IPersistentCollection {
+	return PersistentVector_EMPTY
+}
+
+func (v PersistentVector) equiv(obj interface{}) bool {
+	switch obj.(type) {
+	case List:
+		if len(obj.(List)) != v.count() {
+			return false
+		}
+		for i, i2 := 0, obj.(List).iterator(); i2.hasNext(); i++ {
+			if v.nth(i) != i2.next() {
+				return false
+			}
+		}
+		return true
+	case IPersistentVector:
+		ma := obj.(IPersistentVector)
+		if ma.count() != v.count() {
+			return false
+		}
+		for i := 0; i < v.count(); i++ {
+			if v.nth(i) != ma.nth(i) {
+				return false
+			}
+		}
+		return true
+	case Sequential:
+		var ms ISeq = seq(obj)
+		for i := 0; i < v.count(); i, ms = i + 1, ms.next() {
+			if ms == nil || v.nth(i) != ms.first() {
+				return false
+			}
+		}
+		if ms != nil {
+			return false
+		}
+	}
+	return false
+}
+
+func (v PersistentVector) chunkedSeq() IChunkedSeq {
+	if v.count() == 0 {
+		return nil
+	}
+	return ChunkedSeq{vec: v, i: 0, offset: 0}
+}
+
+func (v PersistentVector) seq() ISeq {
+	return v.chunkedSeq()
+}
+
 func (t TransientVector) persistent() PersistentVector {
 	var trimmedTail []interface{} = t.tail
 	return PersistentVector{t.cnt, t.shift, t.root, trimmedTail}
@@ -186,4 +246,23 @@ func (t TransientVector) tailoff() int {
 		return 0
 	}
 	return ((t.cnt - 1) >> 5) << 5
+}
+
+func (c ChunkedSeq) chunkedFirst() IChunk {
+	return ArrayChunk{c.node, c.offset, len(c.node)}
+}
+
+func (c ChunkedSeq) chunkedNext() ISeq {
+	if c.i + len(c.node) < c.vec.cnt {
+		return ChunkedSeq{vec: c.vec, i: len(c.node), offset: 0}
+	}
+	return nil
+}
+
+func (c ChunkedSeq) chunkedMore() ISeq {
+	var s ISeq = c.chunkedNext()
+	if s == nil {
+		return PersistentList{}
+	}
+	return s
 }
