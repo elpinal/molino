@@ -178,6 +178,68 @@ func TestMap(t * testing.T) {
 	}
 }
 
+func TestFmix(t *testing.T) {
+	a := fmix(12000, 8)
+	if a != 1259081277 {
+		t.Errorf("%s should be 1259081277", a)
+	}
+}
+
+func TestMixK1(t *testing.T) {
+	a := mixK1(24)
+	if a != 166749150 {
+		t.Errorf("%s should be 166749150", a)
+	}
+}
+
+/*
+func TestMixH1(t *testing.T) {
+	a := mixH1(0, 17)
+	if a != 166749150 {
+		t.Errorf("%s should be 166749150", a)
+	}
+}
+*/
+
+/*
+func TestHash(t *testing.T) {
+	a := hash(1)
+	if a != 1 {
+		t.Errorf("%s should be 1", a)
+	}
+
+	b := hash(128)
+	if b != 128 {
+		t.Errorf("%s should be 128", b)
+	}
+
+	c := hash(2147483647)
+	if c != 2147483647 {
+		t.Errorf("%s should be 2147483647", c)
+	}
+
+	d := hash(-3)
+	if d != 2 {
+		t.Errorf("%s should be 2", d)
+	}
+}
+*/
+
+func TestPersistentHashMap(t *testing.T) {
+	var i = []interface{}{1, 3, 9, 27, 81, 243}
+	m := PersistentHashMap{}.createWithCheck(i)
+	var _ IPersistentMap = m
+	if !true {
+		t.Errorf("%v", m)
+	}
+
+	var b ITransientMap = PersistentHashMap{}.asTransient()
+	b = b.assoc(5, 10)
+	if !true {
+		t.Errorf("%v", b)
+	}
+}
+
 func BenchmarkPersistentVector(b *testing.B) {
 	var a []interface{} = []interface{}{1, 2, 3}
 	b.ResetTimer()
