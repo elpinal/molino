@@ -58,8 +58,8 @@ func analyze(form interface{}) Expr {
 		return BoolExpr{false}
 	}
 	switch form.(type) {
-//	case Symbol:
-//		return analyzeSymbol(form.(Symbol))
+	case Symbol:
+		return analyzeSymbol(form.(Symbol))
 	case int64:
 		return NumberExpr{form.(int64)}
 	case ISeq:
