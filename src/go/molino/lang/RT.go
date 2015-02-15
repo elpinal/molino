@@ -11,8 +11,10 @@ var MOLINO_NS Namespace = FindOrCreate(intern("molino.core"))
 var IN_NAMESPACE Symbol = intern("in-ns")
 var NAMESPACE Symbol = intern("ns")
 
-var VAR Var
-var CURRENT_NS Var = VAR.intern(MOLINO_NS, intern("*ns*"), MOLINO_NS, true)
+var CURRENT_NS Var = Var{}.intern(MOLINO_NS, intern("*ns*"), MOLINO_NS, true)
+
+var NS_VAR Var = Var{}.intern(MOLINO_NS, intern("ns"), false, true)
+var IN_NS_VAR Var = Var{}.intern(MOLINO_NS, intern("in-ns"), false, true)
 
 var inNamespace = func(arg1 reflect.Value) (Namespace, error) {
 	var nsname Symbol = arg1.Interface().(Symbol)
@@ -73,6 +75,13 @@ func seqFrom(coll interface{}) ISeq {
 	}
 	//
 	panic("Don't know how to create ISeq from: " + fmt.Sprintf("%T\n", coll))
+}
+
+func conj(coll IPersistentCollection, x interface{}) IPersistentCollection {
+	if coll == nil {
+		return PersistentList{_first: x, _count: 1}
+	}
+	return coll.(ISeq).cons(x)
 }
 
 func first(x interface{}) interface{} {

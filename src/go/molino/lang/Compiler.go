@@ -6,6 +6,14 @@ import (
 
 type Compiler struct {}
 
+type LocalBinding struct {
+	idx int
+	sym Symbol
+	tag Symbol
+	init Expr
+	isArg bool
+}
+
 type Expr interface {
 	eval() interface{}
 }
@@ -23,6 +31,16 @@ type VectorExpr struct {
 type MapExpr struct {
 	keyvals IPersistentVector
 }
+type VarExpr struct {
+	v Var
+}
+
+var LOCAL_ENV Var = Var{ns: nil, sym: nil, root: nil}
+var CONSTANTS Var = Var{}.create()
+var CONSTANT_IDS Var = Var{}.create()
+var VARS Var = Var{ns: nil, sym: nil}
+var NS Symbol = intern("ns")
+var IN_NS Symbol = intern("in-ns")
 
 func eval(form interface{}) interface{} {
 	//
@@ -68,12 +86,33 @@ func (_ Compiler) load(rdr *Reader) (interface{}, error) {
 	return ret, nil
 }
 
-/*
 func analyzeSymbol(sym Symbol) Expr {
 	//
-	return //
+	if sym.ns == "" {
+		var b LocalBinding = referenceLocal(sym)
+		if b.sym.name != "" {
+			return LocalBindingExpr{}
+		}
+		//
+	} else {
+		if namespaceFor(currentNS(), sym).name.name == "" {
+			var nsSym Symbol = intern(sym.ns)
+			//
+		}
+	}
+	var o interface{} = resolve(sym)
+	switch o.(type) {
+	case Var:
+		var v Var = o.(Var)
+		//
+		registerVar(v)
+		return VarExpr{v}
+	case Symbol:
+		//
+	}
+	//
+	panic("Unable to resolve symbol: " + sym.String() + " in this context")
 }
-*/
 
 func analyzeSeq(form ISeq) Expr {
 	op := first(form)
@@ -144,4 +183,79 @@ func (e MapExpr) eval() interface{} {
 		ret = append(ret, e.keyvals.nth(i).(Expr).eval())
 	}
 	return RT_map(ret)
+}
+
+func (e VarExpr) eval() interface{} {
+	return e.v.deref()
+}
+
+func referenceLocal(sym Symbol) LocalBinding {
+	var b LocalBinding = get(LOCAL_ENV.deref(), sym).(LocalBinding)
+	if b.sym.name != "" {
+		//
+	}
+	return b
+}
+
+func namespaceFor(inns Namespace, sym Symbol) Namespace {
+	var nsSym Symbol = intern(sym.ns)
+	var ns Namespace
+	//
+	ns = find(nsSym)
+	//
+	return ns
+}
+
+func resolve(sym Symbol) interface{} {
+	return resolveIn(currentNS(), sym)
+}
+
+func resolveIn(n Namespace, sym Symbol) interface{} {
+	if sym.ns != "" {
+		var ns Namespace = namespaceFor(n, sym)
+		if ns.name.name == "" {
+			panic("No such namespace: " + sym.ns)
+		}
+		v, exist := ns.findInternedVar(intern(sym.name))
+		if !exist {
+			panic("No such var: " + sym.String())
+		} //
+		return v
+	} else if sym == NS {
+		return NS_VAR
+	} else if sym == IN_NS {
+		return IN_NS_VAR
+	} else {
+		o, exist := n.getmapping(sym)
+		if !exist {
+			//
+			panic("Unable to resolve symbol: " + sym.String() + " in this context")
+		}
+		return o
+	}
+	//
+}
+
+func currentNS() Namespace {
+	return CURRENT_NS.deref().(Namespace)
+}
+
+func registerContent(o interface{}) int {
+	var v PersistentVector = CONSTANTS.deref().(PersistentVector)
+	var ids map[interface{}]int = CONSTANT_IDS.deref().(map[interface{}]int)
+	i, ok := ids[o]
+	if ok {
+		return i
+	}
+	CONSTANTS.set(conj(v, o))
+	ids[o] = v.count()
+	return v.count()
+}
+
+func registerVar(v Var) {
+	var varsMap IPersistentMap = VARS.deref().(IPersistentMap)
+	id := getFrom(varsMap, v)
+	if id == nil {
+		VARS.set(assoc(varsMap, v, registerContent(v)))
+	}
 }

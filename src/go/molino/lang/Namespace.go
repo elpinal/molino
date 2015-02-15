@@ -20,6 +20,10 @@ func FindOrCreate(name Symbol) Namespace {
 	return newns
 }
 
+func find(name Symbol) Namespace {
+	return namespaces[name]
+}
+
 func (this Namespace) intern(sym Symbol) Var {
 	if sym.ns != "" {
 		panic("ns is not empty!")
