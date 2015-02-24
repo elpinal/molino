@@ -60,6 +60,14 @@ func (a PersistentArrayMap) assoc(key, val interface{}) Associative {
 	return PersistentArrayMap{array: newArray}
 }
 
+func (a PersistentArrayMap) valAt(key interface{}) interface{} {
+	var i int = a.indexOf(key)
+	if i >= 0 {
+		return a.array[i + 1]
+	}
+	return nil
+}
+
 func (a PersistentArrayMap) indexOfObject(key interface{}) int {
 	//
 	for i := 0; i < len(a.array); i += 2 {

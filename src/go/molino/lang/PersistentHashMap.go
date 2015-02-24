@@ -68,6 +68,19 @@ func (h PersistentHashMap) assoc(key, val interface{}) Associative {
 	return PersistentHashMap{}
 }
 
+func (h PersistentHashMap) valAt(key interface{}) interface{} {
+	if key == nil {
+		if h.hasNil {
+			return h.nilValue
+		}
+		return nil
+	}
+	if h.root != nil {
+		h.root.find(0, hash(key), key)
+	}
+	return nil
+}
+
 func (h PersistentHashMap) asTransient() TransientHashMap {
 	return TransientHashMap{root: h.root, count: h.count}
 }
