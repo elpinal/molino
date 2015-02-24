@@ -3,7 +3,6 @@ package lang
 import (
 	"io/ioutil"
 	"log"
-	"reflect"
 	"fmt"
 )
 
@@ -18,14 +17,14 @@ var CURRENT_NS Var = Var{}.intern(MOLINO_NS, intern("*ns*"), MOLINO_NS, true)
 var NS_VAR Var = Var{}.intern(MOLINO_NS, intern("ns"), false, true)
 var IN_NS_VAR Var = Var{}.intern(MOLINO_NS, intern("in-ns"), false, true)
 
-var inNamespace = func(arg1 reflect.Value) (Namespace, error) {
-	var nsname Symbol = arg1.Interface().(Symbol)
+var inNamespace IFn = NewAFn(func(arg1 interface{}) interface{} {
+	var nsname Symbol = arg1.(Symbol)
 	var ns Namespace = FindOrCreate(nsname)
 	//    CURRENT_NS.set(ns)
 	//CURRENT_NS.bindroot(ns)
 	CURRENT_NS.root = ns
-	return ns, nil
-}
+	return ns
+})
 
 func Runtime() {
 	//fmt.Println(MOLINO_NS, NAMESPACE, IN_NAMESPACE.name)

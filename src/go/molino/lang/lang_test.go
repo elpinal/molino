@@ -240,6 +240,14 @@ func TestPersistentHashMap(t *testing.T) {
 	}
 }
 
+func TestAFn(t *testing.T) {
+	var a IFn = NewAFn(func(x int) int {return x * x + 2})
+	v := a.invoke(11)
+	if v != 123 {
+		t.Errorf("%v should be 123\n", v)
+	}
+}
+
 func BenchmarkPersistentVector(b *testing.B) {
 	var a []interface{} = []interface{}{1, 2, 3}
 	b.ResetTimer()
