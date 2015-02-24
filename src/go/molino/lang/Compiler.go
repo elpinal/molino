@@ -25,6 +25,9 @@ type BoolExpr struct {
 type NumberExpr struct {
 	n int64
 }
+type StringExpr struct {
+	str string
+}
 type KeywordExpr struct {
 	k Keyword
 }
@@ -72,6 +75,8 @@ func analyze(form interface{}) Expr {
 		return registerKeyword(form.(Keyword))
 	case int64:
 		return NumberExpr{form.(int64)}
+	case string:
+		return StringExpr{form.(string)}
 	case ISeq:
 		return analyzeSeq(form.(ISeq))
 	case IPersistentVector:
@@ -148,6 +153,10 @@ func (e BoolExpr) eval() interface{} {
 
 func (e NumberExpr) eval() interface{} {
 	return e.n
+}
+
+func (e StringExpr) eval() interface{} {
+	return e.str
 }
 
 func (e KeywordExpr) eval() interface{} {

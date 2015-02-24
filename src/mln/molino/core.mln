@@ -11,3 +11,5 @@
 molino.core/in-ns
 
 :foo
+
+"bar!"
