@@ -25,6 +25,9 @@ type BoolExpr struct {
 type NumberExpr struct {
 	n int64
 }
+type KeywordExpr struct {
+	k Keyword
+}
 type VectorExpr struct {
 	args IPersistentVector
 }
@@ -42,6 +45,7 @@ type LocalBindingExpr struct {
 var LOCAL_ENV Var = Var{}
 var CONSTANTS Var = Var{}.create()
 var CONSTANT_IDS Var = Var{}.create()
+var KEYWORDS Var = Var{}.create()
 var VARS Var = Var{}.create()
 var NS Symbol = intern("ns")
 var IN_NS Symbol = intern("in-ns")
@@ -64,6 +68,8 @@ func analyze(form interface{}) Expr {
 	switch form.(type) {
 	case Symbol:
 		return analyzeSymbol(form.(Symbol))
+	case Keyword:
+		return registerKeyword(form.(Keyword))
 	case int64:
 		return NumberExpr{form.(int64)}
 	case ISeq:
@@ -142,6 +148,10 @@ func (e BoolExpr) eval() interface{} {
 
 func (e NumberExpr) eval() interface{} {
 	return e.n
+}
+
+func (e KeywordExpr) eval() interface{} {
+	return e.k
 }
 
 func (_ VectorExpr) parse(form IPersistentVector) Expr {
@@ -270,6 +280,18 @@ func registerConstant(o interface{}) int {
 	CONSTANTS.set(conj(v, o))
 	ids[o] = v.count()
 	return v.count()
+}
+
+func registerKeyword(keyword Keyword) KeywordExpr {
+	if !KEYWORDS.isBound() {
+		return KeywordExpr{k: keyword}
+	}
+	var keywordsMap IPersistentMap = KEYWORDS.deref().(IPersistentMap)
+	var id = get(keywordsMap, keyword)
+	if id == nil {
+		KEYWORDS.set(assoc(keywordsMap, keyword, registerConstant(keyword)))
+	}
+	return KeywordExpr{k: keyword}
 }
 
 func registerVar(v Var) {
