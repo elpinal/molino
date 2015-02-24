@@ -55,6 +55,10 @@ func (v Var) invoke(arg1 interface{}) interface{} {
 	return x
 }
 
+func (v Var) isBound() bool {
+	return v.hasRoot()
+}
+
 func (v Var) get() interface{} {
 	if !v.threadBound {
 		return v.root
@@ -77,9 +81,17 @@ func (v Var) set(val interface{}) interface{} {
 	panic(fmt.Sprintf("Can't change/establish root binding of: %s with set", v.sym))
 }
 
+func (v Var) hasRoot() bool {
+	_, ok := v.root.(Unbound)
+	return !ok
+}
+
 func (v Var) getThreadBinding() TBox {
 	if v.threadBound {
 		var e IMapEntry = dvals.bindings.entryAt(v)
+		if e != nil {
+			return e.val().(TBox)
+		}
 	}
 	return TBox{val: nil}
 }

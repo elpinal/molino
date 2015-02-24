@@ -42,7 +42,7 @@ type LocalBindingExpr struct {
 var LOCAL_ENV Var = Var{}
 var CONSTANTS Var = Var{}.create()
 var CONSTANT_IDS Var = Var{}.create()
-var VARS Var = Var{}
+var VARS Var = Var{}.create()
 var NS Symbol = intern("ns")
 var IN_NS Symbol = intern("in-ns")
 
@@ -101,6 +101,7 @@ func analyzeSymbol(sym Symbol) Expr {
 	} else {
 		if namespaceFor(currentNS(), sym).name.name == "" {
 			var nsSym Symbol = intern(sym.ns)
+			_ = nsSym
 			//
 		}
 	}
@@ -272,6 +273,9 @@ func registerContent(o interface{}) int {
 }
 
 func registerVar(v Var) {
+	if !VARS.isBound() {
+		return
+	}
 	var varsMap IPersistentMap = VARS.deref().(IPersistentMap)
 	id := getFrom(varsMap, v)
 	if id == nil {
