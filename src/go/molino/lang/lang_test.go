@@ -56,22 +56,22 @@ func TestList(t *testing.T) {
 func TestPrint(t *testing.T) {
 	var s Symbol = intern("test")
 	if s.String() != "test" {
-		t.Errorf("\"%s\" (type Symbol) must be \"test\"", s)
+		t.Errorf(`"%s" (type Symbol) must be "test"`, s)
 	}
 
 	var n Symbol = intern("London/Prelude")
 	if n.String() != "London/Prelude" {
-		t.Errorf("\"%s\" (type Symbol) must be \"London/Prelude\"", n)
+		t.Errorf(`"%s" (type Symbol) must be "London/Prelude"`, n)
 	}
 
 	var k Keyword = Keyword.intern(Keyword{}, s)
 	if k.String() != ":test" {
-		t.Errorf("\"%s\" (type Keyword) must be \":test\"", k)
+		t.Errorf(`"%s" (type Keyword) must be ":test"`, k)
 	}
 
 	var l Keyword = Keyword.intern(Keyword{}, n)
 	if l.String() != ":London/Prelude" {
-		t.Errorf("\"%s\" (type Keyword) must be \":London/Prelude\"", l)
+		t.Errorf(`"%s" (type Keyword) must be ":London/Prelude"`, l)
 	}
 }
 
