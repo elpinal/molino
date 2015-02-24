@@ -17,19 +17,19 @@ type TransientHashMap struct {
 	hasNil   bool
 	nilValue interface{}
 	leafFlag Box
-	edit     chan bool
+	edit     bool
 }
 
 type INode interface {
 	assoc(int, int, interface{}, interface{}, Box) INode
-	assoc6(chan bool, int, uint, interface{}, interface{}, Box) INode
+	assoc6(bool, int, uint, interface{}, interface{}, Box) INode
 	find(int, uint, interface{}) IMapEntry
 }
 
 type BitmapIndexedNode struct {
 	bitmap int
 	array  []interface{}
-	edit   chan bool
+	edit   bool
 }
 
 
@@ -136,7 +136,7 @@ func (b BitmapIndexedNode) assoc(shift int, hash int, key interface{}, val inter
 	return BitmapIndexedNode{}
 }
 
-func (b BitmapIndexedNode) ensureEditable(edit chan bool) BitmapIndexedNode {
+func (b BitmapIndexedNode) ensureEditable(edit bool) BitmapIndexedNode {
 	if b.edit == edit {
 		return b
 	}
@@ -151,20 +151,20 @@ func (b BitmapIndexedNode) ensureEditable(edit chan bool) BitmapIndexedNode {
 	return BitmapIndexedNode{edit: edit, bitmap: b.bitmap, array: newArray}
 }
 
-func (b BitmapIndexedNode) editAndSet(edit chan bool, i int, a interface{}) BitmapIndexedNode {
+func (b BitmapIndexedNode) editAndSet(edit bool, i int, a interface{}) BitmapIndexedNode {
 	var editable BitmapIndexedNode = b.ensureEditable(edit)
 	editable.array[i] = a
 	return editable
 }
 
-func (b BitmapIndexedNode) editAndSet5(edit chan bool, i int, a interface{}, j int, c interface{}) BitmapIndexedNode {
+func (b BitmapIndexedNode) editAndSet5(edit bool, i int, a interface{}, j int, c interface{}) BitmapIndexedNode {
 	var editable BitmapIndexedNode = b.ensureEditable(edit)
 	editable.array[i] = a
 	editable.array[j] = c
 	return editable
 }
 
-func (b BitmapIndexedNode) assoc6(edit chan bool, shift int, hash uint, key interface{}, val interface{}, addedLeaf Box) INode {
+func (b BitmapIndexedNode) assoc6(edit bool, shift int, hash uint, key interface{}, val interface{}, addedLeaf Box) INode {
 	bit := bitpos(hash, shift)
 	idx := b.index(bit)
 	if (b.bitmap & bit) != 0 {
@@ -253,7 +253,7 @@ func bitCount(i int) int {
 	return i & 0x3f
 }
 
-func createNode(edit chan bool, shift int, key1 interface{}, val1 interface{}, key2hash uint, key2 interface{}, val2 interface{}) INode {
+func createNode(edit bool, shift int, key1 interface{}, val1 interface{}, key2hash uint, key2 interface{}, val2 interface{}) INode {
 	key1hash := hash(key1)
 	if key1hash == key2hash {
 		//
