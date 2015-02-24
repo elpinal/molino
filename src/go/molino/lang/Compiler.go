@@ -260,7 +260,7 @@ func currentNS() Namespace {
 	return CURRENT_NS.deref().(Namespace)
 }
 
-func registerContent(o interface{}) int {
+func registerConstant(o interface{}) int {
 	var v PersistentVector = CONSTANTS.deref().(PersistentVector)
 	var ids map[interface{}]int = CONSTANT_IDS.deref().(map[interface{}]int)
 	i, ok := ids[o]
@@ -279,6 +279,6 @@ func registerVar(v Var) {
 	var varsMap IPersistentMap = VARS.deref().(IPersistentMap)
 	id := getFrom(varsMap, v)
 	if id == nil {
-		VARS.set(assoc(varsMap, v, registerContent(v)))
+		VARS.set(assoc(varsMap, v, registerConstant(v)))
 	}
 }
