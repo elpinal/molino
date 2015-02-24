@@ -250,10 +250,16 @@ func TestAFn(t *testing.T) {
 
 func TestGet(t *testing.T) {
 	var i = []interface{}{1, 3, 9, 27, 81, 243}
-	m := PersistentArrayMap{}.createWithCheck(i)
-	ret := get(m, 9)
-	if ret != 27 {
-		t.Errorf("%v should be 27", ret)
+	am := PersistentArrayMap{}.createWithCheck(i)
+	v1 := get(am, 9)
+	if v1 != 27 {
+		t.Errorf("%v should be 27", v1)
+	}
+
+	hm := PersistentHashMap{}.createWithCheck(i)
+	v2 := get(hm, 81)
+	if v2 != 243 {
+		t.Errorf("%v should be 243", v2)
 	}
 }
 

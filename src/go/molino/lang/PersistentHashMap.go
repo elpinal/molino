@@ -23,7 +23,8 @@ type TransientHashMap struct {
 type INode interface {
 	assoc(int, int, interface{}, interface{}, Box) INode
 	assoc6(bool, int, uint, interface{}, interface{}, Box) INode
-	find(int, uint, interface{}) IMapEntry
+	findEntry(int, uint, interface{}) IMapEntry
+	find(int, uint, interface{}, interface{}) interface{}
 }
 
 type BitmapIndexedNode struct {
@@ -59,7 +60,7 @@ func (h PersistentHashMap) entryAt(key interface{}) IMapEntry {
 		return nil
 	}
 	//
-	return h.root.find(0, hash(key), key)
+	return h.root.findEntry(0, hash(key), key)
 }
 
 func (h PersistentHashMap) assoc(key, val interface{}) Associative {
@@ -76,7 +77,7 @@ func (h PersistentHashMap) valAt(key interface{}) interface{} {
 		return nil
 	}
 	if h.root != nil {
-		h.root.find(0, hash(key), key)
+		return h.root.find(0, hash(key), key, nil)
 	}
 	return nil
 }
@@ -216,7 +217,7 @@ func (b BitmapIndexedNode) assoc6(edit bool, shift int, hash uint, key interface
 	return editable
 }
 
-func (b BitmapIndexedNode) find(shift int, hash uint, key interface{}) IMapEntry {
+func (b BitmapIndexedNode) findEntry(shift int, hash uint, key interface{}) IMapEntry {
 	bit := bitpos(hash, shift)
 	if (b.bitmap & bit) == 0 {
 		return nil
@@ -225,12 +226,29 @@ func (b BitmapIndexedNode) find(shift int, hash uint, key interface{}) IMapEntry
 	keyOrNil := b.array[2*idx]
 	valOrNode := b.array[2*idx+1]
 	if keyOrNil == nil {
-		return valOrNode.(INode).find(shift + 5, hash, key)
+		return valOrNode.(INode).findEntry(shift + 5, hash, key)
 	}
 	if key == keyOrNil {
 		return MapEntry{keyOrNil, valOrNode}
 	}
 	return nil
+}
+
+func (b BitmapIndexedNode) find(shift int, hash uint, key, notFound interface{}) interface{} {
+	bit := bitpos(hash, shift)
+	if (b.bitmap & bit) == 0 {
+		return nil
+	}
+	idx := b.index(bit)
+	keyOrNil := b.array[2*idx]
+	valOrNode := b.array[2*idx+1]
+	if keyOrNil == nil {
+		return valOrNode.(INode).find(shift + 5, hash, key, notFound)
+	}
+	if key == keyOrNil {
+		return valOrNode
+	}
+	return notFound
 }
 
 func mask(hash uint, shift int) uint {
