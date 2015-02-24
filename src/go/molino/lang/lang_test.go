@@ -56,22 +56,22 @@ func TestList(t *testing.T) {
 func TestPrint(t *testing.T) {
 	var s Symbol = intern("test")
 	if s.String() != "test" {
-		t.Errorf("\"%s\" (type Symbol) must be \"test\"\n", s)
+		t.Errorf("\"%s\" (type Symbol) must be \"test\"", s)
 	}
 
 	var n Symbol = intern("London/Prelude")
 	if n.String() != "London/Prelude" {
-		t.Errorf("\"%s\" (type Symbol) must be \"London/Prelude\"\n", n)
+		t.Errorf("\"%s\" (type Symbol) must be \"London/Prelude\"", n)
 	}
 
 	var k Keyword = Keyword.intern(Keyword{}, s)
 	if k.String() != ":test" {
-		t.Errorf("\"%s\" (type Keyword) must be \":test\"\n", k)
+		t.Errorf("\"%s\" (type Keyword) must be \":test\"", k)
 	}
 
 	var l Keyword = Keyword.intern(Keyword{}, n)
 	if l.String() != ":London/Prelude" {
-		t.Errorf("\"%s\" (type Keyword) must be \":London/Prelude\"\n", l)
+		t.Errorf("\"%s\" (type Keyword) must be \":London/Prelude\"", l)
 	}
 }
 
@@ -86,16 +86,16 @@ func TestPersistentArrayMap(t *testing.T) {
 		m.assoc(k1, 9001).(PersistentArrayMap), m.assoc(k1, 10001).(PersistentArrayMap), m.assoc(k4, 9004).(PersistentArrayMap)
 
 	if am1.array[1] != 9001 {
-		t.Errorf("Expect 9001, but %v\n", am1.array[1])
+		t.Errorf("Expect 9001, but %v", am1.array[1])
 	}
 	if am2.array[1] != 10001 {
-		t.Errorf("Expect 10001, but %v\n", am2.array[1])
+		t.Errorf("Expect 10001, but %v", am2.array[1])
 	}
 	if am3.array[3] != 9001 {
-		t.Errorf("Expect 9001, but %v\n", am3.array[3])
+		t.Errorf("Expect 9001, but %v", am3.array[3])
 	}
 	if m.array[1] != 9001 {
-		t.Errorf("Expect 9001, but %v\n", m.array[1])
+		t.Errorf("Expect 9001, but %v", m.array[1])
 	}
 }
 
@@ -107,29 +107,29 @@ func TestBitCount(t *testing.T) {
 		r := bitCount(n)
 		switch {
 		case n == i[0] && r != 0:
-			t.Errorf("Expect 0, but %v\n", r)
+			t.Errorf("Expect 0, but %v", r)
 		case n == i[1] && r != 1:
-			t.Errorf("Expect 1, but %v\n", r)
+			t.Errorf("Expect 1, but %v", r)
 		case n == i[2] && r != 1:
-			t.Errorf("Expect 1, but %v\n", r)
+			t.Errorf("Expect 1, but %v", r)
 		case n == i[3] && r != 2:
-			t.Errorf("Expect 2, but %v\n", r)
+			t.Errorf("Expect 2, but %v", r)
 		case n == i[4] && r != 1:
-			t.Errorf("Expect 1, but %v\n", r)
+			t.Errorf("Expect 1, but %v", r)
 		case n == i[5] && r != 4:
-			t.Errorf("Expect 4, but %v\n", r)
+			t.Errorf("Expect 4, but %v", r)
 		case n == i[6] && r != 3:
-			t.Errorf("Expect 3, but %v\n", r)
+			t.Errorf("Expect 3, but %v", r)
 		case n == i[7] && r != 8:
-			t.Errorf("Expect 8, but %v\n", r)
+			t.Errorf("Expect 8, but %v", r)
 		case n == i[8] && r != 5:
-			t.Errorf("Expect 5, but %v\n", r)
+			t.Errorf("Expect 5, but %v", r)
 		case n == i[9] && r != 6:
-			t.Errorf("Expect 6, but %v\n", r)
+			t.Errorf("Expect 6, but %v", r)
 		case n == i[10] && r != 8:
-			t.Errorf("Expect 8, but %v\n", r)
+			t.Errorf("Expect 8, but %v", r)
 		case n == i[11] && r != 15:
-			t.Errorf("Expect 15, but %v\n", r)
+			t.Errorf("Expect 15, but %v", r)
 		}
 	}
 }
@@ -244,7 +244,7 @@ func TestAFn(t *testing.T) {
 	var a IFn = NewAFn(func(x int) int {return x * x + 2})
 	v := a.invoke(11)
 	if v != 123 {
-		t.Errorf("%v should be 123\n", v)
+		t.Errorf("%v should be 123", v)
 	}
 }
 
