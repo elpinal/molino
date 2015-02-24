@@ -248,6 +248,15 @@ func TestAFn(t *testing.T) {
 	}
 }
 
+func TestGet(t *testing.T) {
+	var i = []interface{}{1, 3, 9, 27, 81, 243}
+	m := PersistentArrayMap{}.createWithCheck(i)
+	ret := get(m, 9)
+	if ret != 27 {
+		t.Errorf("%v should be 27", ret)
+	}
+}
+
 func BenchmarkPersistentVector(b *testing.B) {
 	var a []interface{} = []interface{}{1, 2, 3}
 	b.ResetTimer()

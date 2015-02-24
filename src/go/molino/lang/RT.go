@@ -109,7 +109,9 @@ func next(x interface{}) ISeq {
 }
 
 func get(coll, key interface{}) interface{} {
-	//
+	if c, ok := coll.(ILookup); ok {
+		return c.valAt(key)
+	}
 	return getFrom(coll, key)
 }
 
