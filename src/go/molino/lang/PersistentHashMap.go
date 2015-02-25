@@ -208,8 +208,8 @@ func (b BitmapIndexedNode) assoc6(edit bool, shift int, hash uint, key interface
 	newArray = append(newArray, key)
 	addedLeaf.val = addedLeaf
 	newArray = append(newArray, val)
-	for i := 2*idx; i < 2*(n-idx); i++ {
-		newArray = append(newArray, b.array[1])
+	for i := 2*idx; i < 2*n; i++ {
+		newArray = append(newArray, b.array[i])
 	}
 	var editable BitmapIndexedNode = b.ensureEditable(edit)
 	editable.array = newArray
