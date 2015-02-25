@@ -190,40 +190,51 @@ func TestMixK1(t *testing.T) {
 	if a != 166749150 {
 		t.Errorf("%s should be 166749150", a)
 	}
-}
 
-/*
-func TestMixH1(t *testing.T) {
-	a := mixH1(0, 17)
-	if a != 166749150 {
-		t.Errorf("%s should be 166749150", a)
+	b := mixK1(0)
+	if b != 0 {
+		t.Errorf("%s should be 0", b)
 	}
 }
-*/
 
-/*
+func TestMixH1(t *testing.T) {
+	a := mixH1(0, 17)
+	if a != -429978780 {
+		t.Errorf("%s should be -429978780", a)
+	}
+
+	b := mixH1(0, 166749150)
+	if b != 616509850 {
+		t.Errorf("%s should be 616509850", b)
+	}
+
+	c := mixH1(616509850, 0)
+	if c != 1700053591 {
+		t.Errorf("%s should be 1700053591", c)
+	}
+}
+
 func TestHash(t *testing.T) {
 	a := hash(1)
-	if a != 1 {
-		t.Errorf("%s should be 1", a)
+	if a != 1392991556 {
+		t.Errorf("%s should be 1392991556", a)
 	}
 
 	b := hash(128)
-	if b != 128 {
-		t.Errorf("%s should be 128", b)
+	if b != 292862370 {
+		t.Errorf("%s should be 292862370", b)
 	}
 
 	c := hash(2147483647)
-	if c != 2147483647 {
-		t.Errorf("%s should be 2147483647", c)
+	if c != 1819228606 {
+		t.Errorf("%s should be 1819228606", c)
 	}
 
-	d := hash(-3)
-	if d != 2 {
-		t.Errorf("%s should be 2", d)
-	}
+//	d := hash(-3)
+//	if d != -1797448787 {
+//		t.Errorf("%s should be -1797448787", d)
+//	}
 }
-*/
 
 func TestPersistentHashMap(t *testing.T) {
 	var i = []interface{}{1, 3, 9, 27, 81, 243}
