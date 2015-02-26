@@ -2,6 +2,7 @@ package lang
 
 import (
 	"fmt"
+	"reflect"
 )
 
 type PersistentHashMap struct {
@@ -22,9 +23,10 @@ type TransientHashMap struct {
 
 type INode interface {
 	assoc(int, int, interface{}, interface{}, Box) INode
-	assoc6(bool, int, uint, interface{}, interface{}, Box) INode
-	findEntry(int, uint, interface{}) IMapEntry
-	find(int, uint, interface{}, interface{}) interface{}
+	assoc6(bool, int, int, interface{}, interface{}, *Box) INode
+	findEntry(int, int, interface{}) IMapEntry
+	find(int, int, interface{}, interface{}) interface{}
+	nodeSeq() ISeq
 }
 
 type BitmapIndexedNode struct {
@@ -33,17 +35,25 @@ type BitmapIndexedNode struct {
 	edit   bool
 }
 
+type NodeSeq struct {
+	ASeq
+	array []interface{}
+	i int
+	s ISeq
+}
 
-func hash(k interface{}) uint {
-	fmt.Printf("2 %s\n", k)
+
+func hash(k interface{}) int {
 	if k == nil {
 		return 0
 	}
 	switch k.(type) {
 	case int:
 		return hashInt(k.(int))
+	case int64:
+		return hashInt(int(k.(int64)))
 	}
-	panic("Cannot create hash")
+	panic(fmt.Sprintf("Cannot create hash from %s", k))
 }
 
 func (h PersistentHashMap) createWithCheck(init []interface{}) PersistentHashMap {
@@ -82,6 +92,17 @@ func (h PersistentHashMap) valAt(key interface{}) interface{} {
 	return nil
 }
 
+func (h PersistentHashMap) seq() ISeq {
+	var s ISeq = nil
+	if h.root != nil {
+		s = h.root.nodeSeq()
+	}
+	if h.hasNil {
+		return Cons{_first: MapEntry{nil, h.nilValue}, _more: s}
+	}
+	return s
+}
+
 func (h PersistentHashMap) asTransient() TransientHashMap {
 	return TransientHashMap{root: h.root, count: h.count}
 }
@@ -105,14 +126,14 @@ func (t TransientHashMap) doAssoc(key, val interface{}) ITransientMap {
 	t.leafFlag.val = nil
 	var n INode
 	if t.root == nil {
-		n = BitmapIndexedNode{}.assoc6(t.edit, 0, hash(key), key, val, t.leafFlag)
+		n = BitmapIndexedNode{}.assoc6(t.edit, 0, hash(key), key, val, &t.leafFlag)
 	} else {
-		n = t.root.assoc6(t.edit, 0, hash(key), key, val, t.leafFlag)
+		n = t.root.assoc6(t.edit, 0, hash(key), key, val, &t.leafFlag)
 	}
 	//
-	//if n != t.root {
+	if !reflect.DeepEqual(n, t.root) {
 		t.root = n
-	//}
+	}
 	if t.leafFlag.val != nil {
 		t.count++
 	}
@@ -165,7 +186,7 @@ func (b BitmapIndexedNode) editAndSet5(edit bool, i int, a interface{}, j int, c
 	return editable
 }
 
-func (b BitmapIndexedNode) assoc6(edit bool, shift int, hash uint, key interface{}, val interface{}, addedLeaf Box) INode {
+func (b BitmapIndexedNode) assoc6(edit bool, shift int, hash int, key interface{}, val interface{}, addedLeaf *Box) INode {
 	bit := bitpos(hash, shift)
 	idx := b.index(bit)
 	if (b.bitmap & bit) != 0 {
@@ -173,7 +194,7 @@ func (b BitmapIndexedNode) assoc6(edit bool, shift int, hash uint, key interface
 		valOrNode := b.array[2 * idx + 1]
 		if keyOrNil == nil {
 			var n INode = valOrNode.(INode).assoc6(edit, shift + 5, hash, key, val, addedLeaf)
-			if n == valOrNode {
+			if reflect.DeepEqual(n, valOrNode) {
 				return b
 			}
 			return b.editAndSet(edit, 2 * idx + 1, n)
@@ -217,7 +238,7 @@ func (b BitmapIndexedNode) assoc6(edit bool, shift int, hash uint, key interface
 	return editable
 }
 
-func (b BitmapIndexedNode) findEntry(shift int, hash uint, key interface{}) IMapEntry {
+func (b BitmapIndexedNode) findEntry(shift int, hash int, key interface{}) IMapEntry {
 	bit := bitpos(hash, shift)
 	if (b.bitmap & bit) == 0 {
 		return nil
@@ -234,7 +255,7 @@ func (b BitmapIndexedNode) findEntry(shift int, hash uint, key interface{}) IMap
 	return nil
 }
 
-func (b BitmapIndexedNode) find(shift int, hash uint, key, notFound interface{}) interface{} {
+func (b BitmapIndexedNode) find(shift int, hash int, key, notFound interface{}) interface{} {
 	bit := bitpos(hash, shift)
 	if (b.bitmap & bit) == 0 {
 		return nil
@@ -251,14 +272,51 @@ func (b BitmapIndexedNode) find(shift int, hash uint, key, notFound interface{})
 	return notFound
 }
 
-func mask(hash uint, shift int) uint {
+func (b BitmapIndexedNode) nodeSeq() ISeq {
+	return NodeSeq{}.create(b.array, 0, nil)
+}
+
+func (_ NodeSeq) create(array []interface{}, i int, s ISeq) ISeq {
+	if s != nil {
+		return NodeSeq{array: array, i: i, s: s}
+	}
+	for j := i; j < len(array); j += 2 {
+		if array[j] != nil {
+			return NodeSeq{array: array, i: j}
+		}
+		var node INode = array[j + 1].(INode)
+		if node != nil {
+			var nodeSeq ISeq = node.nodeSeq()
+			if nodeSeq != nil {
+				return NodeSeq{array: array, i: j + 2, s: nodeSeq}
+			}
+		}
+	}
+	return nil
+}
+
+func (n NodeSeq) first() interface{} {
+	if n.s != nil {
+		return n.s.first()
+	}
+	return MapEntry{_key: n.array[n.i], _val: n.array[n.i + 1]}
+}
+
+func (n NodeSeq) next() ISeq {
+	if n.s != nil {
+		return n.create(n.array, n.i, n.s.next())
+	}
+	return n.create(n.array, n.i + 2, nil)
+}
+
+func mask(hash int, shift int) uint {
 	if shift < 0 {
 		panic("Stupid shift")
 	}
 	return uint((hash >> uint(shift)) & 0x01f)
 }
 
-func bitpos(hash uint, shift int) int {
+func bitpos(hash int, shift int) int {
 	return 1 << mask(hash, shift)
 }
 
@@ -271,13 +329,13 @@ func bitCount(i int) int {
 	return i & 0x3f
 }
 
-func createNode(edit bool, shift int, key1 interface{}, val1 interface{}, key2hash uint, key2 interface{}, val2 interface{}) INode {
+func createNode(edit bool, shift int, key1 interface{}, val1 interface{}, key2hash int, key2 interface{}, val2 interface{}) INode {
 	key1hash := hash(key1)
 	if key1hash == key2hash {
 		//
-		panic("FIXME: Hash collision")
+		panic("FIXME: Hash collision: " + fmt.Sprint(key1, key2, key1hash, key2hash))
 	}
 	//
 	var addedLeaf Box = Box{nil}
-	return BitmapIndexedNode{}.assoc6(edit, shift, key1hash, key1, val1, addedLeaf).assoc6(edit, shift, key2hash, key2, val2, addedLeaf)
+	return BitmapIndexedNode{}.assoc6(edit, shift, key1hash, key1, val1, &addedLeaf).assoc6(edit, shift, key2hash, key2, val2, &addedLeaf)
 }
