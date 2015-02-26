@@ -305,6 +305,9 @@ func currentNS() Namespace {
 }
 
 func registerConstant(o interface{}) int {
+	if !CONSTANTS.isBound() {
+		return -1
+	}
 	var v PersistentVector = CONSTANTS.deref().(PersistentVector)
 	var ids map[interface{}]int = CONSTANT_IDS.deref().(map[interface{}]int)
 	i, ok := ids[o]
