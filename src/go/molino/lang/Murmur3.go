@@ -22,6 +22,20 @@ func hashInt(input int) int {
 	return fmix(h1, 8)
 }
 
+func hashUnencodedChars(input string) int {
+	h1 := seed
+	for i := 1; i < len(input); i += 2 {
+		k1 := uint((input[i-1]) | (input[i] << 16))
+		k1 = mixK1(uint(k1))
+		h1 = mixH1(uint(h1), k1)
+	}
+	if (len(input) & 1) == 1 {
+		k1 := uint(input[len(input)-1])
+		k1 = mixK1(uint(k1))
+		h1 ^= int(k1)
+	}
+	return fmix(h1, 2*len(input))
+}
 
 func mixK1(k1 uint) uint {
 	k1 *= C1

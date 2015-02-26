@@ -5,10 +5,10 @@ import (
 )
 
 type Symbol struct {
-	ns   string
-	name string
-	_str string
-	//  _meta map[...]...
+	ns      string
+	name    string
+	_hasheq int
+	_str    string
 }
 
 func (s Symbol) String() string {
@@ -31,4 +31,11 @@ func intern(nsname string) Symbol {
 		name := nsname[i+1:]
 		return Symbol{ns: ns, name: name}
 	}
+}
+
+func (s Symbol) hasheq() int {
+	if s._hasheq == 0 {
+		s._hasheq = Util.hashCombine(hashUnencodedChars(s.name), Util.hash(s.ns))
+	}
+	return s._hasheq
 }

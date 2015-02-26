@@ -48,12 +48,14 @@ func hash(k interface{}) int {
 		return 0
 	}
 	switch k.(type) {
+	case IHashEq:
+		return k.(IHashEq).hasheq()
 	case int:
 		return hashInt(k.(int))
 	case int64:
 		return hashInt(int(k.(int64)))
 	}
-	panic(fmt.Sprintf("Cannot create hash from %s", k))
+	panic(fmt.Sprintf("Cannot create hash from %T", k))
 }
 
 func (h PersistentHashMap) create(init ...interface{}) PersistentHashMap {
