@@ -234,6 +234,31 @@ func TestHash(t *testing.T) {
 //	if d != -1797448787 {
 //		t.Errorf("%s should be -1797448787", d)
 //	}
+
+	e := hash(22)
+	if e != 270085581 {
+		t.Errorf("%s should be 270085581", e)
+	}
+
+	f := hash(64)
+	if f != 875635954 {
+		t.Errorf("%s should be 875635954", f)
+	}
+
+	g := hash(32)
+	if g != 483896201 {
+		t.Errorf("%s should be 483896201", g)
+	}
+
+	h := hash(33)
+	if h != 1904410925 {
+		t.Errorf("%s should be 1904410925", h)
+	}
+
+	i := hash(37)
+	if i != -1168698466 {
+		t.Errorf("%s should be -1168698466", i)
+	}
 }
 
 func TestPersistentHashMap(t *testing.T) {
@@ -271,6 +296,42 @@ func TestGet(t *testing.T) {
 	v2 := get(hm, 81)
 	if v2 != 243 {
 		t.Errorf("%v should be 243", v2)
+	}
+}
+
+func TestSeq(t *testing.T) {
+	var i = []interface{}{1, 3, 9, 27, 81, 243, 2, 4, 6, 8, 10, 12, 14, 16}
+	hm := PersistentHashMap{}.createWithCheck(i)
+	var v ISeq = seq(hm)
+	var _ NodeSeq = v.(NodeSeq)
+	var f IMapEntry = v.first().(IMapEntry)
+	if f.key() != 1 {
+		t.Errorf("%v should be 1", f.key())
+	}
+
+	var s ISeq = v.next()
+	var sf IMapEntry = s.first().(IMapEntry)
+	if sf.key() != 6 {
+		t.Errorf("%v should be 6", sf.key())
+	}
+
+	var ss ISeq = s.next()
+	var ssf IMapEntry = ss.first().(IMapEntry)
+	if ssf.val() != 4 {
+		t.Errorf("%v should be 4", ssf.val())
+	}
+}
+
+func TestBitmapIndexedNode(t *testing.T) {
+	var b INode = BitmapIndexedNode{}
+	b1 := b.assoc6(false, 0, hash(1), 1, 5, &Box{})
+	b1 = b1.assoc6(false, 0, hash(22), 22, 6, &Box{})
+	//t.Errorf("%#v", b1)
+
+	b2 := b.assoc6(false, 0, hash(64), 64, 32, &Box{})
+	b2 = b2.assoc6(false, 0, hash(33), 33, 37, &Box{})
+	if b2.nodeSeq().first().(IMapEntry).val() != 37 {
+		t.Errorf("%v should be 37", b2.nodeSeq().first().(IMapEntry).val())
 	}
 }
 
