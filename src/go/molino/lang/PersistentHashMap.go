@@ -13,7 +13,7 @@ type PersistentHashMap struct {
 }
 
 type TransientHashMap struct {
-	count    int
+	cnt      int
 	root     INode
 	hasNil   bool
 	nilValue interface{}
@@ -56,10 +56,21 @@ func hash(k interface{}) int {
 	panic(fmt.Sprintf("Cannot create hash from %s", k))
 }
 
+func (h PersistentHashMap) create(init ...interface{}) PersistentHashMap {
+	var ret ITransientMap = PersistentHashMap{}.asTransient()
+	for i := 0; i < len(init); i += 2 {
+		ret = ret.assoc(init[i], init[i + 1])
+	}
+	return ret.persistent().(PersistentHashMap)
+}
+
 func (h PersistentHashMap) createWithCheck(init []interface{}) PersistentHashMap {
 	var ret ITransientMap = PersistentHashMap{}.asTransient()
 	for i := 0; i < len(init); i += 2 {
 		ret = ret.assoc(init[i], init[i + 1])
+		if ret.count() != i/2 + 1 {
+			panic(fmt.Sprintf("Duplicate key: %s", init[i]))
+		}
 	}
 	return ret.persistent().(PersistentHashMap)
 }
@@ -105,7 +116,7 @@ func (h PersistentHashMap) seq() ISeq {
 }
 
 func (h PersistentHashMap) asTransient() TransientHashMap {
-	return TransientHashMap{root: h.root, count: h.count}
+	return TransientHashMap{root: h.root, cnt: h.count}
 }
 
 
@@ -119,7 +130,7 @@ func (t TransientHashMap) doAssoc(key, val interface{}) ITransientMap {
 			t.nilValue = val
 		}
 		if !t.hasNil {
-			t.count++
+			t.cnt++
 			t.hasNil = true
 		}
 		return t
@@ -136,7 +147,7 @@ func (t TransientHashMap) doAssoc(key, val interface{}) ITransientMap {
 		t.root = n
 	}
 	if t.leafFlag.val != nil {
-		t.count++
+		t.cnt++
 	}
 	return t
 }
@@ -146,7 +157,11 @@ func (t TransientHashMap) persistent() IPersistentMap {
 }
 
 func (t TransientHashMap) doPersistent() IPersistentMap {
-	return PersistentHashMap{root: t.root, count: t.count}
+	return PersistentHashMap{root: t.root, count: t.cnt}
+}
+
+func (t TransientHashMap) count() int {
+	return t.cnt
 }
 
 
