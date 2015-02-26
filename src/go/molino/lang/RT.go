@@ -109,6 +109,10 @@ func first(x interface{}) interface{} {
 	return seq.first()
 }
 
+func second(x interface{}) interface{} {
+	return first(next(x))
+}
+
 func next(x interface{}) ISeq {
 	var seq ISeq = seq(x)
 	if seq == nil {
@@ -156,11 +160,11 @@ func list(arg ...interface{}) ISeq {
 	case 1:
 		return PersistentList{_first: arg[0], _count: 1}
 	default:
-		return listStar(nil, arg)
+		return listStar(nil, arg...)
 	}
 }
 
-func listStar(rest ISeq, arg1 interface{}, arg ...interface{}) ISeq {
+func listStar(rest ISeq, arg ...interface{}) ISeq {
 	var ret ISeq = rest
 	for i := len(arg)-1; i >= 0; i-- {
 		ret = cons(arg[i], ret)
