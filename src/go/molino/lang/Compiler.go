@@ -76,7 +76,7 @@ func analyze(form interface{}) Expr {
 	case int64:
 		return NumberExpr{form.(int64)}
 	case string:
-		return StringExpr{form.(string)}
+		return StringExpr{form.(string)} //.intern()
 	case ISeq:
 		return analyzeSeq(form.(ISeq))
 	case IPersistentVector:
