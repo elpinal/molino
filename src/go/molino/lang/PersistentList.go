@@ -99,6 +99,9 @@ func (l PersistentList) pop() IPersistentStack { //IPersistentList
 	return l._rest
 }
 
+func (l PersistentList) seq() ISeq {
+	return l
+}
 
 
 func (e EmptyList) equals(o interface{}) bool {
