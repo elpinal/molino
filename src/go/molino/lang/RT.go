@@ -92,6 +92,15 @@ func conj(coll IPersistentCollection, x interface{}) IPersistentCollection {
 	return coll.(ISeq).cons(x)
 }
 
+func cons(x, coll interface{}) ISeq {
+	if coll == nil {
+		return PersistentList{_first: x, _count: 1}
+	} else if c, ok := coll.(ISeq); ok {
+		return Cons{_first: x, _more: c}
+	}
+	return Cons{_first: x, _more: seq(coll)}
+}
+
 func first(x interface{}) interface{} {
 	var seq ISeq = seq(x)
 	if seq == nil {
@@ -137,6 +146,26 @@ func RT_map(init []interface{}) IPersistentMap {
 		return PersistentArrayMap{}.createWithCheck(init)
 	}
 	return PersistentHashMap{}.createWithCheck(init)
+}
+
+func list(arg ...interface{}) ISeq {
+	l := len(arg)
+	switch l {
+	case 0:
+		return nil
+	case 1:
+		return PersistentList{_first: arg[0], _count: 1}
+	default:
+		return listStar(nil, arg)
+	}
+}
+
+func listStar(rest ISeq, arg1 interface{}, arg ...interface{}) ISeq {
+	var ret ISeq = rest
+	for i := len(arg)-1; i >= 0; i-- {
+		ret = cons(arg[i], ret)
+	}
+	return ret
 }
 
 func print(x interface{}) string {

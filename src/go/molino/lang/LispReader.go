@@ -11,7 +11,7 @@ var QUOTE Symbol = intern("quote")
 var macros = map[rune]ReaderFn{
 	'"': StringReader{},
 	';': CommentReader{},
-	//'\'': WrappingReader{QUOTE},
+	'\'': WrappingReader{QUOTE},
 	//'@':  WrappingReader{DEREF},
 	//'^':  MetaReader{},
 	//'`':  SyntaxQuoteReader{},
@@ -29,6 +29,7 @@ var macros = map[rune]ReaderFn{
 
 type StringReader struct{}
 type CommentReader struct{}
+type WrappingReader struct{sym Symbol}
 type ListReader struct{}
 type VectorReader struct{}
 type MapReader struct{}
@@ -304,6 +305,14 @@ func (f CommentReader) invoke(r *Reader, semicolon rune) (interface{}, error) {
 		ch = r.read()
 	}
 	return r, nil
+}
+
+func (f WrappingReader) invoke(r *Reader, quote rune) (interface{}, error) {
+	o, _, err := r.Read()
+	if err != nil {
+		return o, err
+	}
+	return list(f.sym, o), nil
 }
 
 func (f ListReader) invoke(r *Reader, leftparam rune) (interface{}, error) {
