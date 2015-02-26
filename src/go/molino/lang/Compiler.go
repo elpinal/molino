@@ -17,6 +17,10 @@ type LocalBinding struct {
 type Expr interface {
 	eval() interface{}
 }
+type LiteralExpr interface {
+	Expr
+	val() interface{}
+}
 
 type NilExpr struct {}
 type BoolExpr struct {
@@ -24,6 +28,10 @@ type BoolExpr struct {
 }
 type NumberExpr struct {
 	n int64
+}
+type ConstantExpr struct {
+	v interface{}
+	id int
 }
 type StringExpr struct {
 	str string
@@ -155,6 +163,10 @@ func (e NumberExpr) eval() interface{} {
 	return e.n
 }
 
+func (e ConstantExpr) eval() interface{} {
+	return e.v
+}
+
 func (e StringExpr) eval() interface{} {
 	return e.str
 }
@@ -186,6 +198,7 @@ func (e VectorExpr) eval() interface{} {
 
 func (_ MapExpr) parse(form IPersistentMap) Expr {
 	var keyvals IPersistentVector = PersistentVector_EMPTY
+	var keysConstant, valsConstant bool = false, false
 	//
 	for s := seq(form); s != nil; s = s.next() {
 		var e IMapEntry = s.first().(IMapEntry)
@@ -193,10 +206,22 @@ func (_ MapExpr) parse(form IPersistentMap) Expr {
 		var v Expr = analyze(e.val())
 		keyvals = keyvals.cons(k)
 		keyvals = keyvals.cons(v)
+		// FIXME:
+		//if _, ok := k.(LiteralExpr); ok {
+		//}
 		//
 	}
 	var ret Expr = MapExpr{keyvals}
 	//
+	if keysConstant {
+		if valsConstant {
+			var m IPersistentMap = PersistentHashMap{}
+			for i := 0; i < keyvals.length(); i += 2 {
+				m = m.assoc(keyvals.nth(i).(Expr).eval(), keyvals.nth(i+1).(Expr).eval())
+			}
+			return ConstantExpr{v: m, id: registerConstant(m)}
+		}
+	}
 	return ret
 	//
 }
