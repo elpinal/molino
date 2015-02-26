@@ -14,6 +14,10 @@ type LocalBinding struct {
 	isArg bool
 }
 
+type IParser interface {
+	parse(interface{}) Expr
+}
+
 type Expr interface {
 	eval() interface{}
 }
@@ -60,6 +64,10 @@ var KEYWORDS Var = Var{}.create()
 var VARS Var = Var{}.create()
 var NS Symbol = intern("ns")
 var IN_NS Symbol = intern("in-ns")
+
+var specials IPersistentMap = PersistentHashMap{}.create(
+	QUOTE, ConstantExpr{},
+)
 
 func eval(form interface{}) interface{} {
 	//
@@ -144,6 +152,9 @@ func analyzeSeq(form ISeq) Expr {
 		panic("Can't call nil")
 	}
 	//
+	if p := specials.valAt(op).(IParser); p != nil {
+		return p.parse(form)
+	}
 	return nil //
 	//
 }
@@ -165,6 +176,22 @@ func (e NumberExpr) eval() interface{} {
 
 func (e ConstantExpr) eval() interface{} {
 	return e.v
+}
+
+func (e ConstantExpr) parse(form interface{}) Expr {
+	v := second(form)
+	switch v.(type) {
+	case nil:
+		return NilExpr{}
+	case bool:
+		return BoolExpr{v.(bool)}
+	case int64:
+		return NumberExpr{v.(int64)}
+	case string:
+		return StringExpr{v.(string)}
+		//case IPersistentCollection :
+	}
+	return ConstantExpr{v: v, id: registerConstant(v)}
 }
 
 func (e StringExpr) eval() interface{} {
