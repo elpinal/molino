@@ -6,7 +6,7 @@ const (
 	C2 uint = 0x1b873593
 )
 
-func hashInt(input int) uint {
+func hashInt(input int) int {
 	if input == 0 {
 		return 0
 	}
@@ -14,10 +14,10 @@ func hashInt(input int) uint {
 	var high uint = uint(input) >> 32
 
 	var k1 uint = mixK1(uint(low))
-	var h1 uint = mixH1(seed, k1)
+	var h1 int = mixH1(seed, k1)
 
 	k1 = mixK1(high)
-	h1 = mixH1(h1, k1)
+	h1 = mixH1(uint(h1), k1)
 
 	return fmix(h1, 8)
 }
@@ -30,19 +30,33 @@ func mixK1(k1 uint) uint {
 	return k1
 }
 
-func mixH1(h1, k1 uint) uint {
+func mixH1(h1, k1 uint) int {
 	h1 ^= k1
 	h1 = (h1 << 13) | (h1 >> (32 - 13))
 	h1 = h1 * 5 + 0xe6546b64
-	return h1
+	if (h1 >> 31) != 0 {
+		return -int(^h1)-1
+	}
+	return int(h1)
 }
 
-func fmix(h1, length uint) uint {
+func fmix(h1 int, length int) int {
 	h1 ^= length
-	h1 ^= h1 >> 16
-	h1 *= 0x85ebca6b
-	h1 ^= h1 >> 13
-	h1 *= 0xc2b2ae35
-	h1 ^= h1 >> 16
-	return h1
+	var ret uint = uint(h1)
+	ret ^= ret >> 16
+	ret *= 0x85ebca6b
+	if (ret >> 31) != 0 {
+		h1 = -int(^ret)-1
+	} else {
+		h1 = int(ret)
+	}
+	ret ^= uint(h1) >> 13
+	ret *= 0xc2b2ae35
+	if (ret >> 31) != 0 {
+		h1 = -int(^ret)-1
+	} else {
+		h1 = int(ret)
+	}
+	ret ^= uint(h1) >> 16
+	return int(ret)
 }
