@@ -74,6 +74,7 @@ func (h PersistentHashMap) entryAt(key interface{}) IMapEntry {
 }
 
 func (h PersistentHashMap) assoc(key, val interface{}) Associative {
+	panic("FIXME")
 	//var ret ITransientMap = PersistentHashMap{}.asTransient()
 	//
 	return PersistentHashMap{}
@@ -154,6 +155,7 @@ func (b BitmapIndexedNode) index(bit int) int {
 }
 
 func (b BitmapIndexedNode) assoc(shift int, hash int, key interface{}, val interface{}, addedLeaf Box) INode {
+	panic("FIXME")
 	//
 	return BitmapIndexedNode{}
 }
@@ -221,7 +223,6 @@ func (b BitmapIndexedNode) assoc6(edit bool, shift int, hash int, key interface{
 		panic("FIXME:")
 	}
 
-	fmt.Println(1, n, idx)
 	var newArray []interface{} = make([]interface{}, 0, 2*(n+4))
 	for i := 0; i < 2*idx; i++ {
 		newArray = append(newArray, b.array[i])
