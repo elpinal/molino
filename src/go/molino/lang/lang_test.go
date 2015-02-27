@@ -140,6 +140,8 @@ func TestPersistentVector(t *testing.T) {
 	if result.(PersistentVector).cnt != 8 {
 		t.Errorf("%v: %v should be 8", result.(PersistentVector), result.(PersistentVector).cnt)
 	}
+
+	//var _ ISeq = PersistentVector{}
 }
 
 func TestSeqable(t * testing.T) {
