@@ -173,7 +173,7 @@ func (v PersistentVector) chunkedSeq() IChunkedSeq {
 	if v.count() == 0 {
 		return nil
 	}
-	return ChunkedSeq{vec: v, i: 0, offset: 0}
+	return ChunkedSeq{vec: v, i: 0, offset: 0, node: v.arrayFor(0)}
 }
 
 func (v PersistentVector) seq() ISeq {
@@ -265,4 +265,8 @@ func (c ChunkedSeq) chunkedMore() ISeq {
 		return PersistentList{}
 	}
 	return s
+}
+
+func (c ChunkedSeq) first() interface{} {
+	return c.node[c.offset]
 }
