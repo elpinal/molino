@@ -30,7 +30,7 @@ var dvals Frame = Frame{bindings: PersistentHashMap{}, prev: nil}
 
 func (this Var) intern(ns Namespace, sym Symbol, root interface{}, replaceRoot bool) Var {
 	var dvout Var = ns.intern(sym)
-	if replaceRoot {
+	if !dvout.hasRoot() || replaceRoot {
 		dvout.bindroot(root)
 	}
 	ns.updatemapping(sym, dvout)
