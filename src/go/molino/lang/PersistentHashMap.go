@@ -22,7 +22,7 @@ type TransientHashMap struct {
 }
 
 type INode interface {
-	assoc(int, int, interface{}, interface{}, Box) INode
+	assoc(int, int, interface{}, interface{}, *Box) INode
 	assoc6(bool, int, int, interface{}, interface{}, *Box) INode
 	findEntry(int, int, interface{}) IMapEntry
 	find(int, int, interface{}, interface{}) interface{}
@@ -86,10 +86,29 @@ func (h PersistentHashMap) entryAt(key interface{}) IMapEntry {
 }
 
 func (h PersistentHashMap) assoc(key, val interface{}) Associative {
-	panic("FIXME")
-	//var ret ITransientMap = PersistentHashMap{}.asTransient()
-	//
-	return PersistentHashMap{}
+	if key == nil {
+		if h.hasNil {
+			if val == h.nilValue {
+				return h
+			}
+			return PersistentHashMap{count: h.count, root: h.root, hasNil: true, nilValue: val}
+		}
+		return PersistentHashMap{count: h.count + 1, root: h.root, hasNil: true, nilValue: val}
+	}
+	var addedLeaf Box = Box{}
+	var newroot INode
+	if h.root == nil {
+		newroot = BitmapIndexedNode{}.assoc(0, hash(key), key, val, &addedLeaf)
+	} else {
+		newroot = h.root.assoc(0, hash(key), key, val, &addedLeaf)
+	}
+	if newroot == h.root {
+		return h
+	}
+	if addedLeaf.val == nil {
+		return PersistentHashMap{count: h.count, root: newroot, hasNil: h.hasNil, nilValue: h.nilValue}
+	}
+	return PersistentHashMap{count: h.count + 1, root: newroot, hasNil: h.hasNil, nilValue: h.nilValue}
 }
 
 func (h PersistentHashMap) valAt(key interface{}) interface{} {
@@ -168,7 +187,7 @@ func (b BitmapIndexedNode) index(bit int) int {
 	return bitCount(b.bitmap & (bit - 1))
 }
 
-func (b BitmapIndexedNode) assoc(shift int, hash int, key interface{}, val interface{}, addedLeaf Box) INode {
+func (b BitmapIndexedNode) assoc(shift int, hash int, key interface{}, val interface{}, addedLeaf *Box) INode {
 	panic("FIXME")
 	//
 	return BitmapIndexedNode{}
