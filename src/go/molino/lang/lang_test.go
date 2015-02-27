@@ -337,6 +337,14 @@ func TestBitmapIndexedNode(t *testing.T) {
 	}
 }
 
+func TestUtilHash(t *testing.T) {
+	var s = "mol"
+	x := Util.hash(s)
+	if x != 108298 {
+		t.Errorf("%v should be 108298", x)
+	}
+}
+
 func BenchmarkPersistentVector(b *testing.B) {
 	var a []interface{} = []interface{}{1, 2, 3}
 	b.ResetTimer()

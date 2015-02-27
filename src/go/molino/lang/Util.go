@@ -1,14 +1,33 @@
 package lang
 
+import (
+	"fmt"
+)
+
 type util struct {}
 
 var Util util = util{}
+
+type IHashCode interface {
+	hashCode() int
+}
 
 func (_ util) hash(o interface{}) int {
 	if o == nil || o == "" {
 		return 0
 	}
-	panic("Cannot create hash")
+	switch o.(type) {
+	case string:
+		s := o.(string)
+		hashcode := 0
+		for i := 0; i < len(s); i++ {
+			hashcode = hashcode * 31 + int(s[i])
+		}
+		return hashcode
+	case IHashCode:
+		return o.(IHashCode).hashCode()
+	}
+	panic(fmt.Sprintf("Cannot create hash from %T", o))
 }
 
 func (_ util) hashCombine(s, hash int) int {
