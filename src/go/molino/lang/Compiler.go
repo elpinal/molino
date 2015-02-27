@@ -156,8 +156,8 @@ func analyzeSeq(form ISeq) Expr {
 		panic("Can't call nil")
 	}
 	//
-	if p := specials.valAt(op).(IParser); p != nil {
-		return p.parse(form)
+	if p := specials.valAt(op); p != nil {
+		return p.(IParser).parse(form)
 	}
 	return InvokeExpr{}.parse(form)
 	//
