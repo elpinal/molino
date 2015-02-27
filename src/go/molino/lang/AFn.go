@@ -24,6 +24,6 @@ func (a AFn) invoke(args ...interface{}) interface{} {
 }
 
 func (a AFn) applyTo(arglist ISeq) interface{} {
-	//
+	// FIXME
 	return a.invoke(arglist.first())
 }
