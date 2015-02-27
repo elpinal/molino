@@ -153,6 +153,15 @@ func RT_map(init []interface{}) IPersistentMap {
 	return PersistentHashMap{}.createWithCheck(init)
 }
 
+func mapUniqueKeys(init ...interface{}) IPersistentMap {
+	if init == nil {
+		return PersistentArrayMap{}
+	} else if len(init) <= HASHTABLE_THRESHOLD {
+		return PersistentArrayMap{array: init}
+	}
+	return PersistentHashMap{}.create(init)
+}
+
 func list(arg ...interface{}) ISeq {
 	l := len(arg)
 	switch l {

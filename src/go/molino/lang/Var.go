@@ -89,6 +89,22 @@ func (v Var) hasRoot() bool {
 	return !ok
 }
 
+func (v Var) pushThreadBinding(bindings Associative) {
+	var f Frame = dvals
+	var bmap Associative = f.bindings
+	for bs := bindings.seq(); bs != nil; bs = bs.next() {
+		var e IMapEntry = bs.first().(IMapEntry)
+		var v Var = e.key().(Var)
+		//if !v.dynamic {
+		//	panic(fmt.Sprintf("Can't dynamically bind non-dynamic var: %s/%s", v.ns, v.sym))
+		//}
+		//
+		v.threadBound = true
+		bmap = bmap.assoc(v, TBox{val: e.val()})
+	}
+	dvals = Frame{bindings: bmap, prev: &f}
+}
+
 func (v Var) getThreadBinding() TBox {
 	if v.threadBound {
 		var e IMapEntry = dvals.bindings.entryAt(v)

@@ -114,6 +114,7 @@ func analyze(form interface{}) Expr {
 
 func (_ Compiler) load(rdr *Reader) (interface{}, error) {
 	var ret interface{}
+	Var{}.pushThreadBinding(mapUniqueKeys(CURRENT_NS, CURRENT_NS.deref()))
 	for r, eof, err := rdr.Read(); !eof; r, eof, err = rdr.Read() {
 		if err != nil {
 			return nil, err
