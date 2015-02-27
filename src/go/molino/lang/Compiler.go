@@ -61,13 +61,15 @@ type InvokeExpr struct {
 	args  IPersistentVector
 }
 
-var LOCAL_ENV Var = Var{}
-var CONSTANTS Var = Var{}.create()
-var CONSTANT_IDS Var = Var{}.create()
-var KEYWORDS Var = Var{}.create()
-var VARS Var = Var{}.create()
-var NS Symbol = intern("ns")
-var IN_NS Symbol = intern("in-ns")
+var (
+	LOCAL_ENV    Var    = Var{}
+	CONSTANTS    Var    = Var{}.create()
+	CONSTANT_IDS Var    = Var{}.create()
+	KEYWORDS     Var    = Var{}.create()
+	VARS         Var    = Var{}.create()
+	NS           Symbol = intern("ns")
+	IN_NS        Symbol = intern("in-ns")
+)
 
 var specials IPersistentMap = PersistentHashMap{}.create(
 	QUOTE, ConstantExpr{},

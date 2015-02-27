@@ -1,21 +1,23 @@
 package lang
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
-	"fmt"
 )
 
-var MOLINO_NS Namespace = FindOrCreate(intern("molino.core"))
-var IN_NAMESPACE Symbol = intern("in-ns")
-var NAMESPACE Symbol = intern("ns")
+var (
+	MOLINO_NS Namespace = FindOrCreate(intern("molino.core"))
 
-var TAG_KEY Keyword = Keyword{}.internFromString("tag")
+	TAG_KEY Keyword = Keyword{}.internFromString("tag")
 
-var CURRENT_NS Var = Var{}.intern(MOLINO_NS, intern("*ns*"), MOLINO_NS, true)
+	IN_NAMESPACE Symbol = intern("in-ns")
+	NAMESPACE    Symbol = intern("ns")
 
-var NS_VAR Var = Var{}.intern(MOLINO_NS, intern("ns"), false, true)
-var IN_NS_VAR Var = Var{}.intern(MOLINO_NS, intern("in-ns"), false, true)
+	CURRENT_NS Var = Var{}.intern(MOLINO_NS, intern("*ns*"), MOLINO_NS, true)
+	NS_VAR     Var = Var{}.intern(MOLINO_NS, intern("ns"), false, true)
+	IN_NS_VAR  Var = Var{}.intern(MOLINO_NS, intern("in-ns"), false, true)
+)
 
 var inNamespace IFn = NewAFn(func(arg1 interface{}) interface{} {
 	var nsname Symbol = arg1.(Symbol)
@@ -53,7 +55,6 @@ func load(scriptbase string) {
 	}
 	fmt.Println(ret)
 }
-
 
 ////////////// Collections support /////////////////////////////////
 
@@ -168,7 +169,7 @@ func list(arg ...interface{}) ISeq {
 
 func listStar(rest ISeq, arg ...interface{}) ISeq {
 	var ret ISeq = rest
-	for i := len(arg)-1; i >= 0; i-- {
+	for i := len(arg) - 1; i >= 0; i-- {
 		ret = cons(arg[i], ret)
 	}
 	return ret
