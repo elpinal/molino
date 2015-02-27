@@ -46,10 +46,10 @@ type Position struct {
 }
 
 type Reader struct {
-	src      []rune // source
-	offset   int    //
-	lineHead int    //
-	line     int    //
+	src      []rune
+	offset   int
+	lineHead int
+	line     int
 }
 
 func (r *Reader) Init(src string) {
