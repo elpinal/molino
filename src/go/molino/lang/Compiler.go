@@ -126,8 +126,8 @@ func (_ Compiler) load(rdr *Reader) (interface{}, error) {
 func analyzeSymbol(sym Symbol) Expr {
 	var tag Symbol = tagOf(sym)
 	if sym.ns == "" {
-		var b LocalBinding = referenceLocal(sym)
-		if b.sym.name != "" {
+		var b, ok = referenceLocal(sym)
+		if ok {
 			return LocalBindingExpr{b: b, tag: tag}
 		}
 		//
@@ -295,12 +295,16 @@ func (e InvokeExpr) eval() interface{} {
 	return fn.applyTo(seq(Util.ret1(argvs.(Seqable).seq(), nil)))
 }
 
-func referenceLocal(sym Symbol) LocalBinding {
-	var b LocalBinding = get(LOCAL_ENV.deref(), sym).(LocalBinding)
-	if b.sym.name != "" {
-		//
+func referenceLocal(sym Symbol) (LocalBinding, bool) {
+	if !LOCAL_ENV.isBound() {
+		return LocalBinding{}, false
 	}
-	return b
+	var b = get(LOCAL_ENV.deref(), sym)
+	if b != nil {
+		//
+		panic("FIXME: referenceLocal")
+	}
+	return LocalBinding{}, false
 }
 
 func tagOf(o interface{}) Symbol {
