@@ -10,6 +10,10 @@ type Namespace struct {
 
 var namespaces = make(map[Symbol]Namespace)
 
+func (n Namespace) String() string {
+	return n.name.String()
+}
+
 func FindOrCreate(name Symbol) Namespace {
 	ns, isexist := namespaces[name]
 	if isexist {
