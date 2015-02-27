@@ -284,7 +284,7 @@ func (e InvokeExpr) parse(form ISeq) Expr {
 	return InvokeExpr{fexpr: fexpr, args: args}
 }
 
-func (e InvokeExpr) eval() interface {} {
+func (e InvokeExpr) eval() interface{} {
 	var fn IFn = e.fexpr.eval().(IFn)
 	var argvs IPersistentVector = PersistentVector_EMPTY
 	for i := 0; i < e.args.count(); i++ {
