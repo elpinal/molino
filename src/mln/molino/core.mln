@@ -17,3 +17,5 @@ molino.core/in-ns
 {64 32 33 67 1 2 3 4 5 6 7 8 9 0 11 12 13 14 15 16 17 18}
 
 'baz
+
+(molino.core/in-ns 'yet-another-namespace)
