@@ -22,9 +22,7 @@ var (
 var inNamespace IFn = NewAFn(func(arg1 interface{}) interface{} {
 	var nsname Symbol = arg1.(Symbol)
 	var ns Namespace = FindOrCreate(nsname)
-	//    CURRENT_NS.set(ns)
-	//CURRENT_NS.bindroot(ns)
-	CURRENT_NS.root = ns
+	CURRENT_NS.set(ns)
 	return ns
 })
 
