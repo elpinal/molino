@@ -22,3 +22,8 @@ func (a AFn) invoke(args ...interface{}) interface{} {
 	ret := reflect.Value(a).Call(x)
 	return ret[0].Interface()
 }
+
+func (a AFn) applyTo(arglist ISeq) interface{} {
+	//
+	return a.invoke(arglist.first())
+}

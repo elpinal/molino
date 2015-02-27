@@ -56,6 +56,10 @@ type LocalBindingExpr struct {
 	b LocalBinding
 	tag Symbol
 }
+type InvokeExpr struct {
+	fexpr Expr
+	args  IPersistentVector
+}
 
 var LOCAL_ENV Var = Var{}
 var CONSTANTS Var = Var{}.create()
@@ -155,7 +159,7 @@ func analyzeSeq(form ISeq) Expr {
 	if p := specials.valAt(op).(IParser); p != nil {
 		return p.parse(form)
 	}
-	return nil //
+	return InvokeExpr{}.parse(form)
 	//
 }
 
@@ -267,6 +271,26 @@ func (e VarExpr) eval() interface{} {
 
 func (e LocalBindingExpr) eval() interface{} {
 	panic("Can't eval locals")
+}
+
+func (e InvokeExpr) parse(form ISeq) Expr {
+	var fexpr Expr = analyze(form.first())
+	//
+	//
+	var args PersistentVector = PersistentVector_EMPTY
+	for s := seq(form.next()); s != nil; s = s.next() {
+		args = args.cons(analyze(s.first())).(PersistentVector)
+	}
+	return InvokeExpr{fexpr: fexpr, args: args}
+}
+
+func (e InvokeExpr) eval() interface {} {
+	var fn IFn = e.fexpr.eval().(IFn)
+	var argvs IPersistentVector = PersistentVector_EMPTY
+	for i := 0; i < e.args.count(); i++ {
+		argvs = argvs.cons(e.args.nth(i).(Expr).eval()).(PersistentVector)
+	}
+	return fn.applyTo(seq(Util.ret1(argvs.(Seqable).seq(), nil)))
 }
 
 func referenceLocal(sym Symbol) LocalBinding {

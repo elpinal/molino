@@ -15,3 +15,7 @@ func (_ util) hashCombine(s, hash int) int {
 	s ^= hash + 0x9e3779 + (seed << 6) + (seed >> 2)
 	return s
 }
+
+func (_ util) ret1(ret ISeq, _ interface{}) ISeq {
+	return ret
+}
