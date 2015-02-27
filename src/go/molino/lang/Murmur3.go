@@ -1,9 +1,9 @@
 package lang
 
 const (
-	seed = 0
-	C1 uint = 0xcc9e2d51
-	C2 uint = 0x1b873593
+	seed      = 0
+	C1   uint = 0xcc9e2d51
+	C2   uint = 0x1b873593
 )
 
 func hashInt(input int) int {
@@ -47,9 +47,9 @@ func mixK1(k1 uint) uint {
 func mixH1(h1, k1 uint) int {
 	h1 ^= k1
 	h1 = (h1 << 13) | (h1 >> (32 - 13))
-	h1 = h1 * 5 + 0xe6546b64
+	h1 = h1*5 + 0xe6546b64
 	if (h1 >> 31) != 0 {
-		return -int(^h1)-1
+		return -int(^h1) - 1
 	}
 	return int(h1)
 }
@@ -60,14 +60,14 @@ func fmix(h1 int, length int) int {
 	ret ^= ret >> 16
 	ret *= 0x85ebca6b
 	if (ret >> 31) != 0 {
-		h1 = -int(^ret)-1
+		h1 = -int(^ret) - 1
 	} else {
 		h1 = int(ret)
 	}
 	ret ^= uint(h1) >> 13
 	ret *= 0xc2b2ae35
 	if (ret >> 31) != 0 {
-		h1 = -int(^ret)-1
+		h1 = -int(^ret) - 1
 	} else {
 		h1 = int(ret)
 	}

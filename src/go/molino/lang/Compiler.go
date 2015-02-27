@@ -4,13 +4,13 @@ import (
 	"fmt"
 )
 
-type Compiler struct {}
+type Compiler struct{}
 
 type LocalBinding struct {
-	idx int
-	sym Symbol
-	tag Symbol
-	init Expr
+	idx   int
+	sym   Symbol
+	tag   Symbol
+	init  Expr
 	isArg bool
 }
 
@@ -26,7 +26,7 @@ type LiteralExpr interface {
 	val() interface{}
 }
 
-type NilExpr struct {}
+type NilExpr struct{}
 type BoolExpr struct {
 	val bool
 }
@@ -34,7 +34,7 @@ type NumberExpr struct {
 	n int64
 }
 type ConstantExpr struct {
-	v interface{}
+	v  interface{}
 	id int
 }
 type StringExpr struct {
@@ -53,7 +53,7 @@ type VarExpr struct {
 	v Var
 }
 type LocalBindingExpr struct {
-	b LocalBinding
+	b   LocalBinding
 	tag Symbol
 }
 type InvokeExpr struct {

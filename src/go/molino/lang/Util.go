@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-type util struct {}
+type util struct{}
 
 var Util util = util{}
 
@@ -21,7 +21,7 @@ func (_ util) hash(o interface{}) int {
 		s := o.(string)
 		hashcode := 0
 		for i := 0; i < len(s); i++ {
-			hashcode = hashcode * 31 + int(s[i])
+			hashcode = hashcode*31 + int(s[i])
 		}
 		return hashcode
 	case IHashCode:

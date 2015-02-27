@@ -9,8 +9,8 @@ import (
 var QUOTE Symbol = intern("quote")
 
 var macros = map[rune]ReaderFn{
-	'"': StringReader{},
-	';': CommentReader{},
+	'"':  StringReader{},
+	';':  CommentReader{},
 	'\'': WrappingReader{QUOTE},
 	//'@':  WrappingReader{DEREF},
 	//'^':  MetaReader{},
@@ -29,7 +29,7 @@ var macros = map[rune]ReaderFn{
 
 type StringReader struct{}
 type CommentReader struct{}
-type WrappingReader struct{sym Symbol}
+type WrappingReader struct{ sym Symbol }
 type ListReader struct{}
 type VectorReader struct{}
 type MapReader struct{}

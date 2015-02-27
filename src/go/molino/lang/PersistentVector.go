@@ -66,7 +66,7 @@ func (v PersistentVector) arrayFor(i int) []interface{} {
 		}
 		var node PersistentVector_Node = v.root
 		for level := v.shift; level > 0; level -= 5 {
-			node = node.array[(i >> level) & 0x01f].(PersistentVector_Node)
+			node = node.array[(i>>level)&0x01f].(PersistentVector_Node)
 		}
 		return node.array
 	}
@@ -75,7 +75,7 @@ func (v PersistentVector) arrayFor(i int) []interface{} {
 
 func (v PersistentVector) nth(i int) interface{} {
 	var node []interface{} = v.arrayFor(i)
-	return node[i & 0x01f]
+	return node[i&0x01f]
 }
 
 func (v PersistentVector) count() int {
@@ -88,8 +88,8 @@ func (v PersistentVector) length() int {
 
 func (v PersistentVector) cons(val interface{}) IPersistentVector {
 	//i := v.cnt
-	if v.cnt - v.tailoff() < 32 {
-		var newTail []interface{} = make([]interface{}, len(v.tail) + 1)
+	if v.cnt-v.tailoff() < 32 {
+		var newTail []interface{} = make([]interface{}, len(v.tail)+1)
 		copy(newTail, v.tail)
 		newTail[len(v.tail)] = val
 		return PersistentVector{v.cnt + 1, v.shift, v.root, newTail}
@@ -157,7 +157,7 @@ func (v PersistentVector) equiv(obj interface{}) bool {
 		return true
 	case Sequential:
 		var ms ISeq = seq(obj)
-		for i := 0; i < v.count(); i, ms = i + 1, ms.next() {
+		for i := 0; i < v.count(); i, ms = i+1, ms.next() {
 			if ms == nil || v.nth(i) != ms.first() {
 				return false
 			}
@@ -188,7 +188,7 @@ func (t TransientVector) persistent() PersistentVector {
 func (t TransientVector) conj(val interface{}) TransientVector {
 	i := t.cnt
 	//room is tail? = i is not multiples of 32?
-	if i - t.tailoff() < 32 {
+	if i-t.tailoff() < 32 {
 		//t.tail[i & 0x01f] = val
 		t.tail = append(t.tail, val)
 		t.cnt++
@@ -221,10 +221,10 @@ func (t TransientVector) pushTail(level uint, parent PersistentVector_Node, tail
 		nodeToInsert = tailnode
 	} else {
 		if child, ok := parent.array[subidx].(PersistentVector_Node); ok {
-			nodeToInsert = newPath(level - 5, tailnode)
+			nodeToInsert = newPath(level-5, tailnode)
 		} else {
 			//panic("Unknown Error")
-			nodeToInsert = t.pushTail(level - 5, child, tailnode)
+			nodeToInsert = t.pushTail(level-5, child, tailnode)
 		}
 	}
 	//ret.array[subidx] = nodeToInsert
@@ -237,7 +237,7 @@ func newPath(level uint, node PersistentVector_Node) PersistentVector_Node {
 		return node
 	}
 	var ret = PersistentVector_Node{array: make([]interface{}, 0, 8)}
-	ret.array[0] = newPath(level - 5, node)
+	ret.array[0] = newPath(level-5, node)
 	return ret
 }
 
@@ -253,7 +253,7 @@ func (c ChunkedSeq) chunkedFirst() IChunk {
 }
 
 func (c ChunkedSeq) chunkedNext() ISeq {
-	if c.i + len(c.node) < c.vec.cnt {
+	if c.i+len(c.node) < c.vec.cnt {
 		return ChunkedSeq{vec: c.vec, i: len(c.node), offset: 0}
 	}
 	return nil

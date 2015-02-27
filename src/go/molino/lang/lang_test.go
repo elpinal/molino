@@ -9,7 +9,7 @@ func TestVarIntern(t *testing.T) {
 	var ns Namespace = FindOrCreate(intern("testnamespace"))
 	var sym Symbol = intern("testsymbol")
 
-	var ret Var = v.intern(ns, sym, 4, true)	
+	var ret Var = v.intern(ns, sym, 4, true)
 	if ret.root != 4 {
 		t.Errorf("Expect: %s, but %s", ret.root, 4)
 	}
@@ -27,10 +27,10 @@ func TestPersistentList(t *testing.T) {
 	var _ ISeq = l
 	//x := l.equiv(l)
 	/*
-	if true {
-		t.Errorf("%#v", x)
-	}
-*/
+		if true {
+			t.Errorf("%#v", x)
+		}
+	*/
 
 }
 
@@ -147,13 +147,13 @@ func TestPersistentVector(t *testing.T) {
 	}
 }
 
-func TestSeqable(t * testing.T) {
+func TestSeqable(t *testing.T) {
 	var i = []interface{}{1, 3, 9, 27, 81, 243}
 	m := PersistentArrayMap{}.createWithCheck(i)
 	var _ Seqable = m
 }
 
-func TestMap(t * testing.T) {
+func TestMap(t *testing.T) {
 	var i = []interface{}{1, 3, 9, 27, 81, 243}
 	m := PersistentArrayMap{}.createWithCheck(i)
 	var _ Seq = m.seq().(Seq)
@@ -235,10 +235,10 @@ func TestHash(t *testing.T) {
 		t.Errorf("%s should be 1819228606", c)
 	}
 
-//	d := hash(-3)
-//	if d != -1797448787 {
-//		t.Errorf("%s should be -1797448787", d)
-//	}
+	//	d := hash(-3)
+	//	if d != -1797448787 {
+	//		t.Errorf("%s should be -1797448787", d)
+	//	}
 
 	e := hash(22)
 	if e != 270085581 {
@@ -282,7 +282,7 @@ func TestPersistentHashMap(t *testing.T) {
 }
 
 func TestAFn(t *testing.T) {
-	var a IFn = NewAFn(func(x int) int {return x * x + 2})
+	var a IFn = NewAFn(func(x int) int { return x*x + 2 })
 	v := a.invoke(11)
 	if v != 123 {
 		t.Errorf("%v should be 123", v)

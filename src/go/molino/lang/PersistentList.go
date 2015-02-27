@@ -3,7 +3,7 @@ package lang
 type PersistentList struct {
 	ASeq
 	_first interface{}
-	_rest IPersistentList
+	_rest  IPersistentList
 	_count int
 }
 
@@ -102,7 +102,6 @@ func (l PersistentList) pop() IPersistentStack { //IPersistentList
 func (l PersistentList) seq() ISeq {
 	return l
 }
-
 
 func (e EmptyList) equals(o interface{}) bool {
 	return o == nil

@@ -8,7 +8,7 @@ type ASeq struct {
 
 func (a ASeq) count() int {
 	i := 1
-	for s := a.next(); s != nil; s, i = s.next(), i + 1 {
+	for s := a.next(); s != nil; s, i = s.next(), i+1 {
 		if _, ok := s.(Counted); ok {
 			return i + s.count()
 		}
