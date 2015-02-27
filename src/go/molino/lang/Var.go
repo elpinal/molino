@@ -67,7 +67,10 @@ func (v Var) get() interface{} {
 }
 
 func (v Var) deref() interface{} {
-	//
+	var b TBox = v.getThreadBinding()
+	if b.val != nil {
+		return b.val
+	}
 	return v.root
 }
 
