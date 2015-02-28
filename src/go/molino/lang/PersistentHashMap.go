@@ -214,7 +214,7 @@ func (b BitmapIndexedNode) assoc(shift int, hash int, key interface{}, val inter
 		}
 		addedLeaf.val = addedLeaf
 		//
-		return BitmapIndexedNode{bitmap: b.bitmap, array: cloneAndSet(b.array, 2*idx, nil, 2*idx+1, createNode(shift+5, keyOrNil, valOrNode, hash, key, val))}
+		return BitmapIndexedNode{bitmap: b.bitmap, array: cloneAndSet2(b.array, 2*idx, nil, 2*idx+1, createNode(shift+5, keyOrNil, valOrNode, hash, key, val))}
 	}
 	n := bitCount(b.bitmap)
 	if n >= 16 {
@@ -424,4 +424,19 @@ func createNodeWithEdit(edit bool, shift int, key1 interface{}, val1 interface{}
 	//
 	var addedLeaf Box = Box{nil}
 	return BitmapIndexedNode{}.assocWithEdit(edit, shift, key1hash, key1, val1, &addedLeaf).assocWithEdit(edit, shift, key2hash, key2, val2, &addedLeaf)
+}
+
+func cloneAndSet(array []interface{}, i int, a interface{}) []interface{} {
+	clone := make([]interface{}, len(array))
+	copy(clone, array)
+	clone[i] = a
+	return clone
+}
+
+func cloneAndSet2(array []interface{}, i int, a interface{}, j int, b interface{}) []interface{} {
+	clone := make([]interface{}, len(array))
+	copy(clone, array)
+	clone[i] = a
+	clone[j] = b
+	return clone
 }
