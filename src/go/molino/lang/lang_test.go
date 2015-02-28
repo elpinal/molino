@@ -329,12 +329,12 @@ func TestSeq(t *testing.T) {
 
 func TestBitmapIndexedNode(t *testing.T) {
 	var b INode = BitmapIndexedNode{}
-	b1 := b.assoc6(false, 0, hash(1), 1, 5, &Box{})
-	b1 = b1.assoc6(false, 0, hash(22), 22, 6, &Box{})
+	b1 := b.assocWithEdit(false, 0, hash(1), 1, 5, &Box{})
+	b1 = b1.assocWithEdit(false, 0, hash(22), 22, 6, &Box{})
 	//t.Errorf("%#v", b1)
 
-	b2 := b.assoc6(false, 0, hash(64), 64, 32, &Box{})
-	b2 = b2.assoc6(false, 0, hash(33), 33, 37, &Box{})
+	b2 := b.assocWithEdit(false, 0, hash(64), 64, 32, &Box{})
+	b2 = b2.assocWithEdit(false, 0, hash(33), 33, 37, &Box{})
 	if b2.nodeSeq().first().(IMapEntry).val() != 37 {
 		t.Errorf("%v should be 37", b2.nodeSeq().first().(IMapEntry).val())
 	}

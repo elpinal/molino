@@ -24,7 +24,7 @@ type TransientHashMap struct {
 
 type INode interface {
 	assoc(int, int, interface{}, interface{}, *Box) INode
-	assoc6(bool, int, int, interface{}, interface{}, *Box) INode
+	assocWithEdit(bool, int, int, interface{}, interface{}, *Box) INode
 	findEntry(int, int, interface{}) IMapEntry
 	find(int, int, interface{}, interface{}) interface{}
 	nodeSeq() ISeq
@@ -163,9 +163,9 @@ func (t TransientHashMap) doAssoc(key, val interface{}) ITransientMap {
 	t.leafFlag.val = nil
 	var n INode
 	if t.root == nil {
-		n = BitmapIndexedNode{}.assoc6(t.edit, 0, hash(key), key, val, &t.leafFlag)
+		n = BitmapIndexedNode{}.assocWithEdit(t.edit, 0, hash(key), key, val, &t.leafFlag)
 	} else {
-		n = t.root.assoc6(t.edit, 0, hash(key), key, val, &t.leafFlag)
+		n = t.root.assocWithEdit(t.edit, 0, hash(key), key, val, &t.leafFlag)
 	}
 	//
 	if !reflect.DeepEqual(n, t.root) {
@@ -262,14 +262,14 @@ func (b BitmapIndexedNode) editAndSet5(edit bool, i int, a interface{}, j int, c
 	return editable
 }
 
-func (b BitmapIndexedNode) assoc6(edit bool, shift int, hash int, key interface{}, val interface{}, addedLeaf *Box) INode {
+func (b BitmapIndexedNode) assocWithEdit(edit bool, shift int, hash int, key interface{}, val interface{}, addedLeaf *Box) INode {
 	bit := bitpos(hash, shift)
 	idx := b.index(bit)
 	if (b.bitmap & bit) != 0 {
 		keyOrNil := b.array[2*idx]
 		valOrNode := b.array[2*idx+1]
 		if keyOrNil == nil {
-			var n INode = valOrNode.(INode).assoc6(edit, shift+5, hash, key, val, addedLeaf)
+			var n INode = valOrNode.(INode).assocWithEdit(edit, shift+5, hash, key, val, addedLeaf)
 			if reflect.DeepEqual(n, valOrNode) {
 				return b
 			}
@@ -412,5 +412,5 @@ func createNode(edit bool, shift int, key1 interface{}, val1 interface{}, key2ha
 	}
 	//
 	var addedLeaf Box = Box{nil}
-	return BitmapIndexedNode{}.assoc6(edit, shift, key1hash, key1, val1, &addedLeaf).assoc6(edit, shift, key2hash, key2, val2, &addedLeaf)
+	return BitmapIndexedNode{}.assocWithEdit(edit, shift, key1hash, key1, val1, &addedLeaf).assocWithEdit(edit, shift, key2hash, key2, val2, &addedLeaf)
 }
