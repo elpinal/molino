@@ -3,7 +3,6 @@ package lang
 import (
 	"fmt"
 	"reflect"
-	"strconv"
 )
 
 type PersistentHashMap struct {
@@ -44,23 +43,7 @@ type NodeSeq struct {
 }
 
 func hash(k interface{}) int {
-	if k == nil {
-		return 0
-	}
-	switch k.(type) {
-	case IHashEq:
-		return k.(IHashEq).hasheq()
-	case int:
-		return hashInt(k.(int))
-	case int64:
-		return hashInt(int(k.(int64)))
-	}
-	n, err := strconv.ParseInt(fmt.Sprintf("%p", &k), 0, 0)
-	if err != nil {
-		panic(err)
-	}
-	return int(n)
-	//panic(fmt.Sprintf("Cannot create hash from %T", k))
+	return Util.hasheq(k)
 }
 
 func (h PersistentHashMap) create(init ...interface{}) PersistentHashMap {

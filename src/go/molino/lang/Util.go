@@ -2,6 +2,7 @@ package lang
 
 import (
 	"fmt"
+	"strconv"
 )
 
 type util struct{}
@@ -28,6 +29,26 @@ func (_ util) hash(o interface{}) int {
 		return o.(IHashCode).hashCode()
 	}
 	panic(fmt.Sprintf("Cannot create hash from %T", o))
+}
+
+func (_ util) hasheq(o interface{}) int {
+	if o == nil {
+		return 0
+	}
+	switch o.(type) {
+	case IHashEq:
+		return o.(IHashEq).hasheq()
+	case int:
+		return hashInt(o.(int))
+	case int64:
+		return hashInt(int(o.(int64)))
+	}
+	n, err := strconv.ParseInt(fmt.Sprintf("%p", &o), 0, 0)
+	if err != nil {
+		panic(err)
+	}
+	return int(n)
+	//panic(fmt.Sprintf("Cannot create hash from %T", o))
 }
 
 func (_ util) hashCombine(s, hash int) int {
