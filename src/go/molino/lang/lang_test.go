@@ -348,6 +348,15 @@ func TestUtilHash(t *testing.T) {
 	}
 }
 
+func TestHashFromVar(t *testing.T) {
+	var v Var = Var{}.intern(MOLINO_NS, intern("test-var"), "hoge", true)
+	a := hash(v)
+	b := hash(v)
+	if a != b {
+		t.Errorf("%v should equals %v", a, b)
+	}
+}
+
 func BenchmarkPersistentVector(b *testing.B) {
 	var a []interface{} = []interface{}{1, 2, 3}
 	b.ResetTimer()
