@@ -3,6 +3,7 @@ package lang
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 )
 
 type PersistentHashMap struct {
@@ -54,7 +55,12 @@ func hash(k interface{}) int {
 	case int64:
 		return hashInt(int(k.(int64)))
 	}
-	panic(fmt.Sprintf("Cannot create hash from %T", k))
+	n, err := strconv.ParseInt(fmt.Sprintf("%p", &k), 0, 0)
+	if err != nil {
+		panic(err)
+	}
+	return int(n)
+	//panic(fmt.Sprintf("Cannot create hash from %T", k))
 }
 
 func (h PersistentHashMap) create(init ...interface{}) PersistentHashMap {
@@ -188,9 +194,44 @@ func (b BitmapIndexedNode) index(bit int) int {
 }
 
 func (b BitmapIndexedNode) assoc(shift int, hash int, key interface{}, val interface{}, addedLeaf *Box) INode {
-	panic("FIXME")
-	//
-	return BitmapIndexedNode{}
+	bit := bitpos(hash, shift)
+	idx := b.index(bit)
+	if (b.bitmap & bit) != 0 {
+		keyOrNil := b.array[2*idx]
+		valOrNode := b.array[2*idx+1]
+		if keyOrNil == nil {
+			var n INode = valOrNode.(INode).assoc(shift+5, hash, key, val, addedLeaf)
+			if reflect.DeepEqual(n, valOrNode) {
+				return b
+			}
+			return BitmapIndexedNode{bitmap: b.bitmap, array: cloneAndSet(b.array, 2*idx+1, n)}
+		}
+		if key == keyOrNil {
+			if val == valOrNode {
+				return b
+			}
+			return BitmapIndexedNode{bitmap: b.bitmap, array: cloneAndSet(b.array, 2*idx+1, val)}
+		}
+		addedLeaf.val = addedLeaf
+		//
+		return BitmapIndexedNode{bitmap: b.bitmap, array: cloneAndSet(b.array, 2*idx, nil, 2*idx+1, createNode(shift+5, keyOrNil, valOrNode, hash, key, val))}
+	}
+	n := bitCount(b.bitmap)
+	if n >= 16 {
+		panic("FIXME:")
+	}
+
+	var newArray []interface{} = make([]interface{}, 0, 2*(n+1))
+	for i := 0; i < 2*idx; i++ {
+		newArray = append(newArray, b.array[i])
+	}
+	newArray = append(newArray, key)
+	addedLeaf.val = addedLeaf
+	newArray = append(newArray, val)
+	for i := 2 * idx; i < 2*n; i++ {
+		newArray = append(newArray, b.array[i])
+	}
+	return BitmapIndexedNode{bitmap: b.bitmap | bit, array: newArray}
 }
 
 func (b BitmapIndexedNode) ensureEditable(edit bool) BitmapIndexedNode {
