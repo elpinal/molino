@@ -283,7 +283,7 @@ func (b BitmapIndexedNode) assocWithEdit(edit bool, shift int, hash int, key int
 		}
 		addedLeaf.val = addedLeaf
 		//
-		return b.editAndSet5(edit, 2*idx, nil, 2*idx+1, createNode(edit, shift+5, keyOrNil, valOrNode, hash, key, val))
+		return b.editAndSet5(edit, 2*idx, nil, 2*idx+1, createNodeWithEdit(edit, shift+5, keyOrNil, valOrNode, hash, key, val))
 	}
 	n := bitCount(b.bitmap)
 	if n*2 < len(b.array) {
@@ -404,7 +404,7 @@ func bitCount(i int) int {
 	return i & 0x3f
 }
 
-func createNode(edit bool, shift int, key1 interface{}, val1 interface{}, key2hash int, key2 interface{}, val2 interface{}) INode {
+func createNodeWithEdit(edit bool, shift int, key1 interface{}, val1 interface{}, key2hash int, key2 interface{}, val2 interface{}) INode {
 	key1hash := hash(key1)
 	if key1hash == key2hash {
 		//
