@@ -89,7 +89,7 @@ func (v Var) hasRoot() bool {
 	return !ok
 }
 
-func (v Var) pushThreadBinding(bindings Associative) {
+func (_ Var) pushThreadBinding(bindings Associative) {
 	var f Frame = dvals
 	var bmap Associative = f.bindings
 	for bs := bindings.seq(); bs != nil; bs = bs.next() {
