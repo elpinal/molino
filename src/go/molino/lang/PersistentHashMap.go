@@ -404,6 +404,17 @@ func bitCount(i int) int {
 	return i & 0x3f
 }
 
+func createNode(shift int, key1, val1 interface{}, key2hash int, key2, val2 interface{}) INode {
+	key1hash := hash(key1)
+	if key1hash == key2hash {
+		//
+		panic("FIXME: Hash collision: " + fmt.Sprint(key1, key2, key1hash, key2hash))
+	}
+	var addedLeaf Box = Box{nil}
+	var edit bool
+	return BitmapIndexedNode{}.assocWithEdit(edit, shift, key1hash, key1, val1, &addedLeaf).assocWithEdit(edit, shift, key2hash, key2, val2, &addedLeaf)
+}
+
 func createNodeWithEdit(edit bool, shift int, key1 interface{}, val1 interface{}, key2hash int, key2 interface{}, val2 interface{}) INode {
 	key1hash := hash(key1)
 	if key1hash == key2hash {
