@@ -6,8 +6,6 @@ func (i List) iterator() Iterator {
 	return &SeqIterator{seq: START, nexts: i}
 }
 
-
-
 /*
 func (i *Iterator) next() interface{} {
 	nn := i.n

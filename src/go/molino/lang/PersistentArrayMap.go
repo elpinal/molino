@@ -38,19 +38,19 @@ func (a PersistentArrayMap) assoc(key, val interface{}) Associative {
 	i := a.indexOf(key)
 	var newArray []interface{}
 	if i >= 0 {
-		if a.array[i + 1] == val {
+		if a.array[i+1] == val {
 			return a
 		}
 		newArray = make([]interface{}, len(a.array))
 		copy(newArray, a.array)
-		newArray[i + 1] = val
+		newArray[i+1] = val
 	} else {
 		/*
-		if len(a.array) > HASHTABLE_THRESHOLD {
-			return //
-		}
+			if len(a.array) > HASHTABLE_THRESHOLD {
+				return //
+			}
 		*/
-		newArray = make([]interface{}, 2, len(a.array) + 2)
+		newArray = make([]interface{}, 2, len(a.array)+2)
 		if len(a.array) > 0 {
 			newArray = append(newArray, a.array...)
 		}
@@ -63,7 +63,7 @@ func (a PersistentArrayMap) assoc(key, val interface{}) Associative {
 func (a PersistentArrayMap) valAt(key interface{}) interface{} {
 	var i int = a.indexOf(key)
 	if i >= 0 {
-		return a.array[i + 1]
+		return a.array[i+1]
 	}
 	return nil
 }
@@ -138,7 +138,7 @@ func (a Seq) first() interface{} {
 }
 
 func (a Seq) next() ISeq {
-	if a.i + 2 < len(a.array) {
+	if a.i+2 < len(a.array) {
 		return Seq{a.array, a.i + 2}
 	}
 	return nil

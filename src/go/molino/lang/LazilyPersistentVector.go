@@ -5,9 +5,9 @@ type LazilyPersistentVector struct {
 
 func (_ LazilyPersistentVector) create(obj interface{}) IPersistentVector {
 	/*
-	if _, ok := obj.(ISeq); !ok && len(obj) <= 32 {
-		//
-	}
+		if _, ok := obj.(ISeq); !ok && len(obj) <= 32 {
+			//
+		}
 	*/
 	//
 	if iter, ok := obj.(Iterable); ok {

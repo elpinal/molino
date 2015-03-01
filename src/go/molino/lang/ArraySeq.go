@@ -28,7 +28,7 @@ func (a ArraySeq) first() interface{} {
 }
 
 func (a ArraySeq) next() ISeq {
-	if a.array != nil && a.i + 1 < len(a.array) {
+	if a.array != nil && a.i+1 < len(a.array) {
 		return ArraySeq{array: a.array, i: a.i + 1}
 	}
 	return nil

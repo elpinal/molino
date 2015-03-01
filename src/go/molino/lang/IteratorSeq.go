@@ -2,7 +2,7 @@ package lang
 
 type IteratorSeq struct {
 	ASeq
-	iter Iterator
+	iter  Iterator
 	state State
 }
 
