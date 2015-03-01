@@ -357,6 +357,11 @@ func TestHashFromVar(t *testing.T) {
 	}
 }
 
+func TestHashCode(t *testing.T) {
+	var v Var
+	var _ IHashCode = v
+}
+
 func BenchmarkPersistentVector(b *testing.B) {
 	var a []interface{} = []interface{}{1, 2, 3}
 	b.ResetTimer()

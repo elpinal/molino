@@ -114,3 +114,7 @@ func (v Var) getThreadBinding() TBox {
 	}
 	return TBox{val: nil}
 }
+
+func (v Var) hashCode() int {
+	return Util.hash(v.sym.String())
+}

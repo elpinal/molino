@@ -2,7 +2,6 @@ package lang
 
 import (
 	"fmt"
-	"strconv"
 )
 
 type util struct{}
@@ -12,6 +11,8 @@ var Util util = util{}
 type IHashCode interface {
 	hashCode() int
 }
+
+//var randSeed = 1
 
 func (_ util) hash(o interface{}) int {
 	if o == nil || o == "" {
@@ -42,13 +43,10 @@ func (_ util) hasheq(o interface{}) int {
 		return hashInt(o.(int))
 	case int64:
 		return hashInt(int(o.(int64)))
+	case IHashCode:
+		return o.(IHashCode).hashCode()
 	}
-	n, err := strconv.ParseInt(fmt.Sprintf("%p", &o), 0, 0)
-	if err != nil {
-		panic(err)
-	}
-	return int(n)
-	//panic(fmt.Sprintf("Cannot create hash from %T", o))
+	panic(fmt.Sprintf("Cannot create hash from %T", o))
 }
 
 func (_ util) hashCombine(s, hash int) int {
@@ -59,3 +57,28 @@ func (_ util) hashCombine(s, hash int) int {
 func (_ util) ret1(ret ISeq, _ interface{}) ISeq {
 	return ret
 }
+
+/*
+func (_ util) random() int {
+	a := 16807
+	m := 2147483647
+
+	lo := a * (randSeed & 0xffff)
+	hi := a * (randSeed >> 16)
+	lo += (hi & 0x7fff) << 16
+
+	if lo > m {
+		lo &= m
+		lo++
+	}
+	lo += hi >> 15
+
+	if lo > m {
+		lo &= m
+		lo++
+	}
+
+	randSeed = lo
+	return lo
+}
+*/
