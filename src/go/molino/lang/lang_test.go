@@ -73,6 +73,11 @@ func TestPrint(t *testing.T) {
 	if l.String() != ":London/Prelude" {
 		t.Errorf(`"%s" (type Keyword) must be ":London/Prelude"`, l)
 	}
+
+	var v Var = Var{}.intern(MOLINO_NS, intern("test-var"), "hoge", true)
+	if v.String() != "#'molino.core/test-var" {
+		t.Errorf("%v (type %T) must be #'molino.core/test-var", v, v)
+	}
 }
 
 func TestPersistentArrayMap(t *testing.T) {

@@ -28,6 +28,13 @@ type Frame struct {
 
 var dvals Frame = Frame{bindings: PersistentHashMap{}, prev: nil}
 
+func (v Var) String() string {
+	if v.ns.name.name != "" {
+		return fmt.Sprintf("#'%v/%v", v.ns.name, v.sym)
+	}
+	return fmt.Sprintf("#<Var: %v>", v.sym)
+}
+
 func (this Var) intern(ns Namespace, sym Symbol, root interface{}, replaceRoot bool) Var {
 	var dvout Var = ns.intern(sym)
 	if !dvout.hasRoot() || replaceRoot {
