@@ -110,6 +110,7 @@ func (_ Var) pushThreadBinding(bindings Associative) {
 		//}
 		//
 		v.threadBound = true
+		v.ns.updateMapping(v.sym, *v)
 		bmap = bmap.assoc(*v, TBox{val: e.val()})
 	}
 	dvals = Frame{bindings: bmap, prev: &f}
