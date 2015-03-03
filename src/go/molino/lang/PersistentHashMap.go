@@ -307,7 +307,7 @@ func (b BitmapIndexedNode) findEntry(shift int, hash int, key interface{}) IMapE
 	if keyOrNil == nil {
 		return valOrNode.(INode).findEntry(shift+5, hash, key)
 	}
-	if key == keyOrNil {
+	if reflect.DeepEqual(key, keyOrNil) {
 		return MapEntry{keyOrNil, valOrNode}
 	}
 	return nil
@@ -323,6 +323,23 @@ func (b BitmapIndexedNode) find(shift int, hash int, key, notFound interface{}) 
 	valOrNode := b.array[2*idx+1]
 	if keyOrNil == nil {
 		return valOrNode.(INode).find(shift+5, hash, key, notFound)
+	}
+	// FIXME
+	if k1, ok := key.(Var); ok {
+		if k2, ok := keyOrNil.(Var); ok {
+			if k1.sym.name == k2.sym.name {
+				return valOrNode
+			}
+		}
+		return notFound
+	}
+	if k2, ok := keyOrNil.(Var); ok {
+		if k1, ok := key.(Var); ok {
+			if k1.sym.name == k2.sym.name {
+				return valOrNode
+			}
+		}
+		return notFound
 	}
 	if key == keyOrNil {
 		return valOrNode

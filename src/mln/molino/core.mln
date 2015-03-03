@@ -18,4 +18,8 @@ molino.core/in-ns
 
 'baz
 
+*ns*
+
 (molino.core/in-ns 'yet-another-namespace)
+
+molino.core/*ns*
