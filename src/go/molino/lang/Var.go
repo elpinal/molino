@@ -37,7 +37,7 @@ func (v Var) String() string {
 	return "#<Var: --unnamed-->"
 }
 
-func (this Var) intern(ns Namespace, sym Symbol, root interface{}, replaceRoot bool) Var {
+func (v Var) intern(ns Namespace, sym Symbol, root interface{}, replaceRoot bool) Var {
 	var dvout Var = ns.intern(sym)
 	if !dvout.hasRoot() || replaceRoot {
 		dvout.bindroot(root)
@@ -52,9 +52,9 @@ func (v Var) create() Var {
 	return ret
 }
 
-func (this *Var) bindroot(root interface{}) {
-	//  oldroot := this.root
-	this.root = root
+func (v *Var) bindroot(root interface{}) {
+	//  oldroot := v.root
+	v.root = root
 }
 
 func (v Var) invoke(arg1 interface{}) interface{} {
