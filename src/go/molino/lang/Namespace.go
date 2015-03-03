@@ -15,8 +15,8 @@ func (n Namespace) String() string {
 }
 
 func FindOrCreate(name Symbol) Namespace {
-	ns, isexist := namespaces[name]
-	if isexist {
+	ns, ok := namespaces[name]
+	if ok {
 		return ns
 	}
 	var newns Namespace = Namespace{name: name, mappings: make(map[Symbol]Var)}
@@ -30,10 +30,10 @@ func find(name Symbol) Namespace {
 
 func (this Namespace) intern(sym Symbol) Var {
 	if sym.ns != "" {
-		panic("ns is not empty!")
+		panic("Can't intern namespace-qualified symbol")
 	}
-	a, isexist := this.mappings[sym]
-	if isexist {
+	a, ok := this.mappings[sym]
+	if ok {
 		return a
 	}
 	var v Var = Var{ns: this, sym: sym}
@@ -47,8 +47,8 @@ func (this Namespace) refer(sym Symbol, v Var) Var {
 	if sym.ns != "" {
 		panic("ns is not empty!")
 	}
-	a, isexist := this.mappings[sym]
-	if isexist {
+	a, ok := this.mappings[sym]
+	if ok {
 		return a
 	}
 	this.mappings[sym] = v
@@ -56,24 +56,24 @@ func (this Namespace) refer(sym Symbol, v Var) Var {
 }
 
 func (this Namespace) getmapping(name Symbol) (Var, bool) {
-	v, isexist := this.mappings[name]
-	return v, isexist
+	v, ok := this.mappings[name]
+	return v, ok
 }
 
 func (this Namespace) updatemapping(name Symbol, newval Var) {
-	if _, isexist := this.mappings[name]; isexist {
+	if _, ok := this.mappings[name]; ok {
 		this.mappings[name] = newval
 	}
 }
 
 func findNamespace(name Symbol) (Namespace, bool) {
-	v, isexist := namespaces[name]
-	return v, isexist
+	v, ok := namespaces[name]
+	return v, ok
 }
 
 func (this Namespace) findInternedVar(sym Symbol) (Var, bool) {
-	v, isexist := this.mappings[sym]
-	if isexist && v.ns.name == this.name {
+	v, ok := this.mappings[sym]
+	if ok && v.ns.name == this.name {
 		return v, true
 	}
 	return v, false

@@ -338,8 +338,8 @@ func resolveIn(n Namespace, sym Symbol) interface{} {
 		if ns.name.name == "" {
 			panic("No such namespace: " + sym.ns)
 		}
-		v, exist := ns.findInternedVar(intern(sym.name))
-		if !exist {
+		v, ok := ns.findInternedVar(intern(sym.name))
+		if !ok {
 			panic("No such var: " + sym.String())
 		} //
 		return v
@@ -348,8 +348,8 @@ func resolveIn(n Namespace, sym Symbol) interface{} {
 	} else if sym == IN_NS {
 		return IN_NS_VAR
 	} else {
-		o, exist := n.getmapping(sym)
-		if !exist {
+		o, ok := n.getmapping(sym)
+		if !ok {
 			//
 			panic("Unable to resolve symbol: " + sym.String() + " in this context")
 		}
