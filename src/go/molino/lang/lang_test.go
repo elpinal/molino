@@ -275,14 +275,13 @@ func TestPersistentHashMap(t *testing.T) {
 	var i = []interface{}{1, 3, 9, 27, 81, 243}
 	m := PersistentHashMap{}.createWithCheck(i)
 	var _ IPersistentMap = m
-	if !true {
-		t.Errorf("%v", m)
-	}
 
 	var b ITransientMap = PersistentHashMap{}.asTransient()
 	b = b.assoc(5, 10)
-	if !true {
-		t.Errorf("%v", b)
+
+	a := m.assoc(9, 64)
+	if a.valAt(9) != 64 {
+		t.Errorf("%v should be 64", a.valAt(9))
 	}
 }
 
