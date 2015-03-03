@@ -28,41 +28,41 @@ func find(name Symbol) Namespace {
 	return namespaces[name]
 }
 
-func (this Namespace) intern(sym Symbol) Var {
+func (n Namespace) intern(sym Symbol) Var {
 	if sym.ns != "" {
 		panic("Can't intern namespace-qualified symbol")
 	}
-	a, ok := this.mappings[sym]
+	a, ok := n.mappings[sym]
 	if ok {
 		return a
 	}
-	var v Var = Var{ns: this, sym: sym}
+	var v Var = Var{ns: n, sym: sym}
 	unbound := Unbound{v}
 	v.root = unbound
-	this.mappings[sym] = v
+	n.mappings[sym] = v
 	return v
 }
 
-func (this Namespace) refer(sym Symbol, v Var) Var {
+func (n Namespace) refer(sym Symbol, v Var) Var {
 	if sym.ns != "" {
 		panic("ns is not empty!")
 	}
-	a, ok := this.mappings[sym]
+	a, ok := n.mappings[sym]
 	if ok {
 		return a
 	}
-	this.mappings[sym] = v
+	n.mappings[sym] = v
 	return v
 }
 
-func (this Namespace) getmapping(name Symbol) (Var, bool) {
-	v, ok := this.mappings[name]
+func (n Namespace) getmapping(name Symbol) (Var, bool) {
+	v, ok := n.mappings[name]
 	return v, ok
 }
 
-func (this Namespace) updatemapping(name Symbol, newval Var) {
-	if _, ok := this.mappings[name]; ok {
-		this.mappings[name] = newval
+func (n Namespace) updatemapping(name Symbol, newval Var) {
+	if _, ok := n.mappings[name]; ok {
+		n.mappings[name] = newval
 	}
 }
 
@@ -71,9 +71,9 @@ func findNamespace(name Symbol) (Namespace, bool) {
 	return v, ok
 }
 
-func (this Namespace) findInternedVar(sym Symbol) (Var, bool) {
-	v, ok := this.mappings[sym]
-	if ok && v.ns.name == this.name {
+func (n Namespace) findInternedVar(sym Symbol) (Var, bool) {
+	v, ok := n.mappings[sym]
+	if ok && v.ns.name == n.name {
 		return v, true
 	}
 	return v, false
