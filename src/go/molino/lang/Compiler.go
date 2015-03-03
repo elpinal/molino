@@ -394,7 +394,7 @@ func registerVar(v Var) {
 		return
 	}
 	var varsMap IPersistentMap = VARS.deref().(IPersistentMap)
-	id := getFrom(varsMap, v)
+	id := get(varsMap, v)
 	if id == nil {
 		VARS.set(assoc(varsMap, v, registerConstant(v)))
 	}

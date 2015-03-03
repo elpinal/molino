@@ -134,6 +134,7 @@ func getFrom(coll, key interface{}) interface{} {
 		return nil
 	}
 	//
+	panic(fmt.Sprintf("FIXME: Can't get from %T", coll))
 	return nil
 }
 
