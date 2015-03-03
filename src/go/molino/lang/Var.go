@@ -42,7 +42,7 @@ func (v Var) intern(ns Namespace, sym Symbol, root interface{}, replaceRoot bool
 	if !dvout.hasRoot() || replaceRoot {
 		dvout.bindroot(root)
 	}
-	ns.updatemapping(sym, dvout)
+	ns.updateMapping(sym, dvout)
 	return dvout
 }
 

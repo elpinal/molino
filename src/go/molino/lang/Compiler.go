@@ -348,7 +348,7 @@ func resolveIn(n Namespace, sym Symbol) interface{} {
 	} else if sym == IN_NS {
 		return IN_NS_VAR
 	} else {
-		o, ok := n.getmapping(sym)
+		o, ok := n.getMapping(sym)
 		if !ok {
 			//
 			panic("Unable to resolve symbol: " + sym.String() + " in this context")

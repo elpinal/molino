@@ -55,12 +55,12 @@ func (n Namespace) refer(sym Symbol, v Var) Var {
 	return v
 }
 
-func (n Namespace) getmapping(name Symbol) (Var, bool) {
+func (n Namespace) getMapping(name Symbol) (Var, bool) {
 	v, ok := n.mappings[name]
 	return v, ok
 }
 
-func (n Namespace) updatemapping(name Symbol, newval Var) {
+func (n Namespace) updateMapping(name Symbol, newval Var) {
 	if _, ok := n.mappings[name]; ok {
 		n.mappings[name] = newval
 	}
