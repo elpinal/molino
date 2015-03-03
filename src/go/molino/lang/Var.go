@@ -85,7 +85,8 @@ func (v Var) set(val interface{}) interface{} {
 	//
 	var b TBox = v.getThreadBinding()
 	if b.val != nil {
-		b.val = val
+		//b.val = val
+		dvals.bindings = dvals.bindings.assoc(v, TBox{val: val})
 		return val
 	}
 	panic(fmt.Sprintf("Can't change/establish root binding of: %s with set", v.sym))

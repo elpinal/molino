@@ -91,7 +91,7 @@ func (h PersistentHashMap) assoc(key, val interface{}) Associative {
 	} else {
 		newroot = h.root.assoc(0, hash(key), key, val, &addedLeaf)
 	}
-	if newroot == h.root {
+	if reflect.DeepEqual(newroot, h.root) {
 		return h
 	}
 	if addedLeaf.val == nil {
@@ -189,8 +189,8 @@ func (b BitmapIndexedNode) assoc(shift int, hash int, key interface{}, val inter
 			}
 			return BitmapIndexedNode{bitmap: b.bitmap, array: cloneAndSet(b.array, 2*idx+1, n)}
 		}
-		if key == keyOrNil {
-			if val == valOrNode {
+		if reflect.DeepEqual(key, keyOrNil) {
+			if reflect.DeepEqual(val, valOrNode) {
 				return b
 			}
 			return BitmapIndexedNode{bitmap: b.bitmap, array: cloneAndSet(b.array, 2*idx+1, val)}
