@@ -31,8 +31,10 @@ var dvals Frame = Frame{bindings: PersistentHashMap{}, prev: nil}
 func (v Var) String() string {
 	if v.ns.name.name != "" {
 		return fmt.Sprintf("#'%v/%v", v.ns.name, v.sym)
+	} else if v.sym.name != "" {
+		return fmt.Sprintf("#<Var: %v>", v.sym)
 	}
-	return fmt.Sprintf("#<Var: %v>", v.sym)
+	return "#<Var: --unnamed-->"
 }
 
 func (this Var) intern(ns Namespace, sym Symbol, root interface{}, replaceRoot bool) Var {
