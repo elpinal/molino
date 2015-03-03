@@ -26,7 +26,9 @@ type Frame struct {
 	prev     *Frame
 }
 
-var dvals Frame = Frame{bindings: PersistentHashMap{}, prev: nil}
+var Top = Frame{bindings: PersistentHashMap{}, prev: nil}
+
+var dvals Frame = Top
 
 func (v Var) String() string {
 	if v.ns.name.name != "" {
@@ -114,6 +116,16 @@ func (_ Var) pushThreadBinding(bindings Associative) {
 		bmap = bmap.assoc(*v, TBox{val: e.val()})
 	}
 	dvals = Frame{bindings: bmap, prev: &f}
+}
+
+func (_ Var) popThreadBinding() {
+	var f Frame = *dvals.prev
+	if &f == nil {
+		panic("")
+	} else if f == Top {
+		dvals = *dvals.prev
+	}
+	dvals = f
 }
 
 func (v Var) getThreadBinding() TBox {
