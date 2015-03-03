@@ -101,13 +101,13 @@ func (_ Var) pushThreadBinding(bindings Associative) {
 	var bmap Associative = f.bindings
 	for bs := bindings.seq(); bs != nil; bs = bs.next() {
 		var e IMapEntry = bs.first().(IMapEntry)
-		var v Var = e.key().(Var)
+		var v *Var = e.key().(*Var)
 		//if !v.dynamic {
 		//	panic(fmt.Sprintf("Can't dynamically bind non-dynamic var: %s/%s", v.ns, v.sym))
 		//}
 		//
 		v.threadBound = true
-		bmap = bmap.assoc(v, TBox{val: e.val()})
+		bmap = bmap.assoc(*v, TBox{val: e.val()})
 	}
 	dvals = Frame{bindings: bmap, prev: &f}
 }
