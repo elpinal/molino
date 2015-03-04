@@ -9,6 +9,7 @@ type Symbol struct {
 	name    string
 	_hasheq int
 	_str    string
+	_meta   IPersistentMap
 }
 
 func (s Symbol) String() string {
@@ -38,4 +39,8 @@ func (s Symbol) hasheq() int {
 		s._hasheq = Util.hashCombine(hashUnencodedChars(s.name), Util.hash(s.ns))
 	}
 	return s._hasheq
+}
+
+func (s Symbol) meta() IPersistentMap {
+	return s._meta
 }
