@@ -82,6 +82,10 @@ func eval(form interface{}) interface{} {
 }
 
 func analyze(form interface{}) Expr {
+	return analyze1(form, "")
+}
+
+func analyze1(form interface{}, name string) Expr {
 	//
 	if form == nil {
 		return NilExpr{}
@@ -100,7 +104,7 @@ func analyze(form interface{}) Expr {
 	case string:
 		return StringExpr{form.(string)} //.intern()
 	case ISeq:
-		return analyzeSeq(form.(ISeq))
+		return analyzeSeq(form.(ISeq), name)
 	case IPersistentVector:
 		return VectorExpr{}.parse(form.(IPersistentVector))
 	case IPersistentMap:
@@ -154,7 +158,7 @@ func analyzeSymbol(sym Symbol) Expr {
 	panic("Unable to resolve symbol: " + sym.String() + " in this context")
 }
 
-func analyzeSeq(form ISeq) Expr {
+func analyzeSeq(form ISeq, name string) Expr {
 	op := first(form)
 	if op == nil {
 		panic("Can't call nil")
