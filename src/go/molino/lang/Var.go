@@ -55,7 +55,7 @@ func (v Var) String() string {
 func (v Var) intern(ns Namespace, sym Symbol, root interface{}, replaceRoot bool) Var {
 	var dvout Var = ns.intern(sym)
 	if !dvout.hasRoot() || replaceRoot {
-		dvout.bindroot(root)
+		dvout.bindRoot(root)
 	}
 	ns.updateMapping(sym, dvout)
 	return dvout
@@ -67,7 +67,7 @@ func (v Var) create() Var {
 	return ret
 }
 
-func (v *Var) bindroot(root interface{}) {
+func (v *Var) bindRoot(root interface{}) {
 	//  oldroot := v.root
 	v.root = root
 }
