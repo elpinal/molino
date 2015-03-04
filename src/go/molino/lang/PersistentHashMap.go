@@ -42,10 +42,6 @@ type NodeSeq struct {
 	s     ISeq
 }
 
-func hash(k interface{}) int {
-	return Util.hasheq(k)
-}
-
 func (h PersistentHashMap) create(init ...interface{}) PersistentHashMap {
 	var ret ITransientMap = PersistentHashMap{}.asTransient()
 	for i := 0; i < len(init); i += 2 {
@@ -63,6 +59,19 @@ func (h PersistentHashMap) createWithCheck(init []interface{}) PersistentHashMap
 		}
 	}
 	return ret.persistent().(PersistentHashMap)
+}
+
+func hash(k interface{}) int {
+	return Util.hasheq(k)
+}
+
+func (h PersistentHashMap) containsKey(key interface{}) bool {
+	if key == nil {
+		return h.hasNil
+	} else if h.root != nil {
+		return h.root.find(0, hash(key), key, nil) != nil
+	}
+	return false
 }
 
 func (h PersistentHashMap) entryAt(key interface{}) IMapEntry {

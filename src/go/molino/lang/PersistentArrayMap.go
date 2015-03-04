@@ -26,6 +26,14 @@ func (a PersistentArrayMap) createWithCheck(init []interface{}) PersistentArrayM
 	return PersistentArrayMap{array: init}
 }
 
+func (a PersistentArrayMap) count() int {
+	return len(a.array) / 2
+}
+
+func (a PersistentArrayMap) containsKey(key interface{}) bool {
+	return a.indexOf(key) >= 0
+}
+
 func (a PersistentArrayMap) entryAt(key interface{}) IMapEntry {
 	var i int = a.indexOf(key)
 	if i >= 0 {
@@ -60,6 +68,10 @@ func (a PersistentArrayMap) assoc(key, val interface{}) Associative {
 	return PersistentArrayMap{array: newArray}
 }
 
+func (a PersistentArrayMap) empty() IPersistentCollection {
+	return PersistentArrayMap{} //.withMeta(a.meta())
+}
+
 func (a PersistentArrayMap) valAt(key interface{}) interface{} {
 	var i int = a.indexOf(key)
 	if i >= 0 {
@@ -88,6 +100,26 @@ func (a PersistentArrayMap) indexOf(key interface{}) int {
 		return -1
 	}
 	return a.indexOfObject(key)
+}
+
+// Duplicate as PersistentHashMap
+func (h PersistentArrayMap) equiv(obj interface{}) bool {
+	//
+	m, ok := obj.(IPersistentMap)
+	if !ok {
+		return false
+	}
+	if m.count() != h.count() {
+		return false
+	}
+	for s := h.seq(); s != nil; s = s.next() {
+		var e MapEntry = s.first().(MapEntry)
+		var found bool = m.containsKey(e.key())
+		if !found || e.val() != m.valAt(e.key()) {
+			return false
+		}
+	}
+	return true
 }
 
 /*

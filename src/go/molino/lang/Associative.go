@@ -1,9 +1,9 @@
 package lang
 
 type Associative interface {
-	//IPersistentCollection
-	Seqable
+	IPersistentCollection
 	ILookup
+	containsKey(interface{}) bool
 	entryAt(interface{}) IMapEntry
 	assoc(interface{}, interface{}) Associative
 }
