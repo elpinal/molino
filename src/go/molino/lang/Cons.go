@@ -24,3 +24,7 @@ func (c Cons) more() ISeq {
 func (c Cons) count() int {
 	return 1 + c._more.count()
 }
+
+func (c Cons) seq() ISeq {
+	return c
+}
