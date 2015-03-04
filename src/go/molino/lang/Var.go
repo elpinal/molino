@@ -43,6 +43,11 @@ func (v *Var) setDynamic() Var {
 	return *v
 }
 
+func (v *Var) setDynamicTo(dynamic bool) Var {
+	v.dynamic = dynamic
+	return *v
+}
+
 func (v Var) String() string {
 	if v.ns.name.name != "" {
 		return fmt.Sprintf("#'%v/%v", v.ns.name, v.sym)

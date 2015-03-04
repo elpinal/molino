@@ -238,6 +238,17 @@ func (e DefExpr) parse(form interface{}) Expr {
 	return DefExpr{v: v, init: analyze1(third(form), v.sym.name), meta: meta, initProvided: count(form) == 3, isDynamic: isDynamic}
 }
 
+func (e DefExpr) eval() interface{} {
+	if e.initProvided {
+		e.v.bindRoot(e.init.eval())
+	}
+	if e.meta != nil {
+		var metaMap IPersistentMap = e.meta.eval().(IPersistentMap)
+		e.v.setMeta(metaMap)
+	}
+	return e.v.setDynamicTo(e.isDynamic)
+}
+
 func (_ NilExpr) eval() interface{} {
 	return nil
 }
