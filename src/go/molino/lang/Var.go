@@ -10,7 +10,9 @@ type Var struct {
 	sym         Symbol
 	root        interface{}
 	threadBound bool
-	//dynamic bool
+	dynamic     bool
+	//Obj
+	AReference
 }
 
 type TBox struct {
@@ -29,6 +31,17 @@ type Frame struct {
 var Top = Frame{bindings: PersistentHashMap{}, prev: nil}
 
 var dvals Frame = Top
+
+var (
+	macroKey Keyword = Keyword{}.internFromString("macro")
+	nameKey  Keyword = Keyword{}.internFromString("name")
+	nsKey    Keyword = Keyword{}.internFromString("ns")
+)
+
+func (v *Var) setDynamic() Var {
+	v.dynamic = true
+	return *v
+}
 
 func (v Var) String() string {
 	if v.ns.name.name != "" {
@@ -94,6 +107,14 @@ func (v Var) set(val interface{}) interface{} {
 		return val
 	}
 	panic(fmt.Sprintf("Can't change/establish root binding of: %s with set", v.sym))
+}
+
+func (v *Var) setMeta(m IPersistentMap) {
+	v.resetMeta(m.assoc(nameKey, v.sym).assoc(nsKey, v.ns))
+}
+
+func (v Var) isMacro() bool {
+	return booleanCast(v.meta().valAt(macroKey))
 }
 
 func (v Var) hasRoot() bool {
