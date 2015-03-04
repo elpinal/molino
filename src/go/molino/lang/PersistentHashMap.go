@@ -6,7 +6,7 @@ import (
 )
 
 type PersistentHashMap struct {
-	count    int
+	cnt      int
 	root     INode
 	hasNil   bool
 	nilValue interface{}
@@ -80,9 +80,9 @@ func (h PersistentHashMap) assoc(key, val interface{}) Associative {
 			if val == h.nilValue {
 				return h
 			}
-			return PersistentHashMap{count: h.count, root: h.root, hasNil: true, nilValue: val}
+			return PersistentHashMap{cnt: h.cnt, root: h.root, hasNil: true, nilValue: val}
 		}
-		return PersistentHashMap{count: h.count + 1, root: h.root, hasNil: true, nilValue: val}
+		return PersistentHashMap{cnt: h.cnt + 1, root: h.root, hasNil: true, nilValue: val}
 	}
 	var addedLeaf Box = Box{}
 	var newroot INode
@@ -95,9 +95,9 @@ func (h PersistentHashMap) assoc(key, val interface{}) Associative {
 		return h
 	}
 	if addedLeaf.val == nil {
-		return PersistentHashMap{count: h.count, root: newroot, hasNil: h.hasNil, nilValue: h.nilValue}
+		return PersistentHashMap{cnt: h.cnt, root: newroot, hasNil: h.hasNil, nilValue: h.nilValue}
 	}
-	return PersistentHashMap{count: h.count + 1, root: newroot, hasNil: h.hasNil, nilValue: h.nilValue}
+	return PersistentHashMap{cnt: h.cnt + 1, root: newroot, hasNil: h.hasNil, nilValue: h.nilValue}
 }
 
 func (h PersistentHashMap) valAt(key interface{}) interface{} {
@@ -113,6 +113,10 @@ func (h PersistentHashMap) valAt(key interface{}) interface{} {
 	return nil
 }
 
+func (h PersistentHashMap) count() int {
+	return h.cnt
+}
+
 func (h PersistentHashMap) seq() ISeq {
 	var s ISeq = nil
 	if h.root != nil {
@@ -124,8 +128,32 @@ func (h PersistentHashMap) seq() ISeq {
 	return s
 }
 
+func (h PersistentHashMap) empty() IPersistentCollection {
+	return PersistentHashMap{} //.withMeta(h.meta())
+}
+
+// Duplicate as PersistentArrayMap
+func (h PersistentHashMap) equiv(obj interface{}) bool {
+	//
+	m, ok := obj.(IPersistentMap)
+	if !ok {
+		return false
+	}
+	if m.count() != h.count() {
+		return false
+	}
+	for s := h.seq(); s != nil; s = s.next() {
+		var e MapEntry = s.first().(MapEntry)
+		var found bool = m.containsKey(e.key())
+		if !found || e.val() != m.valAt(e.key()) {
+			return false
+		}
+	}
+	return true
+}
+
 func (h PersistentHashMap) asTransient() TransientHashMap {
-	return TransientHashMap{root: h.root, cnt: h.count}
+	return TransientHashMap{root: h.root, cnt: h.cnt}
 }
 
 func (t TransientHashMap) assoc(key, val interface{}) ITransientMap {
@@ -165,7 +193,7 @@ func (t TransientHashMap) persistent() IPersistentMap {
 }
 
 func (t TransientHashMap) doPersistent() IPersistentMap {
-	return PersistentHashMap{root: t.root, count: t.cnt}
+	return PersistentHashMap{root: t.root, cnt: t.cnt}
 }
 
 func (t TransientHashMap) count() int {
