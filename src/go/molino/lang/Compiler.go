@@ -359,6 +359,43 @@ func resolveIn(n Namespace, sym Symbol) interface{} {
 	//
 }
 
+func lookupVar(sym Symbol, internNew, registerMacro bool) (Var, bool) {
+	var v Var
+	var ok bool = true
+	if sym.ns != "" {
+		var ns Namespace = namespaceFor(currentNS(), sym)
+		if ns.name.name == "" {
+			return Var{}, false
+		}
+		var name Symbol = intern(sym.name)
+		if internNew && (ns.String() == currentNS().String()) {
+			v = currentNS().intern(name)
+		} else {
+			v, ok = ns.findInternedVar(name)
+		}
+	} else if sym == NS {
+		v = NS_VAR
+	} else if sym == IN_NS {
+		v = IN_NS_VAR
+	} else {
+		o, ok := currentNS().getMapping(sym)
+		if !ok {
+			if internNew {
+				v = currentNS().intern(intern(sym.name))
+			}
+			//} else if ov, ok := o.(Var); ok {
+			//v = ov
+		} else {
+			v = o
+			//panic(fmt.Sprintf("Expecting var, but %v is mapped to %v", sym, o))
+		}
+	}
+	if !v.isMacro() || registerMacro {
+		registerVar(v)
+	}
+	return v, ok
+}
+
 func currentNS() Namespace {
 	return CURRENT_NS.deref().(Namespace)
 }
