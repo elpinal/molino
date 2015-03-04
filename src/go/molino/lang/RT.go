@@ -86,6 +86,30 @@ func meta(x interface{}) IPersistentMap {
 	return nil
 }
 
+func count(o interface{}) int {
+	if c, ok := o.(Counted); ok {
+		return c.count()
+	}
+	return countFrom(o)
+}
+
+func countFrom(o interface{}) int {
+	switch o.(type) {
+	case nil:
+		return 0
+	case IPersistentCollection:
+		i := 0
+		for s := seq(o); s != nil; s = s.next() {
+			if c, ok := s.(Counted); ok {
+				return i + c.count()
+			}
+			i++
+		}
+		return i
+	}
+	panic(fmt.Sprintf("count not supported on this type: %T\n", o))
+}
+
 func conj(coll IPersistentCollection, x interface{}) IPersistentCollection {
 	if coll == nil {
 		return PersistentList{_first: x, _count: 1}
@@ -112,6 +136,14 @@ func first(x interface{}) interface{} {
 
 func second(x interface{}) interface{} {
 	return first(next(x))
+}
+
+func third(x interface{}) interface{} {
+	return first(next(next(x)))
+}
+
+func fourth(x interface{}) interface{} {
+	return first(next(next(next(x))))
 }
 
 func next(x interface{}) ISeq {
@@ -194,4 +226,11 @@ func print(x interface{}) string {
 	default:
 		return "Unknown"
 	}
+}
+
+func booleanCast(x interface{}) bool {
+	if b, ok := x.(bool); ok {
+		return b
+	}
+	return x != nil
 }
