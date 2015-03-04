@@ -10,6 +10,7 @@ var (
 	MOLINO_NS Namespace = FindOrCreate(intern("molino.core"))
 
 	TAG_KEY Keyword = Keyword{}.internFromString("tag")
+	DOC_KEY Keyword = Keyword{}.internFromString("doc")
 
 	IN_NAMESPACE Symbol = intern("in-ns")
 	NAMESPACE    Symbol = intern("ns")

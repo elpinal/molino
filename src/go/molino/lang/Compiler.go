@@ -2,6 +2,7 @@ package lang
 
 import (
 	"fmt"
+	"strings"
 )
 
 type Compiler struct{}
@@ -26,6 +27,13 @@ type LiteralExpr interface {
 	val() interface{}
 }
 
+type DefExpr struct {
+	v            Var
+	init         Expr
+	meta         Expr
+	initProvided bool
+	isDynamic    bool
+}
 type NilExpr struct{}
 type BoolExpr struct {
 	val bool
@@ -62,16 +70,20 @@ type InvokeExpr struct {
 }
 
 var (
-	LOCAL_ENV    Var    = Var{}
-	CONSTANTS    Var    = Var{}.create()
-	CONSTANT_IDS Var    = Var{}.create()
-	KEYWORDS     Var    = Var{}.create()
-	VARS         Var    = Var{}.create()
-	NS           Symbol = intern("ns")
-	IN_NS        Symbol = intern("in-ns")
+	DEF          Symbol  = intern("def")
+	LOCAL_ENV    Var     = Var{}
+	CONSTANTS    Var     = Var{}.create()
+	CONSTANT_IDS Var     = Var{}.create()
+	KEYWORDS     Var     = Var{}.create()
+	VARS         Var     = Var{}.create()
+	arglistsKey  Keyword = Keyword{}.internFromString("arglists")
+	dynamicKey   Keyword = Keyword{}.internFromString("dynamic")
+	NS           Symbol  = intern("ns")
+	IN_NS        Symbol  = intern("in-ns")
 )
 
 var specials IPersistentMap = PersistentHashMap{}.create(
+	DEF, DefExpr{},
 	QUOTE, ConstantExpr{},
 )
 
@@ -169,6 +181,61 @@ func analyzeSeq(form ISeq, name string) Expr {
 	}
 	return InvokeExpr{}.parse(form)
 	//
+}
+
+func (e DefExpr) parse(form interface{}) Expr {
+	var docstring string
+	if count(form) == 4 {
+		if s, ok := third(form).(string); ok {
+			docstring = s
+			form = list(first(form), second(form), fourth(form))
+		}
+	}
+	if count(form) > 3 {
+		panic("Too many arguments to def")
+	} else if count(form) < 2 {
+		panic("Too few arguments to def")
+	}
+	sym, ok := second(form).(Symbol)
+	if !ok {
+		panic("First argument to def must be a Symbol")
+	}
+	v, ok := lookupVar(sym, true, true)
+	if !ok {
+		panic("Can't refer to qualified var that doesn't exist")
+	}
+	if v.ns.String() != currentNS().String() {
+		if sym.ns == "" {
+			v = currentNS().intern(sym)
+			registerVar(v)
+		} else {
+			panic("Can't create defs outside of current ns")
+		}
+	}
+	var mm IPersistentMap = sym.meta()
+	var isDynamic bool = booleanCast(get(mm, dynamicKey))
+	if isDynamic {
+		v.setDynamic()
+	} else if !isDynamic && strings.HasPrefix(sym.name, "*") && strings.HasSuffix(sym.name, "*") && len(sym.name) > 2 {
+		panic(fmt.Sprintf("Warning: %v not declared dynamic and thus is not dynamically rebindable, "+
+			"but its name suggests otherwise. Please either indicate ^:dynamic %v or change the name.",
+			sym, sym))
+	}
+	if booleanCast(get(mm, arglistsKey)) {
+		var vm IPersistentMap = v.meta()
+		vm = assoc(vm, arglistsKey, second(mm.valAt(arglistsKey)))
+		v.setMeta(vm)
+	}
+	//
+	if docstring != "" {
+		mm = assoc(mm, DOC_KEY, docstring)
+	}
+	//
+	var meta Expr
+	if mm.count() != 0 {
+		meta = analyze(mm)
+	}
+	return DefExpr{v: v, init: analyze1(third(form), v.sym.name), meta: meta, initProvided: count(form) == 3, isDynamic: isDynamic}
 }
 
 func (_ NilExpr) eval() interface{} {
