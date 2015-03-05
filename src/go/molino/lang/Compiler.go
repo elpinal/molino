@@ -51,6 +51,8 @@ type StringExpr struct {
 type KeywordExpr struct {
 	k Keyword
 }
+type HostExpr struct {
+}
 type VectorExpr struct {
 	args IPersistentVector
 }
@@ -71,6 +73,7 @@ type InvokeExpr struct {
 
 var (
 	DEF          Symbol  = intern("def")
+	DOT          Symbol  = intern(".")
 	LOCAL_ENV    Var     = Var{}
 	CONSTANTS    Var     = Var{}.create()
 	CONSTANT_IDS Var     = Var{}.create()
@@ -85,6 +88,7 @@ var (
 var specials IPersistentMap = PersistentHashMap{}.create(
 	DEF, DefExpr{},
 	QUOTE, ConstantExpr{},
+	DOT, HostExpr{},
 )
 
 func eval(form interface{}) interface{} {
@@ -290,6 +294,14 @@ func (e StringExpr) eval() interface{} {
 
 func (e KeywordExpr) eval() interface{} {
 	return e.k
+}
+
+func (e HostExpr) parse(frm interface{}) Expr {
+	var form ISeq = frm.(ISeq)
+	if length(form) < 3 {
+		panic("Malformed member expression, expecting (. target member ...)")
+	}
+	panic("Can't parse")
 }
 
 func (_ VectorExpr) parse(form IPersistentVector) Expr {

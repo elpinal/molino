@@ -27,3 +27,8 @@
 (def unquote)
 
 (def list "This is Docstring" :creator)
+
+; (. molino.lang.PersistentList creator)
+
+;(. PersistentList creator)
+
