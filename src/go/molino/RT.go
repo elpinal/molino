@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"github.com/k0kubun/pp"
 )
 
 var (
@@ -52,7 +53,7 @@ func load(scriptbase string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(ret)
+	pp.Println(ret)
 }
 
 ////////////// Collections support /////////////////////////////////
