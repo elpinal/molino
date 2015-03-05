@@ -28,6 +28,8 @@ var inNamespace IFn = NewAFn(func(arg1 interface{}) interface{} {
 	return ns
 })
 
+var id int = 1
+
 func Runtime() {
 	//fmt.Println(MOLINO_NS, NAMESPACE, IN_NAMESPACE.name)
 	var v Var
@@ -54,6 +56,12 @@ func load(scriptbase string) {
 		log.Fatal(err)
 	}
 	pp.Println(ret)
+}
+
+func nextID() int {
+	var ret int = id
+	id++
+	return ret
 }
 
 ////////////// Collections support /////////////////////////////////
