@@ -1,35 +1,8 @@
 ;; molino.core
 
-;2r0100
-;[9999 888 77 6]
-;[9999 888 77 6 9999 888 77 6 9999 888 77 6 9999 888 77 6 9999 888 77 6 9999 888 77 6 9999 888 77 6 9999 888 77 6]
-;[9999 888 77 6 9999 888 77 6 9999 888 77 6 9999 888 77 6 9999 888 77 6 9999 888 77 6 9999 888 77 6 9999 888 77 6 true]
-;{}
-;{64 32}
-;{64 32 33 67}
+(molino.core/in-ns 'molino.core)
 
-;molino.core/in-ns
+(def
+  list (. PersistentList creator))
 
-;:foo
-
-;"bar!"
-
-;{64 32 33 67 1 2 3 4 5 6 7 8 9 0 11 12 13 14 15 16 17 18}
-
-;'baz
-
-;*ns*
-
-;(molino.core/in-ns 'yet-another-namespace)
-
-;molino.core/*ns*
-
-(def unquote)
-
-(def list "This is Docstring" :creator)
-
-; (. molino.lang.PersistentList creator)
-
-PersistentList
-(. PersistentList creator)
-((. PersistentList creator) :foo :bar :baz)
+(list 32 28 :foo "bar" 'baz)
