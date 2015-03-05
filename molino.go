@@ -1,12 +1,11 @@
 package main
 
 import (
-	"./src/go/molino/lang"
+	"./src/go/molino"
 	"flag"
 	"io/ioutil"
 	"log"
 	"os"
-	//	"fmt"
 )
 
 var fs = flag.NewFlagSet(os.Args[0], 1)
