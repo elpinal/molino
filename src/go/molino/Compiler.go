@@ -51,8 +51,7 @@ type StringExpr struct {
 type KeywordExpr struct {
 	k Keyword
 }
-type HostExpr struct {
-}
+type HostExpr struct{}
 type StaticFieldExpr struct {
 	c         Class
 	fieldName string
