@@ -21,3 +21,12 @@ func (k Keyword) String() string {
 	}
 	return k._str
 }
+
+func (k Keyword) hashCode() int {
+	var ret int64 = int64(Util.hash(k.sym.String())) + int64(0x9e3779b9)
+	if (ret >> 31) != 0 {
+		return -int(^ret) - 1
+	} else {
+		return int(ret)
+	}
+}
