@@ -30,5 +30,6 @@
 
 ; (. molino.lang.PersistentList creator)
 
-;(. PersistentList creator)
-
+PersistentList
+(. PersistentList creator)
+;((. PersistentList creator))

@@ -36,6 +36,23 @@ func (l PersistentList) printInnerSeq() []rune {
 }
 */
 
+var creator IFn = NewRestFn(func(args interface{}) interface{} {
+	if a, ok := args.(ArraySeq); ok {
+		var argsarray = a.array
+		var ret IPersistentList = EmptyList{}
+		for i := len(argsarray) - 1; i >= 0; i-- {
+			ret = ret.cons(argsarray[i]).(IPersistentList)
+		}
+		return ret
+	}
+	s := seq(args)
+	var list List = make([]interface{}, 0, count(s))
+	for ; s != nil; s = s.next() {
+		list = append(list, s.first())
+	}
+	return PersistentList{}.create(list)
+}, 0)
+
 func (l PersistentList) create(init []interface{}) IPersistentList {
 	var ret IPersistentList = EmptyList{}
 	for i := len(init) - 1; i >= 0; i-- {
