@@ -38,6 +38,10 @@ var (
 	nsKey    Keyword = Keyword{}.internFromString("ns")
 )
 
+func (u Unbound) String() string {
+	return "Unbound: " + u.Var.String()
+}
+
 func (v *Var) setDynamic() Var {
 	v.dynamic = true
 	return *v
