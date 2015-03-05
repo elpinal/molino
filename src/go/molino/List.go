@@ -3,7 +3,7 @@ package molino
 type List []interface{}
 
 func (i List) iterator() Iterator {
-	return &SeqIterator{seq: START, nexts: i}
+	return &SeqIterator{seq: START, _next: i}
 }
 
 /*

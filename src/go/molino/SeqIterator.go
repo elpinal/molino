@@ -2,7 +2,7 @@ package molino
 
 type SeqIterator struct {
 	seq   interface{}
-	nexts interface{}
+	_next interface{}
 }
 
 var START interface{}
@@ -10,17 +10,17 @@ var START interface{}
 func (s *SeqIterator) hasNext() bool {
 	if s.seq == START {
 		s.seq = nil
-		s.nexts = seq(s.nexts)
-	} else if s.seq == s.nexts {
-		s.nexts = next(s.seq)
+		s._next = seq(s._next)
+	} else if s.seq == s._next {
+		s._next = next(s.seq)
 	}
-	return s.nexts != nil
+	return s._next != nil
 }
 
 func (s *SeqIterator) next() interface{} {
 	if !s.hasNext() {
 		panic("Index out of range")
 	}
-	s.seq = s.nexts
-	return first(s.nexts)
+	s.seq = s._next
+	return first(s._next)
 }
