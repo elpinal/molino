@@ -23,7 +23,7 @@ func (a RestFn) invoke(args ...interface{}) interface{} {
 	return ret[0].Interface()
 }
 
-func (a RestFn) applyTo(arglist ISeq) interface{} {
+func (a RestFn) applyTo(args ISeq) interface{} {
 	// FIXME
-	return a.invoke(arglist.first())
+	return a.invoke(args)
 }

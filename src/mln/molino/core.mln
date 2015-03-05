@@ -32,4 +32,4 @@
 
 PersistentList
 (. PersistentList creator)
-;((. PersistentList creator))
+((. PersistentList creator) :foo :bar :baz)
