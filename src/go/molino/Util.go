@@ -12,7 +12,17 @@ type IHashCode interface {
 	hashCode() int
 }
 
+type hashString string
+
 //var randSeed = 1
+
+func (h hashString) hashCode() int {
+	hashcode := 0
+	for i := 0; i < len(h); i++ {
+		hashcode = hashcode*31 + int(h[i])
+	}
+	return hashcode
+}
 
 func (_ util) hash(o interface{}) int {
 	if o == nil || o == "" {
@@ -20,12 +30,7 @@ func (_ util) hash(o interface{}) int {
 	}
 	switch o.(type) {
 	case string:
-		s := o.(string)
-		hashcode := 0
-		for i := 0; i < len(s); i++ {
-			hashcode = hashcode*31 + int(s[i])
-		}
-		return hashcode
+		return hashString(o.(string)).hashCode()
 	case IHashCode:
 		return o.(IHashCode).hashCode()
 	}
@@ -39,6 +44,8 @@ func (_ util) hasheq(o interface{}) int {
 	switch o.(type) {
 	case IHashEq:
 		return o.(IHashEq).hasheq()
+	case string:
+		return hashString(o.(string)).hashCode()
 	case int:
 		return hashInt(o.(int))
 	case int64:
