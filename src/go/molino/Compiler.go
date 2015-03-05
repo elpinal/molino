@@ -53,6 +53,11 @@ type KeywordExpr struct {
 }
 type HostExpr struct {
 }
+type StaticFieldExpr struct {
+	c         Class
+	fieldName string
+	tag       Symbol
+}
 type VectorExpr struct {
 	args IPersistentVector
 }
@@ -70,6 +75,9 @@ type InvokeExpr struct {
 	fexpr Expr
 	args  IPersistentVector
 }
+
+//type Package string
+type Class string
 
 var (
 	DEF          Symbol  = intern("def")
@@ -89,6 +97,11 @@ var specials IPersistentMap = PersistentHashMap{}.create(
 	DEF, DefExpr{},
 	QUOTE, ConstantExpr{},
 	DOT, HostExpr{},
+)
+
+var functions IPersistentMap = PersistentHashMap{}.create(
+	"PersistentList", PersistentHashMap{}.create(
+		"creator", creator),
 )
 
 func eval(form interface{}) interface{} {
@@ -167,6 +180,8 @@ func analyzeSymbol(sym Symbol) Expr {
 		//
 		registerVar(v)
 		return VarExpr{v}
+	case Class:
+		return ConstantExpr{o, registerConstant(o)}
 	case Symbol:
 		//
 	}
@@ -296,12 +311,40 @@ func (e KeywordExpr) eval() interface{} {
 	return e.k
 }
 
-func (e HostExpr) parse(frm interface{}) Expr {
+func (_ HostExpr) parse(frm interface{}) Expr {
 	var form ISeq = frm.(ISeq)
 	if length(form) < 3 {
 		panic("Malformed member expression, expecting (. target member ...)")
 	}
+	c := maybeClass(second(form))
+	var maybeField bool = length(form) == 3
+	if _, ok := third(form).(Symbol); maybeField && !ok {
+		maybeField = false
+	}
+	if maybeField {
+		var sym Symbol = third(form).(Symbol)
+		var tag Symbol = tagOf(form)
+		return StaticFieldExpr{c, sym.name, tag}
+	}
 	panic("Can't parse")
+}
+
+func maybeClass(form interface{}) Class {
+	if c, ok := form.(Class); ok {
+		return c
+	}
+	if sym, ok := form.(Symbol); ok {
+		if sym.ns == "" {
+			if functions.valAt(sym.name) != nil { // || strings.Contains(sym.name, ".")
+				return Class(sym.name)
+			}
+		}
+	}
+	panic("FIXME: maybeClass")
+}
+
+func (e StaticFieldExpr) eval() interface{} {
+	return functions.valAt(string(e.c)).(IPersistentMap).valAt(e.fieldName)
 }
 
 func (_ VectorExpr) parse(form IPersistentVector) Expr {
@@ -438,6 +481,8 @@ func resolveIn(n Namespace, sym Symbol) interface{} {
 			panic("No such var: " + sym.String())
 		} //
 		return v
+	} else if functions.valAt(sym.name) != nil { // || strings.Contains(sym.name, ".")
+		return Class(sym.name)
 	} else if sym == NS {
 		return NS_VAR
 	} else if sym == IN_NS {
