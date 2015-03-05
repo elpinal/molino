@@ -42,5 +42,8 @@ func (s Symbol) hasheq() int {
 }
 
 func (s Symbol) meta() IPersistentMap {
+	if s._meta == nil {
+		return PersistentHashMap{}
+	}
 	return s._meta
 }

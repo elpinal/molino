@@ -5,6 +5,9 @@ type AReference struct {
 }
 
 func (r AReference) meta() IPersistentMap {
+	if r._meta == nil {
+		return PersistentHashMap{}
+	}
 	return r._meta
 }
 
