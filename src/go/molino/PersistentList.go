@@ -120,6 +120,17 @@ func (l PersistentList) seq() ISeq {
 	return l
 }
 
+func (l PersistentList) iterator() Iterator {
+	return &SeqIterator{seq: START, _next: l}
+}
+
+func (l PersistentList) hasheq() int {
+	if l._hasheq == -1 {
+		l._hasheq = hashOrdered(l)
+	}
+	return l._hasheq
+}
+
 func (e EmptyList) equals(o interface{}) bool {
 	return o == nil
 }

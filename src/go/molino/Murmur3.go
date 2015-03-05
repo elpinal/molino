@@ -37,6 +37,23 @@ func hashUnencodedChars(input string) int {
 	return fmix(h1, 2*len(input))
 }
 
+func mixCollHash(hash, count int) int {
+	var h1 int = seed
+	var k1 uint = mixK1(uint(hash))
+	h1 = mixH1(uint(h1), k1)
+	return fmix(h1, count)
+}
+
+func hashOrdered(xs Iterable) int {
+	n := 0
+	hash := 1
+	for x := xs.iterator(); x.hasNext(); {
+		hash = 31 * hash + Util.hasheq(x.next())
+		n++
+	}
+	return mixCollHash(hash, n)
+}
+
 func mixK1(k1 uint) uint {
 	k1 *= C1
 	k1 = (k1 << 15) | (k1 >> (32 - 15))
