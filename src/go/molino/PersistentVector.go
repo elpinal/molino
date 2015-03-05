@@ -270,3 +270,14 @@ func (c ChunkedSeq) chunkedMore() ISeq {
 func (c ChunkedSeq) first() interface{} {
 	return c.node[c.offset]
 }
+
+func (c ChunkedSeq) next() ISeq {
+	if c.offset + 1 < len(c.node) {
+		return ChunkedSeq{vec: c.vec, node: c.node, i: c.i, offset: c.offset + 1}
+	}
+	return c.chunkedNext()
+}
+
+func (c ChunkedSeq) count() int {
+	return c.vec.cnt - (c.i + c.offset)
+}
