@@ -216,6 +216,14 @@ func listStar(rest ISeq, arg ...interface{}) ISeq {
 	return ret
 }
 
+func length(list ISeq) int {
+	i := 0
+	for c := list; c != nil; c = c.next() {
+		i++
+	}
+	return i
+}
+
 func print(x interface{}) string {
 	switch x.(type) {
 	case nil:
