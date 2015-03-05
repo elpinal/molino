@@ -1,4 +1,4 @@
-package lang
+package molino
 
 type IFn interface {
 	invoke(...interface{}) interface{}

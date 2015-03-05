@@ -29,9 +29,9 @@ func main() {
 	}
 	os.Args = fs.Args()
 
-	lang.Runtime()
+	molino.Runtime()
 	/*
-		reader := new(lang.Reader)
+		reader := new(molino.Reader)
 		reader.Init(string(body))
 		var ret interface{}
 		for r, eof, err := reader.Read(); !eof; r, eof, err = reader.Read() {

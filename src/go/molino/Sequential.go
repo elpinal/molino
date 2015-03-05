@@ -1,3 +1,3 @@
-package lang
+package molino
 
 type Sequential interface{}

@@ -1,4 +1,4 @@
-package lang
+package molino
 
 type Obj struct {
 	_meta IPersistentMap

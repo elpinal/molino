@@ -1,4 +1,4 @@
-package lang
+package molino
 
 type IHashEq interface {
 	hasheq() int

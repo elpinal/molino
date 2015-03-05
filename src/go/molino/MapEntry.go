@@ -1,4 +1,4 @@
-package lang
+package molino
 
 type MapEntry struct {
 	_key interface{}
