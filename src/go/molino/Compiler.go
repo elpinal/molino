@@ -234,10 +234,10 @@ func (e DefExpr) parse(form interface{}) Expr {
 	var isDynamic bool = booleanCast(get(mm, dynamicKey))
 	if isDynamic {
 		v.setDynamic()
-	} else if !isDynamic && strings.HasPrefix(sym.name, "*") && strings.HasSuffix(sym.name, "*") && len(sym.name) > 2 {
+	}
+	if !isDynamic && strings.HasPrefix(sym.name, "*") && strings.HasSuffix(sym.name, "*") && len(sym.name) > 2 {
 		panic(fmt.Sprintf("Warning: %v not declared dynamic and thus is not dynamically rebindable, "+
-			"but its name suggests otherwise. Please either indicate ^:dynamic %v or change the name.",
-			sym, sym))
+			"but its name suggests otherwise. Please either indicate ^:dynamic %v or change the name.", sym, sym))
 	}
 	if booleanCast(get(mm, arglistsKey)) {
 		var vm IPersistentMap = v.meta()
