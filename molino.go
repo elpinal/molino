@@ -4,7 +4,6 @@ import (
 	"flag"
 	"io/ioutil"
 	"log"
-	"os"
 
 	"github.com/elpinal/molino/src/go/molino"
 )
@@ -18,16 +17,16 @@ func main() {
 	if *e != "" {
 		body = []byte(*e)
 		source = "argument"
+	} else if flag.NArg() != 1 {
+		log.Fatal("1 argument required")
 	} else {
 		var err error
-		arg := os.Args[1]
 		source = flag.Arg(0)
-		body, err = ioutil.ReadFile(arg)
+		body, err = ioutil.ReadFile(source)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
-	os.Args = flag.Args()
 
 	molino.Runtime()
 	/*
