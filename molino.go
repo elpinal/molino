@@ -29,7 +29,7 @@ func main() {
 	}
 
 	molino.Runtime()
-	reader := new(molino.Reader)
+	reader := molino.Reader{}
 	reader.Init(body)
 	var ret interface{}
 	for r, eof, err := reader.Read(); !eof; r, eof, err = reader.Read() {
