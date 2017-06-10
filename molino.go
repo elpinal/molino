@@ -13,17 +13,14 @@ var e = flag.String("e", "", "One line of program")
 
 func main() {
 	flag.Parse()
-	var body []byte
-	var source string
-	if *e != "" {
-		body = []byte(*e)
-		source = "argument"
-	} else if flag.NArg() != 1 {
-		fmt.Fprintln(os.Stderr, "1 argument required")
-		os.Exit(1)
-	} else {
+	body := []byte(*e)
+	if len(body) == 0 {
+		if flag.NArg() != 1 {
+			fmt.Fprintln(os.Stderr, "1 argument required")
+			os.Exit(1)
+		}
 		var err error
-		source = flag.Arg(0)
+		source := flag.Arg(0)
 		body, err = ioutil.ReadFile(source)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
