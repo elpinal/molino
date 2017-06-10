@@ -9,11 +9,10 @@ import (
 	"github.com/elpinal/molino/src/go/molino"
 )
 
-var fs = flag.NewFlagSet(os.Args[0], 1)
-var e = fs.String("e", "", "One line of program")
+var e = flag.String("e", "", "One line of program")
 
 func main() {
-	fs.Parse(os.Args[1:])
+	flag.Parse()
 	var body []byte
 	var source string
 	if *e != "" {
@@ -22,13 +21,13 @@ func main() {
 	} else {
 		var err error
 		arg := os.Args[1]
-		source = fs.Arg(0)
+		source = flag.Arg(0)
 		body, err = ioutil.ReadFile(arg)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
-	os.Args = fs.Args()
+	os.Args = flag.Args()
 
 	molino.Runtime()
 	/*
