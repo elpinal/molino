@@ -48,7 +48,7 @@ func hashOrdered(xs Iterable) int {
 	n := 0
 	hash := 1
 	for x := xs.iterator(); x.hasNext(); {
-		hash = 31 * hash + Util.hasheq(x.next())
+		hash = 31*hash + Util.hasheq(x.next())
 		n++
 	}
 	return mixCollHash(hash, n)

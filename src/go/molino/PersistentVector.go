@@ -272,7 +272,7 @@ func (c ChunkedSeq) first() interface{} {
 }
 
 func (c ChunkedSeq) next() ISeq {
-	if c.offset + 1 < len(c.node) {
+	if c.offset+1 < len(c.node) {
 		return ChunkedSeq{vec: c.vec, node: c.node, i: c.i, offset: c.offset + 1}
 	}
 	return c.chunkedNext()
