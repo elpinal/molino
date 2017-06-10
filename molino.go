@@ -13,24 +13,24 @@ var e = flag.String("e", "", "One line of program")
 
 func main() {
 	flag.Parse()
-	body := []byte(*e)
-	if len(body) == 0 {
+	body := *e
+	if body == "" {
 		if flag.NArg() != 1 {
 			fmt.Fprintln(os.Stderr, "1 argument required")
 			os.Exit(1)
 		}
-		var err error
 		source := flag.Arg(0)
-		body, err = ioutil.ReadFile(source)
+		b, err := ioutil.ReadFile(source)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
+		body = string(b)
 	}
 
 	molino.Runtime()
 	reader := new(molino.Reader)
-	reader.Init(string(body))
+	reader.Init(body)
 	var ret interface{}
 	for r, eof, err := reader.Read(); !eof; r, eof, err = reader.Read() {
 		if err != nil {
