@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"log"
+	"os"
 
 	"github.com/elpinal/molino/src/go/molino"
 )
@@ -19,13 +19,15 @@ func main() {
 		body = []byte(*e)
 		source = "argument"
 	} else if flag.NArg() != 1 {
-		log.Fatal("1 argument required")
+		fmt.Fprintln(os.Stderr, "1 argument required")
+		os.Exit(1)
 	} else {
 		var err error
 		source = flag.Arg(0)
 		body, err = ioutil.ReadFile(source)
 		if err != nil {
-			log.Fatal(err)
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
 		}
 	}
 
@@ -35,8 +37,8 @@ func main() {
 	var ret interface{}
 	for r, eof, err := reader.Read(); !eof; r, eof, err = reader.Read() {
 		if err != nil {
-			// log.SetFlags(log.Lshortfile)
-			log.Fatal(err)
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
 		}
 		fmt.Println(r)
 		ret = molino.Eval(r)
