@@ -103,6 +103,10 @@ var functions IPersistentMap = PersistentHashMap{}.create(
 		"creator", creator),
 )
 
+func Eval(form interface{}) interface{} {
+	return eval(form)
+}
+
 func eval(form interface{}) interface{} {
 	//
 	expr := analyze(form)

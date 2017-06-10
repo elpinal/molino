@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 
@@ -29,18 +30,16 @@ func main() {
 	}
 
 	molino.Runtime()
-	/*
-		reader := new(molino.Reader)
-		reader.Init(string(body))
-		var ret interface{}
-		for r, eof, err := reader.Read(); !eof; r, eof, err = reader.Read() {
-			if err != nil {
-				// log.SetFlags(log.Lshortfile)
-				log.Fatal(err)
-			}
-			fmt.Println(r)
-			ret = eval(r)
+	reader := new(molino.Reader)
+	reader.Init(string(body))
+	var ret interface{}
+	for r, eof, err := reader.Read(); !eof; r, eof, err = reader.Read() {
+		if err != nil {
+			// log.SetFlags(log.Lshortfile)
+			log.Fatal(err)
 		}
-	*/
-	_, _ = source, body
+		fmt.Println(r)
+		ret = molino.Eval(r)
+		fmt.Println(ret)
+	}
 }
